@@ -1,18 +1,19 @@
+<style lang="sass" scoped>
+@import 'src/styles/app.variables'
+</style>
+
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App" />
-  </div>
+  <q-page class="layout vertical center-center">
+    <img alt="Quasar logo" src="../assets/logo.svg" style="width: 200px; height: 200px" />
+  </q-page>
 </template>
 
 <script lang="ts">
-import HelloWorld from '@/components/HelloWorld.vue' // @ is an alias to /src
 import { defineComponent } from 'vue'
 
 export default defineComponent({
   name: 'Home',
-  components: {
-    HelloWorld,
-  },
+
+  components: {},
 })
 </script>
