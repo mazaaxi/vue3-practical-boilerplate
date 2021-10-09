@@ -23,18 +23,13 @@ export default defineComponent({
     })
 
     onUnmounted(() => {
-      offRouterReady()
       offAfterRouteUpdate()
       offBeforeRouteUpdate()
       offBeforeRouteLeave()
     })
 
-    const { routes, onRouterReady } = useRouter()
+    const { routes } = useRouter()
     const route = routes.home
-
-    const offRouterReady = onRouterReady(() => {
-      console.log(`onRouterReady`)
-    })
 
     const offBeforeRouteUpdate = route.onBeforeRouteUpdate(async (to, from) => {
       console.log(`Home onBeforeRouteUpdate:`, { to: to.fullPath, from: from.fullPath })
