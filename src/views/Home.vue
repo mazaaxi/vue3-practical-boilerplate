@@ -9,11 +9,44 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, onMounted, onUnmounted } from 'vue'
+import { useRouter } from '@/router'
 
 export default defineComponent({
   name: 'Home',
 
   components: {},
+
+  setup() {
+    onMounted(() => {
+      console.log(`Home onMounted`)
+    })
+
+    onUnmounted(() => {
+      offRouterReady()
+      offAfterRouteUpdate()
+      offBeforeRouteUpdate()
+      offBeforeRouteLeave()
+    })
+
+    const { routes, onRouterReady } = useRouter()
+    const route = routes.home
+
+    const offRouterReady = onRouterReady(() => {
+      console.log(`onRouterReady`)
+    })
+
+    const offBeforeRouteUpdate = route.onBeforeRouteUpdate(async (to, from) => {
+      console.log(`Home onBeforeRouteUpdate:`, { to: to.fullPath, from: from.fullPath })
+    })
+
+    const offBeforeRouteLeave = route.onBeforeRouteLeave(async (to, from) => {
+      console.log(`Home onBeforeRouteLeave:`, { to: to.fullPath, from: from.fullPath })
+    })
+
+    const offAfterRouteUpdate = route.onAfterRouteUpdate(async (to, from) => {
+      console.log(`Home onAfterRouteUpdate:`, { to: to.fullPath, from: from.fullPath })
+    })
+  },
 })
 </script>

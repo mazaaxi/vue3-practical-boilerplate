@@ -98,8 +98,9 @@
 </template>
 
 <script>
-import { ref } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { ref, watch } from 'vue'
+import { useI18n } from '@/i18n'
+import { useRouter } from '@/router'
 
 export default {
   name: 'LayoutDefault',
@@ -107,7 +108,15 @@ export default {
   components: {},
 
   setup() {
-    const i18n = useI18n({ useScope: 'global' })
+    const { i18n } = useI18n()
+    const { currentRoute } = useRouter()
+
+    watch(
+      () => currentRoute.fullPath,
+      async (newValue, oldValue) => {
+        console.log(`currentRoute:`, { to: newValue, from: oldValue })
+      }
+    )
 
     function onClick(e) {
       console.log(i18n.d(new Date(), 'dateSec', 'en'), ': en')
