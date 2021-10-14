@@ -24,7 +24,7 @@ module.exports = {
     ],
     'comma-spacing': ['error', { before: false, after: true }],
     'computed-property-spacing': ['error', 'never'],
-    'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+    'no-console': 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     'no-dupe-class-members': 'off',
     'no-empty': 'off',

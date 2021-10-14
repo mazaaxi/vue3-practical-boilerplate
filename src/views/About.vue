@@ -10,7 +10,7 @@
 
 <script lang="ts">
 import { defineComponent, onMounted, onUnmounted } from 'vue'
-import { useRouter } from '@/router'
+import { useRouterUtils } from '@/router'
 
 export default defineComponent({
   name: 'About',
@@ -28,7 +28,7 @@ export default defineComponent({
       offBeforeRouteLeave()
     })
 
-    const { routes } = useRouter()
+    const { routes } = useRouterUtils()
     const route = routes.about
 
     const offBeforeRouteUpdate = route.onBeforeRouteUpdate(async (to, from) => {

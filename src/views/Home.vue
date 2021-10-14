@@ -5,17 +5,29 @@
 <template>
   <q-page class="layout vertical center-center">
     <img alt="Quasar logo" src="../assets/logo.svg" style="width: 200px; height: 200px" />
+    <!--
+    <div>{{ msg }}</div>
+    <div>{{ t('common.cancel') }}</div>
+    -->
   </q-page>
 </template>
 
 <script lang="ts">
 import { defineComponent, onMounted, onUnmounted } from 'vue'
-import { useRouter } from '@/router'
+import { QPage } from 'quasar'
+import { useI18n } from '@/i18n'
+import { useRouterUtils } from '@/router'
 
 export default defineComponent({
   name: 'Home',
 
-  components: {},
+  components: {
+    QPage,
+  },
+
+  props: {
+    msg: { type: String, default: 'Hello World' },
+  },
 
   setup() {
     onMounted(() => {
@@ -28,7 +40,9 @@ export default defineComponent({
       offBeforeRouteLeave()
     })
 
-    const { routes } = useRouter()
+    const i18n = useI18n()
+
+    const { routes } = useRouterUtils()
     const route = routes.home
 
     const offBeforeRouteUpdate = route.onBeforeRouteUpdate(async (to, from) => {
@@ -42,6 +56,10 @@ export default defineComponent({
     const offAfterRouteUpdate = route.onAfterRouteUpdate(async (to, from) => {
       console.log(`Home onAfterRouteUpdate:`, { to: to.fullPath, from: from.fullPath })
     })
+
+    return {
+      ...i18n,
+    }
   },
 })
 </script>

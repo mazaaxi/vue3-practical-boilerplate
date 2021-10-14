@@ -98,18 +98,18 @@
 </template>
 
 <script>
-import { ref, watch } from 'vue'
+import { defineComponent, ref, watch } from 'vue'
 import { useI18n } from '@/i18n'
-import { useRouter } from '@/router'
+import { useRouterUtils } from '@/router'
 
-export default {
-  name: 'LayoutDefault',
+export default defineComponent({
+  name: 'AppPage',
 
   components: {},
 
   setup() {
-    const { i18n } = useI18n()
-    const { currentRoute } = useRouter()
+    const i18n = useI18n()
+    const { currentRoute } = useRouterUtils()
 
     watch(
       () => currentRoute.fullPath,
@@ -131,5 +131,5 @@ export default {
       onClick,
     }
   },
-}
+})
 </script>

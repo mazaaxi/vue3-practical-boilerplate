@@ -1,18 +1,18 @@
 import { ExampleRoute, ExampleRoutes } from '@/router/example'
 import { FlowStatus, RawRoute, Route } from '@/router/core'
 import { Router, createRouter, createWebHistory } from 'vue-router'
-import { SupportI18nLocales, loadI18nLocaleMessages, setI18nLanguage } from '@/i18n'
+import { SupportI18nLocales, useI18nUtils } from '@/i18n'
 import { UnwrapRef, WritableComputedRef, computed, reactive, ref, watch } from 'vue'
 import { I18n } from 'vue-i18n'
 import { createNanoEvents } from 'nanoevents'
 import flatten from 'lodash/flatten'
 import { pickProps } from 'js-common-lib'
 
-//========================================================================
+//==========================================================================
 //
 //  Interfaces
 //
-//========================================================================
+//==========================================================================
 
 interface AppRouterContainer {
   router: Router
@@ -25,22 +25,27 @@ interface AppRoutes {
   about: ExampleRoute
 }
 
-//========================================================================
+//==========================================================================
 //
 //  Implementation
 //
-//========================================================================
+//==========================================================================
 
 namespace AppRouterContainer {
   let instance: AppRouterContainer
 
-  export function setupRouter(i18n: I18n): AppRouterContainer {
+  export function setupRouter(i18n: I18n): Router {
     instance = newInstance(i18n)
-    return instance
+    return instance.router
   }
 
-  export function useRouter(): AppRouterContainer {
-    return instance
+  export function useRouter(): Router {
+    return instance.router
+  }
+
+  export function useRouterUtils(): Omit<AppRouterContainer, 'router'> {
+    const { router, ...others } = instance
+    return others
   }
 
   function newInstance(i18n: I18n): AppRouterContainer {
@@ -61,6 +66,8 @@ namespace AppRouterContainer {
     const routerReady = ref(false)
 
     const emitter = createNanoEvents()
+
+    const { loadI18nLocaleMessages, setI18nLanguage } = useI18nUtils()
 
     //--------------------------------------------------
     //  Routes
@@ -108,12 +115,6 @@ namespace AppRouterContainer {
       onAfterRouteUpdate: () => () => {},
       onAfterRouteLeave: () => () => {},
     })
-
-    //----------------------------------------------------------------------
-    //
-    //  Methods
-    //
-    //----------------------------------------------------------------------
 
     //----------------------------------------------------------------------
     //
@@ -218,12 +219,12 @@ namespace AppRouterContainer {
   }
 }
 
-//========================================================================
+//==========================================================================
 //
 //  Export
 //
-//========================================================================
+//==========================================================================
 
-const { setupRouter, useRouter } = AppRouterContainer
-export { AppRouterContainer, AppRoutes, FlowStatus, RawRoute, setupRouter, useRouter }
+const { setupRouter, useRouter, useRouterUtils } = AppRouterContainer
+export { AppRoutes, setupRouter, useRouter, useRouterUtils }
 export * from '@/router/core'

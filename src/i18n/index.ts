@@ -1,7 +1,8 @@
-import { Composer, I18n, I18nOptions, Locale, useI18n as _useI18n, createI18n } from 'vue-i18n'
+import { I18n, Locale, useI18n as _useI18n, createI18n } from 'vue-i18n'
 import { WritableComputedRef, nextTick } from 'vue'
 import axios from 'axios'
 import { datetimeFormats } from '@/i18n/date-time-formats'
+import en from '@/i18n/locales/en'
 
 //----------------------------------------------------------------------
 //
@@ -9,10 +10,12 @@ import { datetimeFormats } from '@/i18n/date-time-formats'
 //
 //----------------------------------------------------------------------
 
-const SupportI18nLocales = ['en', 'en-US', 'ja', 'ja-JP']
+const SupportI18nLocales = ['ja', 'ja-JP', 'en', 'en-US']
 
 interface I18nContainer {
-  i18n: Composer<unknown, unknown, unknown, unknown, never, unknown>
+  i18n: I18n
+  setI18nLanguage(locale: string): void
+  loadI18nLocaleMessages(locale: string): Promise<void>
 }
 
 //----------------------------------------------------------------------
@@ -22,38 +25,55 @@ interface I18nContainer {
 //----------------------------------------------------------------------
 
 namespace I18nContainer {
-  let instance: I18n
+  let instance: I18nContainer
 
-  export function setupI18n(options: Omit<I18nOptions, 'legacy'> & { locale: Locale }) {
-    const { locale, ..._options } = options
-    instance = createI18n({
-      ..._options,
+  export function setupI18n(options?: { locale?: Locale }): I18n {
+    instance ??= newInstance(options)
+    return instance.i18n
+  }
+
+  export function useI18n() {
+    return _useI18n({ useScope: 'global' })
+  }
+
+  export function useI18nUtils(): Omit<I18nContainer, 'i18n'> {
+    const { i18n, ...others } = instance
+    return others
+  }
+
+  function newInstance(options?: { locale?: Locale }): I18nContainer {
+    options ??= {}
+    options.locale ??= 'en'
+
+    const i18n: I18n = createI18n({
       legacy: false,
+      globalInjection: true,
+      fallbackLocale: 'en',
+      messages: { en },
       datetimeFormats,
+      ...options,
     })
-    setI18nLanguage(locale || 'en')
-    return instance
-  }
 
-  export function useI18n(): I18nContainer {
-    return {
-      i18n: _useI18n({ useScope: 'global' }),
+    const setI18nLanguage: I18nContainer['setI18nLanguage'] = locale => {
+      ;(i18n.global.locale as WritableComputedRef<string>).value = locale
+      axios.defaults.headers.common['Accept-Language'] = locale
     }
-  }
 
-  export function setI18nLanguage(locale: string) {
-    ;(instance.global.locale as WritableComputedRef<string>).value = locale
-    axios.defaults.headers.common['Accept-Language'] = locale
-  }
+    const loadI18nLocaleMessages: I18nContainer['loadI18nLocaleMessages'] = async locale => {
+      // load locale messages with dynamic import
+      const messages = await import(/* webpackChunkName: "locale-[request]" */ `@/i18n/locales/${locale}.js`)
+      // set locale and locale message
+      i18n.global.setLocaleMessage(locale, messages.default)
+      return nextTick()
+    }
 
-  export async function loadI18nLocaleMessages(locale: string) {
-    // load locale messages with dynamic import
-    const messages = await import(/* webpackChunkName: "locale-[request]" */ `@/i18n/locales/${locale}.js`)
+    setI18nLanguage(options.locale)
 
-    // set locale and locale message
-    instance.global.setLocaleMessage(locale, messages.default)
-
-    return nextTick()
+    return {
+      i18n,
+      setI18nLanguage,
+      loadI18nLocaleMessages,
+    }
   }
 }
 
@@ -63,5 +83,5 @@ namespace I18nContainer {
 //
 //----------------------------------------------------------------------
 
-const { setupI18n, useI18n, setI18nLanguage, loadI18nLocaleMessages } = I18nContainer
-export { SupportI18nLocales, setupI18n, useI18n, setI18nLanguage, loadI18nLocaleMessages }
+const { setupI18n, useI18n, useI18nUtils } = I18nContainer
+export { SupportI18nLocales, setupI18n, useI18n, useI18nUtils }

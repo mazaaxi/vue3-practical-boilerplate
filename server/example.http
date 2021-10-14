@@ -1,0 +1,97 @@
+PUT {{host}}/api/testData
+Content-Type: application/json
+
+{
+  "app": {
+    "name": "vue3-practical-boilerplate",
+    "version": "0.0.1"
+  },
+  "products": [
+    {
+      "id": "product5",
+      "title": "Surface Pro X - 13",
+      "price": 120610,
+      "stock": 50,
+      "createdAt": "2020-01-01T10:00:00.000Z",
+      "updatedAt": "2020-01-02T10:00:00.000Z"
+    }
+  ]
+}
+
+###
+
+GET {{host}}/api/products
+Content-Type: application/json
+
+###
+
+GET {{host}}/api/products?ids[]=product1&ids[]=product2
+Content-Type: application/json
+
+###
+
+GET {{host}}/api/cartItems
+Content-Type: application/json
+Authorization: Bearer {{idToken}}
+
+###
+
+GET {{host}}/api/cartItems?ids[]=cartItem1&ids[]=cartItem2
+Content-Type: application/json
+Authorization: Bearer {{idToken}}
+
+###
+
+POST {{host}}/api/cartItems
+Content-Type: application/json
+Authorization: Bearer {{idToken}}
+
+[
+  {
+    "uid": "taro.yamada",
+    "productId": "product3",
+    "title": "MediaPad 10",
+    "price": 26400,
+    "quantity": 1
+  },
+  {
+    "uid": "taro.yamada",
+    "productId": "product4",
+    "title": "Surface Go",
+    "price": 54290,
+    "quantity": 1
+  }
+]
+
+###
+
+PUT {{host}}/api/cartItems
+Content-Type: application/json
+Authorization: Bearer {{idToken}}
+
+[
+  {
+    "uid": "taro.yamada",
+    "id": "cartItem1",
+    "quantity": 2
+  },
+  {
+    "uid": "taro.yamada",
+    "id": "cartItem2",
+    "quantity": 1
+  }
+]
+
+###
+
+DELETE {{host}}/api/cartItems?ids[]=cartItem1&ids[]=cartItem2
+Content-Type: application/json
+Authorization: Bearer {{idToken}}
+
+###
+
+PUT {{host}}/api/cartItems/checkout
+Content-Type: application/json
+Authorization: Bearer {{idToken}}
+
+###
