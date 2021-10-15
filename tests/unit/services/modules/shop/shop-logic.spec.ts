@@ -98,7 +98,7 @@ describe('ShopService', () => {
           signInUser = UserStore.createEmptyUser()
         },
         validateSignedIn() {
-          if (!signInUser.id) throw new Error(`Not signed in.`)
+          if (!signInUser.id) throw new Error(`Not signed-in.`)
         },
       })
     })
@@ -106,12 +106,12 @@ describe('ShopService', () => {
 
   it('fetchProducts', async () => {
     const { stores, services } = provideDependency(({ apis }) => {
-      // モック設定
+      // mock settings
       const getProducts = td.replace<TestAPIContainer, 'getProducts'>(apis, 'getProducts')
       td.when(getProducts()).thenResolve(Products())
     })
 
-    // テスト対象実行
+    // run the test target
     const actual = await services.shop.fetchProducts()
 
     expect(actual).toEqual(Products())
@@ -120,16 +120,16 @@ describe('ShopService', () => {
   })
 
   describe('fetchCartItems', () => {
-    it('ベーシックケース', async () => {
+    it('basic case', async () => {
       const { stores, helpers, services } = provideDependency(({ apis, helpers }) => {
-        // モック設定
+        // mock settings
         const getCartItems = td.replace<TestAPIContainer, 'getCartItems'>(apis, 'getCartItems')
         td.when(getCartItems()).thenResolve(CartItems())
-        // サインインユーザー設定
+        // sign-in user settings
         helpers.account.signIn(SignInUser)
       })
 
-      // テスト対象実行
+      // run the test target
       const actual = await services.shop.fetchCartItems()
 
       expect(actual).toEqual(CartItems())
@@ -137,54 +137,54 @@ describe('ShopService', () => {
       toBeCopyCartItem(stores, actual)
     })
 
-    it('サインインしていない場合', async () => {
+    it('if not signed-in', async () => {
       const { stores, services } = provideDependency()
 
       let actual!: Error
       try {
-        // テスト対象実行
+        // run the test target
         await services.shop.fetchCartItems()
       } catch (err: any) {
         actual = err
       }
 
-      expect(actual.message).toBe(`Not signed in.`)
+      expect(actual.message).toBe(`Not signed-in.`)
 
-      // ストアに変化がないことを検証
+      // verify that there is no change in the store
       expect(stores.cart.all.length).toBe(0)
     })
 
-    it('APIでエラーが発生した場合', async () => {
+    it('if an error occurs in the API', async () => {
       const expected = new Error()
       const { stores, services } = provideDependency(({ apis, helpers }) => {
-        // モック設定
+        // mock settings
         const getCartItems = td.replace<TestAPIContainer, 'getCartItems'>(apis, 'getCartItems')
         td.when(getCartItems()).thenReject(expected)
-        // サインインユーザー設定
+        // sign-in user settings
         helpers.account.signIn(SignInUser)
       })
 
       let actual!: Error
       try {
-        // テスト対象実行
+        // run the test target
         await services.shop.fetchCartItems()
       } catch (err: any) {
         actual = err
       }
 
       expect(actual).toBe(expected)
-      // ストアに変化がないことを検証
+      // verify that there is no change in the store
       expect(stores.cart.all.length).toBe(0)
     })
   })
 
   describe('addItemToCart', () => {
-    it('ベーシックケース - 追加', async () => {
-      // 現在の商品の在庫数を設定
+    it('basic case - add', async () => {
+      // set a number of items in stock for a current product
       const products = Products()
       const product3 = products[2]
       product3.stock = 10
-      // API実行後のレスポンスオブジェクト
+      // response object after API execution
       const response: CartItemEditResponse = {
         id: generateId(),
         uid: SignInUser.id,
@@ -203,9 +203,9 @@ describe('ShopService', () => {
       }
 
       const { stores, helpers, services } = provideDependency(({ apis, stores, helpers }) => {
-        // ストア設定
+        // store settings
         stores.product.setAll(products)
-        // モック設定
+        // mock settings
         const addCartItems = td.replace<TestAPIContainer, 'addCartItems'>(apis, 'addCartItems')
         td.when(
           addCartItems([
@@ -218,27 +218,27 @@ describe('ShopService', () => {
             },
           ])
         ).thenResolve([response])
-        // サインインユーザー設定
+        // sign-in user settings
         helpers.account.signIn(SignInUser)
       })
 
-      // テスト対象実行
+      // run the test target
       await services.shop.addItemToCart(response.product.id)
 
-      // カートにアイテムが追加されたか検証
+      // verify that the item has added to the cart
       const cartItem = stores.cart.sgetById(response.id)
       expect(cartItem.quantity).toBe(response.quantity)
-      // 商品の在庫数が適切にマイナスされたか検証
+      // verify that the number of products in stock has properly decremented
       const product = stores.product.sgetById(response.productId)
       expect(product.stock).toBe(response.product.stock)
     })
 
-    it('ベーシックケース - 更新', async () => {
-      // 現在の商品の在庫数を設定
+    it('basic case - update', async () => {
+      // set a number of items in stock for a current product
       const products = Products()
       const product1 = products[0]
       product1.stock = 10
-      // API実行後のレスポンスオブジェクト
+      // response object after API execution
       const cartItem1 = CartItems()[0]
       expect(cartItem1.productId).toBe(product1.id)
       const response: CartItemEditResponse = {
@@ -254,46 +254,46 @@ describe('ShopService', () => {
       }
 
       const { stores, helpers, services } = provideDependency(({ apis, stores, helpers }) => {
-        // ストア設定
+        // store settings
         stores.product.setAll(products)
         stores.cart.setAll(CartItems())
-        // モック設定
+        // mock settings
         const updateCartItems = td.replace<TestAPIContainer, 'updateCartItems'>(apis, 'updateCartItems')
         td.when(updateCartItems([{ id: response.id, uid: SignInUser.id, quantity: response.quantity }])).thenResolve([response])
-        // サインインユーザー設定
+        // sign-in user settings
         helpers.account.signIn(SignInUser)
       })
 
-      // テスト対象実行
+      // run the test target
       await services.shop.addItemToCart(response.product.id)
 
-      // カートアイテムの個数が適切にプラスされたか検証
+      // verify the number of cart items has properly incremented
       const cartItem = stores.cart.sgetById(response.id)
       expect(cartItem.quantity).toBe(response.quantity)
-      // 商品の在庫数が適切にマイナスされたか検証
+      // verify that the number of products in stock has properly decremented
       const product = stores.product.sgetById(response.productId)
       expect(product.stock).toBe(response.product.stock)
     })
 
-    it('在庫が足りなかった場合', async () => {
+    it('if do not have enough stock', async () => {
       const products = Products()
       const product1 = products[0]
-      // 現在の商品の在庫数を設定
+      // set a number of items in stock for a current product
       product1.stock = 0
 
       const { stores, services } = provideDependency(({ apis, stores, helpers }) => {
-        // ストア設定
+        // store settings
         stores.product.setAll(products)
-        // モック設定
+        // mock settings
         const addCartItems = td.replace<TestAPIContainer, 'addCartItems'>(apis, 'addCartItems')
         td.when(addCartItems(td.matchers.anything())).thenReject(new Error())
-        // サインインユーザー設定
+        // sign-in user settings
         helpers.account.signIn(SignInUser)
       })
 
       let actual!: Error
       try {
-        // テスト対象実行
+        // run the test target
         await services.shop.addItemToCart(product1.id)
       } catch (err: any) {
         actual = err
@@ -301,53 +301,53 @@ describe('ShopService', () => {
 
       expect(actual).toBeInstanceOf(Error)
 
-      // ストアに変化がないことを検証
+      // verify that there is no change in the store
       expect(stores.product.all).toEqual(products)
       expect(stores.cart.all.length).toBe(0)
     })
 
-    it('サインインしていない場合', async () => {
+    it('if not signed-in', async () => {
       const products = Products()
       const product1 = products[0]
 
       const { stores, services } = provideDependency(({ stores }) => {
-        // ストア設定
+        // store settings
         stores.product.setAll(products)
       })
 
       let actual!: Error
       try {
-        // テスト対象実行
+        // run the test target
         await services.shop.addItemToCart(product1.id)
       } catch (err: any) {
         actual = err
       }
 
-      expect(actual.message).toBe(`Not signed in.`)
+      expect(actual.message).toBe(`Not signed-in.`)
 
-      // ストアに変化がないことを検証
+      // verify that there is no change in the store
       expect(stores.product.all).toEqual(products)
       expect(stores.cart.all.length).toBe(0)
     })
 
-    it('APIでエラーが発生した場合', async () => {
+    it('if an error occurs in the API', async () => {
       const products = Products()
       const product1 = products[0]
 
       const expected = new Error()
       const { stores, services } = provideDependency(({ apis, stores, helpers }) => {
-        // ストア設定
+        // store settings
         stores.product.setAll(products)
-        // モック設定
+        // mock settings
         const addCartItems = td.replace<TestAPIContainer, 'addCartItems'>(apis, 'addCartItems')
         td.when(addCartItems(td.matchers.anything())).thenReject(expected)
-        // サインインユーザー設定
+        // sign-in user settings
         helpers.account.signIn(SignInUser)
       })
 
       let actual!: Error
       try {
-        // テスト対象実行
+        // run the test target
         await services.shop.addItemToCart(product1.id)
       } catch (err: any) {
         actual = err
@@ -355,23 +355,23 @@ describe('ShopService', () => {
 
       expect(actual).toBe(expected)
 
-      // ストアに変化がないことを検証
+      // verify that there is no change in the store
       expect(stores.product.all).toEqual(products)
       expect(stores.cart.all.length).toBe(0)
     })
   })
 
   describe('removeItemFromCart', () => {
-    it('ベーシックケース - 更新', async () => {
-      // 現在の商品の在庫数を設定
+    it('basic case - update', async () => {
+      // set a number of items in stock for a current product
       const products = Products()
       const product1 = products[0]
       product1.stock = 10
-      // 現在のカートの数量を設定
+      // set a current cart quantity
       const cartItems = CartItems()
       const cartItem1 = cartItems[0]
       cartItem1.quantity = 2
-      // API実行後のレスポンスオブジェクト
+      // response object after API execution
       expect(cartItem1.productId).toBe(product1.id)
       const response: CartItemEditResponse = {
         ...cartItem1,
@@ -385,37 +385,37 @@ describe('ShopService', () => {
       }
 
       const { stores, helpers, services } = provideDependency(({ apis, stores, helpers }) => {
-        // ストア設定
+        // store settings
         stores.product.setAll(products)
         stores.cart.setAll(cartItems)
-        // モック設定
+        // mock settings
         const updateCartItems = td.replace<TestAPIContainer, 'updateCartItems'>(apis, 'updateCartItems')
         td.when(updateCartItems([{ id: response.id, uid: SignInUser.id, quantity: response.quantity }])).thenResolve([response])
-        // サインインユーザー設定
+        // sign-in user settings
         helpers.account.signIn(SignInUser)
       })
 
-      // テスト対象実行
+      // run the test target
       await services.shop.removeItemFromCart(response.product.id)
 
-      // カートアイテムの個数が適切にマイナスされたか検証
+      // verify that the number of cart items has properly decremented
       const cartItem = stores.cart.sgetById(response.id)
       expect(cartItem.quantity).toBe(response.quantity)
-      // 商品の在庫数が適切にプラスされたか検証
+      // verify that the number of products in stock has properly incremented
       const product = stores.product.sgetById(response.productId)
       expect(product.stock).toBe(response.product.stock)
     })
 
-    it('ベーシックケース - 削除', async () => {
-      // 現在の商品の在庫数を設定
+    it('basic case - remove', async () => {
+      // set a number of items in stock for a current product
       const products = Products()
       const product1 = products[0]
       product1.stock = 10
-      // 現在のカートの数量を設定
+      // set a current cart quantity
       const cartItems = CartItems()
       const cartItem1 = cartItems[0]
       cartItem1.quantity = 1
-      // API実行後のレスポンスオブジェクト
+      // response object after API execution
       expect(cartItem1.productId).toBe(product1.id)
       const response: CartItemEditResponse = {
         ...cartItem1,
@@ -429,76 +429,77 @@ describe('ShopService', () => {
       }
 
       const { stores, helpers, services } = provideDependency(({ apis, stores, helpers }) => {
-        // ストア設定
+        // store settings
         stores.product.setAll(products)
         stores.cart.setAll(cartItems)
-        // モック設定
+        // mock settings
         const removeCartItems = td.replace<TestAPIContainer, 'removeCartItems'>(apis, 'removeCartItems')
         td.when(removeCartItems([response.id])).thenResolve([response])
-        // サインインユーザー設定
+        // sign-in user settings
         helpers.account.signIn(SignInUser)
       })
 
-      // テスト対象実行
+      // run the test target
       await services.shop.removeItemFromCart(response.product.id)
 
-      // カートアイテムが削除されたか検証
+      // verify that cart items have removed
       const cartItem = stores.cart.getById(response.id)
       expect(cartItem).toBeUndefined()
       // 商品の在庫数が適切にプラスされたか検証
+      // verify that the number of products in stock has properly incremented
       const product = stores.product.sgetById(response.productId)
       expect(product.stock).toBe(response.product.stock)
     })
 
-    it('サインインしていない場合', async () => {
+    it('if not signed-in', async () => {
       const products = Products()
       const product1 = products[0]
       const cartItems = CartItems()
 
       const { stores, services } = provideDependency(({ stores }) => {
-        // ストア設定
+        // store settings
         stores.product.setAll(Products())
         stores.cart.setAll(cartItems)
       })
 
       let actual!: Error
       try {
-        // テスト対象実行
+        // run the test target
         await services.shop.removeItemFromCart(product1.id)
       } catch (err: any) {
         actual = err
       }
 
-      expect(actual.message).toBe(`Not signed in.`)
+      expect(actual.message).toBe(`Not signed-in.`)
 
-      // ストアに変化がないことを検証
+      // verify that there is no change in the store
       expect(stores.product.all).toEqual(products)
       expect(stores.cart.all).toEqual(cartItems)
     })
 
-    it('APIでエラーが発生した場合', async () => {
+    it('if an error occurs in the API', async () => {
       const products = Products()
       const product1 = products[0]
-      // 現在のカートの数量を設定
+      // set a current cart quantity
       const cartItems = CartItems()
       const cartItem1 = cartItems[0]
       cartItem1.quantity = 1
 
       const expected = new Error()
       const { stores, services } = provideDependency(({ apis, stores, helpers }) => {
-        // ストア設定
+        // store settings
         stores.product.setAll(Products())
         stores.cart.setAll(cartItems)
-        // モック設定
+        // mock settings
         const removeCartItems = td.replace<TestAPIContainer, 'removeCartItems'>(apis, 'removeCartItems')
         td.when(removeCartItems(td.matchers.anything())).thenReject(expected)
-        // サインインユーザー設定
+        // sign-in user settings
         helpers.account.signIn(SignInUser)
       })
 
       let actual!: Error
       try {
-        // テスト対象実行
+        // run the test target
         await services.shop.removeItemFromCart(product1.id)
       } catch (err: any) {
         actual = err
@@ -506,75 +507,75 @@ describe('ShopService', () => {
 
       expect(actual).toBe(expected)
 
-      // ストアに変化がないことを検証
+      // verify that there is no change in the store
       expect(stores.product.all).toEqual(Products())
       expect(stores.cart.all).toEqual(cartItems)
     })
   })
 
   describe('checkout', () => {
-    it('ベーシックケース', async () => {
+    it('basic case', async () => {
       const { apis, services } = provideDependency(({ apis, stores, helpers }) => {
-        // ストア設定
+        // store settings
         stores.product.setAll(Products())
         stores.cart.setAll(CartItems())
-        // モック設定
+        // mock settings
         const checkoutCart = td.replace<TestAPIContainer, 'checkoutCart'>(apis, 'checkoutCart')
         td.when(checkoutCart()).thenResolve(true)
-        // サインインユーザー設定
+        // sign-in user settings
         helpers.account.signIn(SignInUser)
       })
 
-      // テスト対象の実行
+      // run the test target
       await services.shop.checkout()
 
       expect(services.shop.cartItems.length).toBe(0)
       expect(services.shop.products).toEqual(Products())
 
-      // APIが適切な引数でコールされたか検証
+      // verify that the API was called with the proper arguments
       const exp = td.explain(apis.checkoutCart)
-      expect(exp.calls.length).toBe(1) // 1回呼び出されるはず
-      expect(exp.calls[0].args[0]).toBeUndefined() // 1回目の呼び出しが引数なしなはず
+      expect(exp.calls.length).toBe(1) // only be called once
+      expect(exp.calls[0].args[0]).toBeUndefined() // the first call should be no argument
     })
 
-    it('サインインしていない場合', async () => {
+    it('if not signed-in', async () => {
       const { stores, services } = provideDependency(({ apis, stores, helpers }) => {
-        // ストア設定
+        // store settings
         stores.product.setAll(Products())
         stores.cart.setAll(CartItems())
       })
 
       let actual!: Error
       try {
-        // テスト対象実行
+        // run the test target
         await services.shop.checkout()
       } catch (err: any) {
         actual = err
       }
 
-      expect(actual.message).toBe(`Not signed in.`)
+      expect(actual.message).toBe(`Not signed-in.`)
 
-      // ストアに変化がないことを検証
+      // verify that there is no change in the store
       expect(stores.product.all).toEqual(Products())
       expect(stores.cart.all).toEqual(CartItems())
     })
 
-    it('APIでエラーが発生した場合', async () => {
+    it('if an error occurs in the API', async () => {
       const expected = new Error()
       const { stores, services } = provideDependency(({ apis, stores, helpers }) => {
-        // ストア設定
+        // store settings
         stores.product.setAll(Products())
         stores.cart.setAll(CartItems())
-        // モック設定
+        // mock settings
         const checkoutCart = td.replace<TestAPIContainer, 'checkoutCart'>(apis, 'checkoutCart')
         td.when(checkoutCart()).thenReject(expected)
-        // サインインユーザー設定
+        // sign-in user settings
         helpers.account.signIn(SignInUser)
       })
 
       let actual!: Error
       try {
-        // テスト対象実行
+        // run the test target
         await services.shop.checkout()
       } catch (err: any) {
         actual = err
@@ -582,7 +583,7 @@ describe('ShopService', () => {
 
       expect(actual).toBe(expected)
 
-      // ストアに変化がないことを検証
+      // verify that there is no change in the store
       expect(stores.product.all).toEqual(Products())
       expect(stores.cart.all).toEqual(CartItems())
     })

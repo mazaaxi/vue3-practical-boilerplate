@@ -49,7 +49,6 @@ describe('CartStore', () => {
       stores.cart.setAll(CartItems())
     })
 
-    // テスト対象実行
     const actual = stores.cart.all
 
     expect(actual).toEqual(CartItems())
@@ -60,31 +59,31 @@ describe('CartStore', () => {
       stores.cart.setAll(CartItems())
     })
 
-    // テスト対象実行
     const actual = stores.cart.totalPrice
 
     expect(actual).toBe(88380)
   })
 
   describe('getById', () => {
-    it('ベーシックケース', () => {
+    it('basic case', () => {
       const { stores } = provideDependency(({ stores }) => {
         stores.cart.setAll(CartItems())
       })
 
-      // テスト対象実行
+      // run the test target
       const actual = stores.cart.getById(CartItem1().id)!
 
       expect(actual).toEqual(CartItem1())
+
       toBeCopyCartItem(stores, actual)
     })
 
-    it('存在しないカートアイテムIDを指定した場合', () => {
+    it('if a non-existent cart item id is specified', () => {
       const { stores } = provideDependency(({ stores }) => {
         stores.cart.setAll(CartItems())
       })
 
-      // テスト対象実行
+      // run the test target
       const actual = stores.cart.getById('9999')
 
       expect(actual).toBeUndefined()
@@ -92,26 +91,27 @@ describe('CartStore', () => {
   })
 
   describe('sgetById', () => {
-    it('ベーシックケース', () => {
+    it('basic case', () => {
       const { stores } = provideDependency(({ stores }) => {
         stores.cart.setAll(CartItems())
       })
 
-      // テスト対象実行
+      // run the test target
       const actual = stores.cart.sgetById(CartItem1().id)
 
       expect(actual).toEqual(CartItem1())
+
       toBeCopyCartItem(stores, actual)
     })
 
-    it('存在しないカートアイテムIDを指定した場合', () => {
+    it('if a non-existent cart item id is specified', () => {
       const { stores } = provideDependency(({ stores }) => {
         stores.cart.setAll(CartItems())
       })
 
       let actual!: Error
       try {
-        // テスト対象実行
+        // run the test target
         stores.cart.sgetById('9999')
       } catch (err: any) {
         actual = err
@@ -122,24 +122,24 @@ describe('CartStore', () => {
   })
 
   describe('getByProductId', () => {
-    it('ベーシックケース', () => {
+    it('basic case', () => {
       const { stores } = provideDependency(({ stores }) => {
         stores.cart.setAll(CartItems())
       })
 
-      // テスト対象実行
+      // run the test target
       const actual = stores.cart.getByProductId(CartItem1().productId)!
 
       expect(actual).toEqual(CartItem1())
       toBeCopyCartItem(stores, actual)
     })
 
-    it('存在しない商品IDを指定した場合', () => {
+    it('if a non-existent product id is specified', () => {
       const { stores } = provideDependency(({ stores }) => {
         stores.cart.setAll(CartItems())
       })
 
-      // テスト対象実行
+      // run the test target
       const actual = stores.cart.getByProductId('9999')
 
       expect(actual).toBeUndefined()
@@ -147,26 +147,26 @@ describe('CartStore', () => {
   })
 
   describe('sgetByProductId', () => {
-    it('ベーシックケース', () => {
+    it('basic case', () => {
       const { stores } = provideDependency(({ stores }) => {
         stores.cart.setAll(CartItems())
       })
 
-      // テスト対象実行
+      // run the test target
       const actual = stores.cart.sgetByProductId(CartItem1().productId)
 
       expect(actual).toEqual(CartItem1())
       toBeCopyCartItem(stores, actual)
     })
 
-    it('存在しない商品IDを指定した場合', () => {
+    it('if a non-existent product id is specified', () => {
       const { stores } = provideDependency(({ stores }) => {
         stores.cart.setAll(CartItems())
       })
 
       let actual!: Error
       try {
-        // テスト対象実行
+        // run the test target
         stores.cart.sgetByProductId('9999')
       } catch (err: any) {
         actual = err
@@ -177,7 +177,7 @@ describe('CartStore', () => {
   })
 
   describe('add', () => {
-    it('ベーシックケース', () => {
+    it('basic case', () => {
       const { stores } = provideDependency(({ stores }) => {
         stores.cart.setAll(CartItems())
       })
@@ -190,17 +190,18 @@ describe('CartStore', () => {
       cartItemX.price = 999
       cartItemX.quantity = 888
 
-      // テスト対象実行
+      // run the test target
       const actual = stores.cart.add(cartItemX)
 
       expect(actual).toEqual(cartItemX)
-      toBeCopyCartItem(stores, actual)
 
       const added = stores.cart.sgetById(cartItemX.id)
       expect(added).toEqual(cartItemX)
+
+      toBeCopyCartItem(stores, actual)
     })
 
-    it('余分なプロパティを含んだ場合', () => {
+    it('if cart item contains extra properties', () => {
       const { stores } = provideDependency(({ stores }) => {
         stores.cart.setAll(CartItems())
       })
@@ -213,29 +214,30 @@ describe('CartStore', () => {
       cartItemX.price = 999
       cartItemX.quantity = 888
 
-      // テスト対象実行
+      // run the test target
       const actual = stores.cart.add({
         ...cartItemX,
-        zzz: 'zzz',
+        zzz: 'zzz', // extra property
       } as any)
 
       expect(actual).toEqual(cartItemX)
       expect(actual).not.toHaveProperty('zzz')
-      toBeCopyCartItem(stores, actual)
 
       const added = stores.cart.sgetById(cartItemX.id)
       expect(added).toEqual(cartItemX)
       expect(added).not.toHaveProperty('zzz')
+
+      toBeCopyCartItem(stores, actual)
     })
 
-    it('既に存在するカートアイテムIDを指定した場合', () => {
+    it('if specify a cart item id that already exists', () => {
       const { stores } = provideDependency(({ stores }) => {
         stores.cart.setAll(CartItems())
       })
 
       let actual!: Error
       try {
-        // テスト対象実行
+        // run the test target
         stores.cart.add(CartItem1())
       } catch (err: any) {
         actual = err
@@ -246,7 +248,7 @@ describe('CartStore', () => {
   })
 
   describe('set', () => {
-    it('ベーシックケース', () => {
+    it('basic case', () => {
       const { stores } = provideDependency(({ stores }) => {
         stores.cart.setAll(CartItems())
       })
@@ -254,45 +256,47 @@ describe('CartStore', () => {
       const cartItem1 = CartItem.clone(CartItem1())
       cartItem1.title = 'aaa'
 
-      // テスト対象実行
-      // ※一部のプロパティだけを変更
+      // run the test target
+      // NOTE: change only some properties
       const actual = stores.cart.set({
         id: cartItem1.id,
         title: cartItem1.title,
       })!
 
       expect(actual).toEqual(cartItem1)
+
       toBeCopyCartItem(stores, actual)
     })
 
-    it('余分なプロパティを含んだ場合', () => {
+    it('if cart item contains extra properties', () => {
       const { stores } = provideDependency(({ stores }) => {
         stores.cart.setAll(CartItems())
       })
 
       const cartItem1 = CartItem.clone(CartItem1())
 
-      // テスト対象実行
+      // run the test target
       const actual = stores.cart.set({
         ...cartItem1,
-        zzz: 'zzz',
+        zzz: 'zzz', // extra property
       } as any)!
 
       expect(actual).toEqual(cartItem1)
       expect(actual).not.toHaveProperty('zzz')
-      toBeCopyCartItem(stores, actual)
 
       const updated = stores.cart.sgetById(cartItem1.id)
       expect(updated).toEqual(cartItem1)
       expect(updated).not.toHaveProperty('zzz')
+
+      toBeCopyCartItem(stores, actual)
     })
 
-    it('存在しないカートアイテムIDを指定した場合', () => {
+    it('if a non-existent cart item id is specified', () => {
       const { stores } = provideDependency(({ stores }) => {
         stores.cart.setAll(CartItems())
       })
 
-      // テスト対象実行
+      // run the test target
       const actual = stores.cart.set({
         ...CartItem1(),
         id: '9999',
@@ -303,24 +307,25 @@ describe('CartStore', () => {
   })
 
   describe('remove', () => {
-    it('ベーシックケース', () => {
+    it('basic case', () => {
       const { stores } = provideDependency(({ stores }) => {
         stores.cart.setAll(CartItems())
       })
 
-      // テスト対象実行
+      // run the test target
       const actual = stores.cart.remove(CartItem1().id)!
 
       expect(actual).toEqual(CartItem1())
+
       toBeCopyCartItem(stores, actual)
     })
 
-    it('存在しないカートアイテムIDを指定した場合', () => {
+    it('if a non-existent cart item id is specified', () => {
       const { stores } = provideDependency(({ stores }) => {
         stores.cart.setAll(CartItems())
       })
 
-      // テスト対象実行
+      // run the test target
       const actual = stores.cart.remove(CartItem1().id)
 
       expect(actual).toBeDefined()
@@ -328,12 +333,12 @@ describe('CartStore', () => {
   })
 
   describe('clear', () => {
-    it('ベーシックケース', () => {
+    it('basic case', () => {
       const { stores } = provideDependency(({ stores }) => {
         stores.cart.setAll(CartItems())
       })
 
-      // テスト対象実行
+      // run the test target
       stores.cart.clear()
 
       expect(stores.cart.all.length).toBe(0)

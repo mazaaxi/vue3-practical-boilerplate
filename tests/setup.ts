@@ -8,19 +8,19 @@ import td from 'testdouble'
 import { useConfig } from '@/config'
 
 //
-// Jestの設定
+// Setting Jest
 //
 jest.setTimeout(5000)
 
 //
-// testdoubleの設定
+// Setting testdouble
 //
 require('testdouble-jest')(td, jest)
-// 各テストファイルでtestdoubleをインポートしなくても使用できるようになる
+// don't need to import `testdouble` in each test file to use it
 window.td = td
 
 //
-// Quasarの設定
+// Setting Quasar
 //
 // quasar.setup()
 

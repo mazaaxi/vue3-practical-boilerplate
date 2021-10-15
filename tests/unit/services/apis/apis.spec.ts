@@ -91,10 +91,10 @@ function RawCartItems(): ToRawEntity<CartItem>[] {
 //==========================================================================
 
 /**
- * 擬似的なサインインを実現するためにテスト用IDトークンを設定します。
+ * Set up a test id token to achieve a pseudo sign-in.
  */
 function setTestIdToken(): void {
-  // ここでローカルストレージに保存したIDトークンはAPIリクエストで使用される
+  // here, the id token stored in the local storage is used in the API request
   localStorage.setItem('idToken', JSON.stringify({ uid: SignInUser.id }))
 }
 
@@ -106,7 +106,7 @@ function setTestIdToken(): void {
 
 describe('APIContainer', () => {
   describe('getProduct', () => {
-    it('ベーシックケース', async () => {
+    it('basic case', async () => {
       const { apis } = provideDependency()
       await apis.putTestData({
         products: RawProducts(),
@@ -114,7 +114,7 @@ describe('APIContainer', () => {
 
       const product1 = Products()[0]
 
-      // テスト対象実行
+      // run the test target
       const actual = await apis.getProduct(product1.id)
 
       expect(actual).toMatchObject(product1)
@@ -122,27 +122,27 @@ describe('APIContainer', () => {
   })
 
   describe('getProducts', () => {
-    it('ベーシックケース - 引数なし', async () => {
+    it('basic case - without arguments', async () => {
       const { apis } = provideDependency()
       await apis.putTestData({
         products: RawProducts(),
       })
 
-      // テスト対象実行
-      const actual = await apis.getProducts()
+      // run the test target
+      const actual = await apis.getProducts() // without arguments
 
       expect(actual).toMatchObject(Products())
     })
 
-    it('ベーシックケース - 引数あり', async () => {
+    it('basic case - with arguments', async () => {
       const { apis } = provideDependency()
       await apis.putTestData({
         products: RawProducts(),
       })
 
-      const [product1, product2] = Products()
+      const [product1, product2] = Products() // with arguments
 
-      // テスト対象実行
+      // run the test target
       const actual = await apis.getProducts([product1.id, product2.id])
 
       expect(actual).toMatchObject([product1, product2])
@@ -158,14 +158,14 @@ describe('APIContainer', () => {
     setTestIdToken()
     const cartItem1 = CartItems()[0]
 
-    // テスト対象実行
+    // run the test target
     const actual = await apis.getCartItem(cartItem1.id)
 
     expect(actual).toMatchObject(cartItem1)
   })
 
   describe('getCartItems', () => {
-    it('ベーシックケース - 引数なし', async () => {
+    it('basic case - without arguments', async () => {
       const { apis } = provideDependency()
       await apis.putTestData({
         cartItems: RawCartItems(),
@@ -173,13 +173,13 @@ describe('APIContainer', () => {
 
       setTestIdToken()
 
-      // テスト対象実行
+      // run the test target
       const actual = await apis.getCartItems()
 
       expect(actual).toMatchObject(CartItems())
     })
 
-    it('ベーシックケース - 引数あり', async () => {
+    it('basic case - with arguments', async () => {
       const { apis } = provideDependency()
       await apis.putTestData({
         cartItems: RawCartItems(),
@@ -188,7 +188,7 @@ describe('APIContainer', () => {
       setTestIdToken()
       const [cartItem1, cartItem2] = CartItems()
 
-      // テスト対象実行
+      // run the test target
       const actual = await apis.getCartItems([cartItem1.id, cartItem2.id])
 
       expect(actual).toMatchObject([cartItem1, cartItem2])
@@ -196,7 +196,7 @@ describe('APIContainer', () => {
   })
 
   describe('addCartItems', () => {
-    it('ベーシックケース', async () => {
+    it('basic case', async () => {
       const { apis } = provideDependency()
       await apis.putTestData({
         products: RawProducts(),
@@ -207,7 +207,7 @@ describe('APIContainer', () => {
       const product3 = Products()[2]
       const now = dayjs()
 
-      // テスト対象実行
+      // run the test target
       const actual = await apis.addCartItems([
         {
           uid: SignInUser.id,
@@ -218,7 +218,6 @@ describe('APIContainer', () => {
         },
       ])
 
-      // テスト結果検証
       expect(actual.length).toBe(1)
 
       const addedCartItem = actual[0]
@@ -243,7 +242,7 @@ describe('APIContainer', () => {
   })
 
   describe('updateCartItems', () => {
-    it('ベーシックケース', async () => {
+    it('basic case', async () => {
       const { apis } = provideDependency()
       await apis.putTestData({
         products: RawProducts(),
@@ -255,7 +254,7 @@ describe('APIContainer', () => {
       const cartItem1 = CartItems()[0]
       const now = dayjs()
 
-      // テスト対象実行
+      // run the test target
       const actual = await apis.updateCartItems([
         {
           id: cartItem1.id,
@@ -264,7 +263,6 @@ describe('APIContainer', () => {
         },
       ])
 
-      // テスト結果検証
       expect(actual.length).toBe(1)
 
       const updatedCartItem = actual[0]
@@ -289,7 +287,7 @@ describe('APIContainer', () => {
   })
 
   describe('removeCartItems', () => {
-    it('ベーシックケース', async () => {
+    it('basic case', async () => {
       const { apis } = provideDependency()
       await apis.putTestData({
         products: RawProducts(),
@@ -301,10 +299,9 @@ describe('APIContainer', () => {
       const cartItem1 = CartItems()[0]
       const now = dayjs()
 
-      // テスト対象実行
+      // run the test target
       const actual = await apis.removeCartItems([cartItem1.id])
 
-      // テスト結果検証
       expect(actual.length).toBe(1)
 
       const removedCartItem = actual[0]
@@ -329,7 +326,7 @@ describe('APIContainer', () => {
   })
 
   describe('checkoutCart', () => {
-    it('ベーシックケース', async () => {
+    it('basic case', async () => {
       const { apis } = provideDependency()
       await apis.putTestData({
         products: RawProducts(),
@@ -338,10 +335,9 @@ describe('APIContainer', () => {
 
       setTestIdToken()
 
-      // テスト対象実行
+      // run the test target
       const actual = await apis.checkoutCart()
 
-      // テスト結果検証
       expect(actual).toBeTruthy()
 
       const current = await apis.getCartItems()

@@ -1,4 +1,4 @@
-import { CartItem, Product } from '@/services'
+import { CartItem, Product, User } from '@/services'
 import { UnwrapRef, reactive } from 'vue'
 import { DeepReadonly } from 'js-common-lib'
 import { StoreContainer } from '@/services/stores'
@@ -24,18 +24,35 @@ namespace TestStoreContainer {
 }
 
 //--------------------------------------------------
+//  User
+//--------------------------------------------------
+
+/**
+ * Verifies that the specified item is a copy of the store.
+ * @param stores
+ * @param actual
+ */
+function toBeCopyUser<T extends DeepReadonly<User>>(stores: TestStoreContainer, actual: T): void {
+  const items = Array.isArray(actual) ? (actual as T[]) : [actual as T]
+  for (const item of items) {
+    const stateItem = stores.user.state.all.find(stateItem => stateItem.id === item.id)
+    expect(item).not.toBe(stateItem)
+  }
+}
+
+//--------------------------------------------------
 //  Product
 //--------------------------------------------------
 
 /**
- * 指定されたアイテムがストアのコピーであることを検証します。
- * @param store
+ * Verifies that the specified item is a copy of the store.
+ * @param stores
  * @param actual
  */
-function toBeCopyProduct<T extends DeepReadonly<Product>>(store: TestStoreContainer, actual: T | T[]): void {
+function toBeCopyProduct<T extends DeepReadonly<Product>>(stores: TestStoreContainer, actual: T | T[]): void {
   const items = Array.isArray(actual) ? (actual as T[]) : [actual as T]
   for (const item of items) {
-    const stateItem = store.cart.all.find(stateItem => stateItem.id === item.id)
+    const stateItem = stores.cart.all.find(stateItem => stateItem.id === item.id)
     expect(item).not.toBe(stateItem)
   }
 }
@@ -45,14 +62,14 @@ function toBeCopyProduct<T extends DeepReadonly<Product>>(store: TestStoreContai
 //--------------------------------------------------
 
 /**
- * 指定されたアイテムがストアのコピーであることを検証します。
- * @param store
+ * Verifies that the specified item is a copy of the store.
+ * @param stores
  * @param actual
  */
-function toBeCopyCartItem<T extends DeepReadonly<CartItem>>(store: TestStoreContainer, actual: T | T[]): void {
+function toBeCopyCartItem<T extends DeepReadonly<CartItem>>(stores: TestStoreContainer, actual: T | T[]): void {
   const items = Array.isArray(actual) ? (actual as T[]) : [actual as T]
   for (const item of items) {
-    const stateItem = store.cart.all.find(stateItem => stateItem.id === item.id)
+    const stateItem = stores.cart.all.find(stateItem => stateItem.id === item.id)
     expect(item).not.toBe(stateItem)
   }
 }
@@ -63,4 +80,4 @@ function toBeCopyCartItem<T extends DeepReadonly<CartItem>>(store: TestStoreCont
 //
 //==========================================================================
 
-export { TestStoreContainer, toBeCopyCartItem, toBeCopyProduct }
+export { TestStoreContainer, toBeCopyUser, toBeCopyCartItem, toBeCopyProduct }

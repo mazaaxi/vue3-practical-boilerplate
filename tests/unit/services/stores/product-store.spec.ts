@@ -61,31 +61,32 @@ describe('ProductStore', () => {
       stores.product.setAll(Products())
     })
 
-    // テスト対象実行
+    // run the test target
     const actual = stores.product.all
 
     expect(actual).toEqual(Products())
   })
 
   describe('getById', () => {
-    it('ベーシックケース', () => {
+    it('basic case', () => {
       const { stores } = provideDependency(({ stores }) => {
         stores.product.setAll(Products())
       })
 
-      // テスト対象実行
+      // run the test target
       const actual = stores.product.getById(Product1().id)!
 
       expect(actual).toEqual(Product1())
+
       toBeCopyProduct(stores, actual)
     })
 
-    it('存在しない商品IDを指定した場合', () => {
+    it('if a non-existent product id is specified', () => {
       const { stores } = provideDependency(({ stores }) => {
         stores.product.setAll(Products())
       })
 
-      // テスト対象実行
+      // run the test target
       const actual = stores.product.getById('9999')
 
       expect(actual).toBeUndefined()
@@ -93,26 +94,27 @@ describe('ProductStore', () => {
   })
 
   describe('sgetById', () => {
-    it('ベーシックケース', () => {
+    it('basic case', () => {
       const { stores } = provideDependency(({ stores }) => {
         stores.product.setAll(Products())
       })
 
-      // テスト対象実行
+      // run the test target
       const actual = stores.product.sgetById(Product1().id)
 
       expect(actual).toEqual(Product1())
+
       toBeCopyProduct(stores, actual)
     })
 
-    it('存在しない商品IDを指定した場合', () => {
+    it('if a non-existent product id is specified', () => {
       const { stores } = provideDependency(({ stores }) => {
         stores.product.setAll(Products())
       })
 
       let actual!: Error
       try {
-        // テスト対象実行
+        // run the test target
         stores.product.sgetById('9999')
       } catch (err: any) {
         actual = err
@@ -123,7 +125,7 @@ describe('ProductStore', () => {
   })
 
   describe('add', () => {
-    it('ベーシックケース', () => {
+    it('basic case', () => {
       const { stores } = provideDependency(({ stores }) => {
         stores.product.setAll(Products())
       })
@@ -134,17 +136,18 @@ describe('ProductStore', () => {
       productX.price = 999
       productX.stock = 888
 
-      // テスト対象実行
+      // run the test target
       const actual = stores.product.add(productX)
 
       expect(actual).toEqual(productX)
+
       toBeCopyProduct(stores, actual)
 
       const added = stores.product.sgetById(productX.id)
       expect(added).toEqual(productX)
     })
 
-    it('余分なプロパティを含んだ場合', () => {
+    it('if product contains extra properties', () => {
       const { stores } = provideDependency(({ stores }) => {
         stores.product.setAll(Products())
       })
@@ -155,29 +158,30 @@ describe('ProductStore', () => {
       productX.price = 999
       productX.stock = 888
 
-      // テスト対象実行
+      // run the test target
       const actual = stores.product.add({
         ...productX,
-        zzz: 'zzz',
+        zzz: 'zzz', // extra property
       } as any)
 
       expect(actual).toEqual(productX)
       expect(actual).not.toHaveProperty('zzz')
-      toBeCopyProduct(stores, actual)
 
       const added = stores.product.sgetById(productX.id)
       expect(added).toEqual(productX)
       expect(added).not.toHaveProperty('zzz')
+
+      toBeCopyProduct(stores, actual)
     })
 
-    it('既に存在する商品IDを指定した場合', () => {
+    it('if specify a product id that already exists', () => {
       const { stores } = provideDependency(({ stores }) => {
         stores.product.setAll(Products())
       })
 
       let actual!: Error
       try {
-        // テスト対象実行
+        // run the test target
         stores.product.add(Product1())
       } catch (err: any) {
         actual = err
@@ -188,7 +192,7 @@ describe('ProductStore', () => {
   })
 
   describe('set', () => {
-    it('ベーシックケース', () => {
+    it('basic case', () => {
       const { stores } = provideDependency(({ stores }) => {
         stores.product.setAll(Products())
       })
@@ -196,45 +200,47 @@ describe('ProductStore', () => {
       const product1 = Product.clone(Products()[0])
       product1.title = 'aaa'
 
-      // テスト対象実行
-      // ※一部のプロパティだけを変更
+      // run the test target
+      // NOTE: change only some properties
       const actual = stores.product.set({
         id: product1.id,
         title: product1.title,
       })!
 
       expect(actual).toEqual(product1)
+
       toBeCopyProduct(stores, actual)
     })
 
-    it('余分なプロパティを含んだ場合', () => {
+    it('if product contains extra properties', () => {
       const { stores } = provideDependency(({ stores }) => {
         stores.product.setAll(Products())
       })
 
       const product1 = Product.clone(Product1())
 
-      // テスト対象実行
+      // run the test target
       const actual = stores.product.set({
         ...product1,
-        zzz: 'zzz',
+        zzz: 'zzz', // extra property
       } as any)!
 
       expect(actual).toEqual(product1)
       expect(actual).not.toHaveProperty('zzz')
-      toBeCopyProduct(stores, actual)
 
       const updated = stores.product.sgetById(product1.id)
       expect(updated).toEqual(product1)
       expect(updated).not.toHaveProperty('zzz')
+
+      toBeCopyProduct(stores, actual)
     })
 
-    it('存在しない商品IDを指定した場合', () => {
+    it('if a non-existent product id is specified', () => {
       const { stores } = provideDependency(({ stores }) => {
         stores.product.setAll(Products())
       })
 
-      // テスト対象実行
+      // run the test target
       const actual = stores.product.set({
         ...Product1(),
         id: '9999',
@@ -245,26 +251,26 @@ describe('ProductStore', () => {
   })
 
   describe('decrementStock', () => {
-    it('ベーシックケース', () => {
+    it('basic case', () => {
       const { stores } = provideDependency(({ stores }) => {
         stores.product.setAll(Products())
       })
 
-      // テスト対象実行
+      // run the test target
       const actual = stores.product.decrementStock(Product1().id)
 
       const updated = stores.product.sgetById(Product1().id)
       expect(updated.stock).toBe(Product1().stock - 1)
     })
 
-    it('存在しない商品IDを指定した場合', () => {
+    it('if a non-existent product id is specified', () => {
       const { stores } = provideDependency(({ stores }) => {
         stores.product.setAll(Products())
       })
 
       let actual!: Error
       try {
-        // テスト対象実行
+        // run the test target
         stores.product.decrementStock('9999')
       } catch (err: any) {
         actual = err
@@ -275,26 +281,26 @@ describe('ProductStore', () => {
   })
 
   describe('incrementStock', () => {
-    it('ベーシックケース', () => {
+    it('basic case', () => {
       const { stores } = provideDependency(({ stores }) => {
         stores.product.setAll(Products())
       })
 
-      // テスト対象実行
+      // run the test target
       const actual = stores.product.incrementStock(Product1().id)
 
       const updated = stores.product.sgetById(Product1().id)
       expect(updated.stock).toBe(Product1().stock + 1)
     })
 
-    it('存在しない商品IDを指定した場合', () => {
+    it('if a non-existent product id is specified', () => {
       const { stores } = provideDependency(({ stores }) => {
         stores.product.setAll(Products())
       })
 
       let actual!: Error
       try {
-        // テスト対象実行
+        // run the test target
         stores.product.incrementStock('9999')
       } catch (err: any) {
         actual = err

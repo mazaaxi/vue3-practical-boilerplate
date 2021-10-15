@@ -1,10 +1,10 @@
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const _path = require('path')
 
-// ベースURLの設定
+// setting a base URL
 const publicPath = process.env.VUE_APP_BASE_PATH ?? ''
 
-// 各エントリーポイントの設定
+// setting an entry point
 const pages = {
   index: {
     // entry for the page
@@ -33,10 +33,9 @@ module.exports = {
 
   pages,
 
-  // Firebase Hostingでハッシュ付きのファイルを使用すると、
-  // Service Workerで不具合が生じ、新しいリソースがキャッシュできなかったり、
-  // 画面ロード時にリソースをうまく見つけられずエラーが発生したりする。
-  // このためファイル名にハッシュをつけないよう設定している。
+  // Using files with hashes in Firebase Hosting causes problems with Service Worker,
+  // which can't cache new resources, or can't find the resource properly when loading the screen, resulting in errors.
+  // For this reason, the file name is set to not have a hash.
   filenameHashing: false,
 
   pwa: {
@@ -51,11 +50,11 @@ module.exports = {
     // Workbox webpack Plugins
     // https://developers.google.com/web/tools/workbox/reference-docs/latest/module-workbox-webpack-plugin.GenerateSW#GenerateSW
     workboxOptions: {
-      // skipWaitingについては以下を参照
+      // see below for more information about `skipWaiting`
       // https://developers.google.com/web/fundamentals/primers/service-workers/lifecycle?hl=ja#updates
       skipWaiting: true,
 
-      // ServiceWorkerインストール時にキャッシュされるファイルを設定
+      // set files to be cached when ServiceWorker is installed
       include: [
         /\.html$/,
         /\.js$/,
@@ -68,11 +67,10 @@ module.exports = {
       ],
       exclude: [/\.map$/],
 
-      // `/`以下のパスで存在しないファイルまたはディレクトリが
-      // 指定された場合にindex.htmlへフォールバックするよう設定
+      // set fallback to `index.html` when a non-existent file or directory is specified in a path under `/`.
       navigateFallback: `${_path.join(publicPath, '/index.html')}`,
 
-      // フェッチ時にキャッシュされるパスを設定
+      // set paths to be cached on fetch
       runtimeCaching: [
         {
           urlPattern: /\/api\//,
@@ -84,7 +82,7 @@ module.exports = {
 
   chainWebpack: config => {
     // Vue I18n 単一ファイルコンポーネントの設定
-    // http://kazupon.github.io/vue-i18n/guide/sfc.html
+    // https://vue-i18n.intlify.dev/guide/advanced/sfc.html#vue-cli
     config.module
       .rule('i18n')
       .resourceQuery(/blockType=i18n/)
@@ -96,22 +94,22 @@ module.exports = {
         .loader('yaml-loader')
         .end()
 
-    // 必要なリソースファイルのコピー
+    // copy the necessary resource files
     let copyFiles = [
-      // 必要であれば追記
-      // 例: { from: 'node_modules/firebase/firebase-*.js' },
+      // add more if necessary
+      // ex. { from: 'node_modules/firebase/firebase-*.js' },
     ]
     if (process.env.NODE_ENV !== 'production') {
       copyFiles = [
         ...copyFiles,
-        // その他必要であれば追記
-        // 例: { from: 'node_modules/aaa/bbb.css', to: 'node_modules/aaa' },
+        // add more if necessary
+        // ex. { from: 'node_modules/aaa/bbb.css', to: 'node_modules/aaa' },
       ]
     }
 
     config
       .plugin('copy-prod')
-      // 参照: https://github.com/vuejs/vue-cli/blob/c76d2e691d8ea58b219394ca7799f50d873b8588/packages/%40vue/cli-service/lib/commands/build/resolveAppConfig.js#L7
+      // cf. https://github.com/vuejs/vue-cli/blob/c76d2e691d8ea58b219394ca7799f50d873b8588/packages/%40vue/cli-service/lib/commands/build/resolveAppConfig.js#L7
       .after('copy')
       .use(CopyWebpackPlugin, [copyFiles])
   },

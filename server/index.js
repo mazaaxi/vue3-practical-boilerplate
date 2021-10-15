@@ -66,11 +66,17 @@ const server = jsonServer.create()
 const router = jsonServer.router(path.join(__dirname, 'db.json'))
 const db = router.db
 
-// デフォルトのミドルウェアを設定(logger, static, cors and no-cache)
+// set default middleware
+// ex. logger, static, cors and no-cache
 server.use(jsonServer.defaults())
 
-// クライアントリクエストで送らてくるデータの解析を行うパーサーを設定
+// set the parser to parse data sent by client requests
 server.use(jsonServer.bodyParser)
+
+// set the router
+// cf. Prefix all requests in JSON Server with middleware
+//     https://stackoverflow.com/questions/49559454/prefix-all-requests-in-json-server-with-middleware
+server.use('api', router)
 
 //========================================================================
 //
@@ -333,12 +339,7 @@ server.put(`/${APIPrefix}/cartItems/checkout`, (req, res, next) => {
 //
 //========================================================================
 
-// json-serverのデフォルトルーターを設定
-// cf. Prefix all requests in JSON Server with middleware
-//     https://stackoverflow.com/questions/49559454/prefix-all-requests-in-json-server-with-middleware
-server.use('api', router)
-
-// json-server起動
+// launch json-server
 server.listen(5041, () => {
   console.log('API Server running at: http://localhost:5041/')
 })

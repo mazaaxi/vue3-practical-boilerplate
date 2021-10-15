@@ -31,22 +31,22 @@ type SetupFunc = (provided: ProvidedDependency) => void
 let provided: ProvidedDependency | undefined
 
 /**
- * アプリケーションに必要な依存オブジェクトをVueコンポーネントに登録します。
- * 引数の`setup`を指定しない場合、デフォルトの依存オブジェクトが登録されます。
+ * Register dependent objects required for the application.
+ * If the `setup` argument is not specified, default dependent objects will be registered.
  * @param setup
- *   サービスとその依存オブジェクトに対してモック設定を行いたい場合この関数を指定します。
- *   この関数の引数にはサービスとその依存オブジェクトが渡ってきます。必要に応じてこの
- *   オブジェクトにモック設定を行って下さい。
+ *   Specify this function when you want to perform mock settings for dependent objects.
+ *   Dependent objects will be passed as the argument of this function.
+ *   Set mock settings for these objects if necessary.
  * @param dependency
- *   テストで使用するサービスとその依存オブジェクトを指定します。
- *   ここで指定されたオブジェクトは`setup()`関数の引数にも渡されるので、必要に応じてこの
- *   オブジェクトにモック設定を行うことができます。
+ *   Specifies dependency objects to be used in a test.
+ *   The object specified here is also passed as an argument to the `setup()` function,
+ *   so you can set mock settings on this object if necessary.
  */
 function provideDependency(setup?: SetupFunc, dependency?: Partial<ProvidedDependency>): ProvidedDependency {
   const wrapper = shallowMount<ProvidedDependency & DefineComponent>({
     template: '<div></div>',
     setup() {
-      return { ...provideDependencyToVue(setup, dependency) }
+      return { ...provideDependencyImpl(setup, dependency) }
     },
   })
 
@@ -54,26 +54,12 @@ function provideDependency(setup?: SetupFunc, dependency?: Partial<ProvidedDepen
   return { apis, helpers, stores, services }
 }
 
-/**
- * アプリケーションに必要な依存オブジェクトをVueコンポーネントに登録します。
- * 引数の`setup`を指定しない場合、デフォルトの依存オブジェクトが登録されます。
- * @param setup
- *   サービスとその依存オブジェクトに対してモック設定を行いたい場合この関数を指定します。
- *   この関数の引数にはサービスとその依存オブジェクトが渡ってきます。必要に応じてこの
- *   オブジェクトにモック設定を行って下さい。
- * @param dependency
- *   テストで使用するサービスとその依存オブジェクトを指定します。
- *   ここで指定されたオブジェクトは`setup()`関数の引数にも渡されるので、必要に応じてこの
- *   オブジェクトにモック設定を行うことができます。
- */
-function provideDependencyToVue(setup?: SetupFunc, dependency?: Partial<ProvidedDependency>): ProvidedDependency {
-  // テスト時にダイアログを動かすとエラーになるのでモック化
+function provideDependencyImpl(setup?: SetupFunc, dependency?: Partial<ProvidedDependency>): ProvidedDependency {
+  // launching a dialog during testing will cause an error, so mock it.
   // setupDialogs(td.object())
 
-  // まだprovidedが設定されていない場合
   if (!provided) {
     const apis = dependency?.apis ?? TestAPIContainer.newInstance()
-
     useAPI(apis)
 
     const stores = dependency?.stores ?? TestStoreContainer.newInstance()
@@ -88,11 +74,10 @@ function provideDependencyToVue(setup?: SetupFunc, dependency?: Partial<Provided
     provided = { apis, helpers, stores, services }
   }
 
-  // setup関数が指定されていなかった場合、providedを返す
+  // if the `setup` function is not specified, return `provided`
   if (!setup) return provided
 
-  // setup関数を実行
-  // ※setup関数を実行するとprovidedの依存オブジェクトがモック化される
+  // NOTE: when the `setup` function is executed, the `provided` dependent objects will be mocked as needed.
   setup(provided)
 
   return provided
@@ -108,5 +93,5 @@ function clearProvidedDependency(): void {
 //
 //==========================================================================
 
-export { provideDependency, provideDependencyToVue, clearProvidedDependency, ProvidedDependency }
+export { provideDependency, clearProvidedDependency, ProvidedDependency }
 export * from './services'

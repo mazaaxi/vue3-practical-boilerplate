@@ -96,8 +96,7 @@ interface CartItem extends TimestampEntity {
 //==========================================================================
 
 /**
- * 指定された文字列日付をエンティティ日付型に変換します。
- * @param rawDate
+ * Converts a string date to entity date type.
  */
 function toEntityDate<T extends string | undefined | null>(rawDate: T): ToEntityDate<T> {
   if (rawDate === undefined) return undefined as ToEntityDate<T>
@@ -106,9 +105,9 @@ function toEntityDate<T extends string | undefined | null>(rawDate: T): ToEntity
 }
 
 /**
- * 指定されたオブジェクトの文字列日付のプロパティをエンティティ日付型に変換します。
- * @param obj 対象オブジェクトを指定します。
- * @param props プロパティ名を指定します。
+ * Converts string date properties of an object to entity date type.
+ * @param obj A target object
+ * @param props Target string date property names
  */
 function toDeepEntityDate<T, K extends keyof any>(obj: T, props: K[]): ToDeepEntityDateAre<T, K> {
   if (!obj) return obj as any
@@ -132,7 +131,7 @@ function toDeepEntityDate<T, K extends keyof any>(obj: T, props: K[]): ToDeepEnt
 }
 
 /**
- * 指定されたエンティティ日付型を文字列日付に変換します。
+ * Converts entity date type to string date.
  */
 function toRawDate<T extends Dayjs | undefined | null>(entityDate: T): ToRawDate<T> {
   if (entityDate === undefined) return undefined as ToRawDate<T>
@@ -141,8 +140,7 @@ function toRawDate<T extends Dayjs | undefined | null>(entityDate: T): ToRawDate
 }
 
 /**
- * 指定されたオブジェクトのエンティティ日付型のプロパティを文字列日付に変換します。
- * @param obj 対象オブジェクトを指定します。
+ * Converts an entity date type properties of an object to date string.
  */
 function toDeepRawDate<T>(obj: T): ToDeepRawDate<T> {
   if (!obj) return obj as any
@@ -166,28 +164,28 @@ function toDeepRawDate<T>(obj: T): ToDeepRawDate<T> {
 }
 
 /**
- * APIから取得したエンティティをアプリケーション形式のエンティティへ変換します。
+ * Converts an entity retrieved from API to an entity in application format.
  */
 function toEntity<T>(rawEntity: T): ToEntity<T> {
   return toDeepEntityDate(rawEntity, ['createdAt', 'updatedAt'])
 }
 
 /**
- * APIから取得したエンティティをアプリケーション形式のエンティティへ変換します。
+ * Converts entities retrieved from API to entities in application format.
  */
 function toEntities<T>(rawEntities: T[]): ToEntity<T>[] {
   return rawEntities.map(rawEntity => toEntity(rawEntity)!)
 }
 
 /**
- * 指定されたオブジェクトをAPI形式のエンティティへ変換します。
+ * Converts a entity to an entity in API format.
  */
 function toRawEntity<T>(entity: T): ToDeepRawDate<T> {
   return toDeepRawDate(entity)
 }
 
 /**
- * 指定されたオブジェクトをAPI形式のエンティティへ変換します。
+ * Converts entities to entities in API format.
  */
 function toRawEntities<T>(entities: T[]): ToDeepRawDate<T>[] {
   return entities.map(entity => toRawEntity(entity)!)

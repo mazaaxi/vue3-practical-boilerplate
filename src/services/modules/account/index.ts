@@ -56,9 +56,9 @@ namespace AccountService {
       helpers.account.signIn(user)
 
       // TODO
-      //  ここでローカルストレージに保存したIDトークンはAPIリクエストで使用されます。
-      //  ただしここで設定した値は非常に擬似的なものであり、実装にはアプリケーションの仕様
-      //  に基づき認証処理を実装してください。
+      //  The id token stored in the local storage here will be used in the API request.
+      //  However, the implementation here is pseudo, and the authentication process
+      //  should be implemented based on the specifications of the application.
       localStorage.setItem('idToken', JSON.stringify({ uid: user.id }))
     }
 

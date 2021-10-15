@@ -1,8 +1,7 @@
 import { User, generateId } from '@/services'
-import { DeepReadonly } from 'js-common-lib'
+import { provideDependency, toBeCopyUser } from '../../../helpers'
 import { cloneDeep } from 'lodash'
 import dayjs from 'dayjs'
-import { provideDependency } from '../../../helpers'
 
 //==========================================================================
 //
@@ -53,22 +52,12 @@ function User2(): User {
 //==========================================================================
 
 /**
- * ストアが保持する生のユーザーを取得します。
+ * Retrieves the "raw" users held by the store.
+ * @param id ID of a user you want to retrieve
  */
-function getStateUser(id: string): User | undefined {
+function getStoreUser(id: string): User | undefined {
   const { stores } = provideDependency()
   return stores.user.state.all.find(user => user.id === id)
-}
-
-/**
- * 指定されたアイテムがストアのコピーであることを検証します。
- */
-function toBeCopy<T extends DeepReadonly<User>>(actual: T): void {
-  const users = Array.isArray(actual) ? (actual as T[]) : [actual as T]
-  for (const user of users) {
-    const stateNode = getStateUser(user.id)
-    expect(user).not.toBe(stateNode)
-  }
 }
 
 //==========================================================================
@@ -79,53 +68,55 @@ function toBeCopy<T extends DeepReadonly<User>>(actual: T): void {
 
 describe('UserStore', () => {
   describe('get', () => {
-    it('ベーシックケース', () => {
+    it('basic case', () => {
       const { stores } = provideDependency()
       stores.user.setAll([User1(), User2()])
 
       const actual = stores.user.get(User1().id)!
 
       expect(actual).toEqual(User1())
-      toBeCopy(actual)
+      toBeCopyUser(stores, actual)
     })
   })
 
   describe('set', () => {
-    it('ベーシックケース', () => {
+    it('basic case', () => {
       const { stores } = provideDependency()
       stores.user.add(User1_dummy())
 
-      // テスト対象実行
+      // run the test target
       const user1 = User1()
       const actual = stores.user.set(user1)
 
-      // 戻り値の検証
+      // verify the return value
       expect(actual).toEqual(user1)
-      // ストアの値を検証
-      const updated = getStateUser(user1.id)
+
+      // verify the store status
+      const updated = getStoreUser(user1.id)
       expect(updated).toEqual(user1)
 
-      toBeCopy(actual)
+      toBeCopyUser(stores, actual)
     })
   })
 
   describe('add', () => {
-    it('ベーシックケース', () => {
+    it('basic case', () => {
       const { stores } = provideDependency()
 
-      // テスト対象実行
+      // run the test target
       const actual = stores.user.add(User1())
 
-      // 戻り値の検証
+      // verify the return value
       expect(actual).toEqual(User1())
-      // ストアの値を検証
-      const added = getStateUser(User1().id)
+
+      // verify the store status
+      const added = getStoreUser(User1().id)
       expect(added).toEqual(User1())
 
-      toBeCopy(actual)
+      toBeCopyUser(stores, actual)
     })
 
-    it('既に存在するプロフィールを追加しようとした場合', () => {
+    it('if trying to add a user that already exists', () => {
       const { stores } = provideDependency()
       stores.user.setAll([User1()])
 
@@ -142,29 +133,30 @@ describe('UserStore', () => {
   })
 
   describe('remove', () => {
-    it('ベーシックケース', () => {
+    it('basic case', () => {
       const { stores } = provideDependency()
       stores.user.setAll([User1()])
 
-      // テスト対象実行
+      // run the test target
       const actual = stores.user.remove(User1().id)!
 
-      // 戻り値の検証
+      // verify the return value
       expect(actual).toEqual(User1())
-      // ストアの値を検証
-      const exists = Boolean(getStateUser(User1().id))
+
+      // verify the store status
+      const exists = Boolean(getStoreUser(User1().id))
       expect(exists).toBeFalsy()
 
-      toBeCopy(actual)
+      toBeCopyUser(stores, actual)
     })
 
-    it('存在しないプロフィールを削除しようとした場合', () => {
+    it('if trying to remove a user that already exists', () => {
       const { stores } = provideDependency()
 
-      // テスト対象実行
+      // run the test target
       const actual = stores.user.remove(User1().id)
 
-      // 戻り値の検証
+      // verify the return value
       expect(actual).toBeUndefined()
     })
   })

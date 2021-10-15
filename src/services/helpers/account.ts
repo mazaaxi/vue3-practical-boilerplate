@@ -55,7 +55,7 @@ namespace AccountHelper {
 
     const validateSignedIn: AccountHelper['validateSignedIn'] = () => {
       if (!state.isSignedIn) {
-        throw new Error(`There is no user signed in.`)
+        throw new Error(`There is no user signed-in.`)
       }
     }
 
