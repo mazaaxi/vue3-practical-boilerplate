@@ -24,8 +24,12 @@ interface StoreContainer {
 namespace StoreContainer {
   let instance: StoreContainer
 
-  export function useStore(stores?: StoreContainer): StoreContainer {
-    instance = stores ? stores : instance ? instance : reactive(newRawInstance())
+  export function setupStore(stores?: StoreContainer): StoreContainer {
+    instance = stores ? stores : reactive(newRawInstance())
+    return instance
+  }
+
+  export function useStore(): StoreContainer {
     return instance
   }
 
@@ -44,5 +48,5 @@ namespace StoreContainer {
 //
 //==========================================================================
 
-const { useStore } = StoreContainer
-export { StoreContainer, useStore }
+const { setupStore, useStore } = StoreContainer
+export { StoreContainer, setupStore, useStore }

@@ -20,8 +20,12 @@ interface HelperContainer {
 namespace HelperContainer {
   let instance: HelperContainer
 
-  export function useHelper(helpers?: HelperContainer): HelperContainer {
-    instance = helpers ? helpers : instance ? instance : reactive(newRawInstance())
+  export function setupHelper(helpers?: HelperContainer): HelperContainer {
+    instance = helpers ? helpers : reactive(newRawInstance())
+    return instance
+  }
+
+  export function useHelper(): HelperContainer {
     return instance
   }
 
@@ -38,5 +42,5 @@ namespace HelperContainer {
 //
 //==========================================================================
 
-const { useHelper } = HelperContainer
-export { AccountHelper, HelperContainer, useHelper }
+const { setupHelper, useHelper } = HelperContainer
+export { AccountHelper, HelperContainer, setupHelper, useHelper }

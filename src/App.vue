@@ -99,6 +99,7 @@
 
 <script>
 import { defineComponent, ref, watch } from 'vue'
+import { setupService } from '@/services'
 import { useI18n } from '@/i18n'
 import { useRouterUtils } from '@/router'
 
@@ -108,6 +109,7 @@ export default defineComponent({
   components: {},
 
   setup() {
+    const services = setupService()
     const i18n = useI18n()
     const { currentRoute } = useRouterUtils()
 

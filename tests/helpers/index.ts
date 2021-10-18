@@ -1,11 +1,11 @@
 import { TestAPIContainer, TestHelperContainer, TestServiceContainer, TestStoreContainer } from './services'
 import { DefineComponent } from 'vue'
 // import { setupDialogs } from '@/dialogs'
+import { setupAPI } from '@/services/apis'
+import { setupHelper } from '@/services/helpers'
+import { setupService } from '@/services'
+import { setupStore } from '@/services/stores'
 import { shallowMount } from '@vue/test-utils'
-import { useAPI } from '@/services/apis'
-import { useHelper } from '@/services/helpers'
-import { useService } from '@/services'
-import { useStore } from '@/services/stores'
 
 //==========================================================================
 //
@@ -15,8 +15,8 @@ import { useStore } from '@/services/stores'
 
 interface ProvidedDependency {
   apis: TestAPIContainer
-  helpers: TestHelperContainer
   stores: TestStoreContainer
+  helpers: TestHelperContainer
   services: TestServiceContainer
 }
 
@@ -50,8 +50,8 @@ function provideDependency(setup?: SetupFunc, dependency?: Partial<ProvidedDepen
     },
   })
 
-  const { apis, helpers, stores, services } = wrapper.vm
-  return { apis, helpers, stores, services }
+  const { apis, stores, helpers, services } = wrapper.vm
+  return { apis, stores, helpers, services }
 }
 
 function provideDependencyImpl(setup?: SetupFunc, dependency?: Partial<ProvidedDependency>): ProvidedDependency {
@@ -60,18 +60,18 @@ function provideDependencyImpl(setup?: SetupFunc, dependency?: Partial<ProvidedD
 
   if (!provided) {
     const apis = dependency?.apis ?? TestAPIContainer.newInstance()
-    useAPI(apis)
+    setupAPI(apis)
 
     const stores = dependency?.stores ?? TestStoreContainer.newInstance()
-    useStore(stores)
+    setupStore(stores)
 
     const helpers = dependency?.helpers ?? TestHelperContainer.newInstance()
-    useHelper(helpers)
+    setupHelper(helpers)
 
     const services = dependency?.services ?? TestServiceContainer.newInstance()
-    useService(services)
+    setupService(services)
 
-    provided = { apis, helpers, stores, services }
+    provided = { apis, stores, helpers, services }
   }
 
   // if the `setup` function is not specified, return `provided`

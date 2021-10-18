@@ -46,8 +46,12 @@ interface CartItemEditResponse extends CartItem {
 namespace APIContainer {
   let instance: APIContainer
 
-  export function useAPI(apis?: APIContainer): APIContainer {
-    instance = apis ? apis : instance ? instance : newRawInstance()
+  export function setupAPI(apis?: APIContainer): APIContainer {
+    instance = apis ? apis : newRawInstance()
+    return instance
+  }
+
+  export function useAPI(): APIContainer {
     return instance
   }
 
@@ -149,5 +153,5 @@ namespace APIContainer {
 //
 //==========================================================================
 
-const { useAPI } = APIContainer
-export { APIContainer, CartItemAddInput, CartItemEditResponse, CartItemUpdateInput, useAPI }
+const { setupAPI, useAPI } = APIContainer
+export { APIContainer, CartItemAddInput, CartItemEditResponse, CartItemUpdateInput, setupAPI, useAPI }

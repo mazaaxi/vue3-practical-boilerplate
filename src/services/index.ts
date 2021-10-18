@@ -1,9 +1,9 @@
 import { AccountService } from '@/services/modules/account'
 import { ShopService } from '@/services/modules/shop'
 import { reactive } from 'vue'
-import { useAPI } from '@/services/apis'
-import { useHelper } from '@/services/helpers'
-import { useStore } from '@/services/stores'
+import { setupAPI } from '@/services/apis'
+import { setupHelper } from '@/services/helpers'
+import { setupStore } from '@/services/stores'
 
 //==========================================================================
 //
@@ -25,12 +25,16 @@ interface ServiceContainer {
 namespace ServiceContainer {
   let instance: ServiceContainer
 
-  export function useService(services?: ServiceContainer): ServiceContainer {
-    useAPI()
-    useStore()
-    useHelper()
+  export function setupService(services?: ServiceContainer): ServiceContainer {
+    setupAPI()
+    setupStore()
+    setupHelper()
 
-    instance = services ? services : instance ? instance : reactive(newRawInstance())
+    instance = services ? services : reactive(newRawInstance())
+    return instance
+  }
+
+  export function useService(): ServiceContainer {
     return instance
   }
 
@@ -48,6 +52,6 @@ namespace ServiceContainer {
 //
 //==========================================================================
 
-const { useService } = ServiceContainer
-export { ServiceContainer, useService }
+const { setupService, useService } = ServiceContainer
+export { ServiceContainer, setupService, useService }
 export * from '@/services/base'
