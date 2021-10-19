@@ -87,7 +87,12 @@ namespace MessageInput {
         set: v => ctx.emit('update:modelValue', v),
       })
 
-      const displayMessage = computed(() => `${inputTitle.value}: ${inputMessage.value}`)
+      const displayMessage = computed(() => {
+        if (!inputTitle.value && !inputMessage.value) {
+          return `NO MESSAGE`
+        }
+        return `${inputTitle.value}: ${inputMessage.value}`
+      })
 
       const result = {
         inputTitle,

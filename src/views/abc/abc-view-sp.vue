@@ -29,9 +29,13 @@
 
 <template>
   <div class="AbcViewSP">
-    <div v-show="isSignedIn">
-      <div>{{ $t('abc.signedInUser', { name: user.fullName, email: user.email }) }}</div>
-      <div>{{ $t('abc.signedInTime', { time: $d(new Date(), 'dateSec') }) }}</div>
+    <div class="layout horizontal center">
+      <div v-show="isSignedIn">
+        <div>{{ $t('abc.signedInUser', { name: user.fullName, email: user.email }) }}</div>
+        <div>{{ $t('abc.signedInTime', { time: $d(new Date(), 'dateSec') }) }}</div>
+      </div>
+      <div class="flex-1" />
+      <q-btn flat rounded color="primary" :label="isSignedIn ? $t('common.signOut') : $t('common.signIn')" @click="signInOrOutButtonOnClick" dense />
     </div>
 
     <div class="message-container">
@@ -46,14 +50,6 @@
     <div class="spacing-my-16">
       <div class="value">{{ displayMessage }}</div>
       <div class="layout horizontal center end-justified">
-        <q-btn
-          flat
-          rounded
-          color="primary"
-          :label="isSignedIn ? $t('common.signOut') : $t('common.signIn')"
-          @click="signInOrOutButtonOnClick"
-          dense
-        />
         <q-btn
           class="spacing-ml-10"
           flat

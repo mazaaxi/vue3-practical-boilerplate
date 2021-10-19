@@ -1,7 +1,8 @@
 import { QBtn, QCard, QInput } from 'quasar'
-import { SetupContext, computed, onMounted, reactive, ref, toRefs, watch, watchEffect } from 'vue'
+import { SetupContext, computed, onUnmounted, reactive, ref, toRefs, watch, watchEffect } from 'vue'
 import { MessageInput } from '@/views/abc/message-input.vue'
 import { TestUsers } from '@/services/test-data'
+import { useRouterUtils } from '@/router'
 import { useService } from '@/services'
 
 //========================================================================
@@ -35,9 +36,8 @@ namespace AbcView {
     //
     //----------------------------------------------------------------------
 
-    onMounted(() => {
-      message.title = 'ABC Page'
-      message.body = 'A simple tutorial on Vue.'
+    onUnmounted(() => {
+      offAfterRouteUpdate()
     })
 
     //----------------------------------------------------------------------
@@ -47,6 +47,8 @@ namespace AbcView {
     //----------------------------------------------------------------------
 
     const services = useService()
+    const { routes } = useRouterUtils()
+    const route = routes.abc
 
     const isSignedIn = computed(() => services.account.isSignedIn)
 
@@ -57,10 +59,7 @@ namespace AbcView {
 
     const messageInput = ref<MessageInput>()
 
-    const message = reactive({
-      title: '',
-      body: '',
-    })
+    const message = reactive({ title: '', body: '' })
 
     const sentMessages = reactive<{ [uid: string]: string[] }>({})
 
@@ -92,6 +91,12 @@ namespace AbcView {
       },
       { deep: true }
     )
+
+    const offAfterRouteUpdate = route.onAfterRouteUpdate(() => {
+      const { title, body } = route.message
+      message.title = title || ''
+      message.body = body || ''
+    })
 
     async function signInOrOutButtonOnClick() {
       if (isSignedIn.value) {
