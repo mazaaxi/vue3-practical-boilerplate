@@ -1,5 +1,10 @@
 <style lang="sass" scoped>
 @import 'src/styles/app.variables'
+
+.menu
+  .list
+    .item
+      white-space: nowrap
 </style>
 
 <template>
@@ -9,9 +14,37 @@
         <q-btn flat dense round @click="leftDrawerOpen = !leftDrawerOpen" aria-label="Menu" icon="menu" />
 
         <q-toolbar-title @click="onClick"> Quasar App</q-toolbar-title>
-        <div class="spacing-mr-10">{{ d(new Date(), 'dateTime') }}</div>
 
         <div>Quasar v{{ $q.version }}</div>
+
+        <q-btn class="spacing-ml-10" flat round dense color="white" icon="more_vert">
+          <q-menu class="menu">
+            <q-list class="list">
+              <!-- Languages -->
+              <q-item clickable>
+                <q-item-section>{{ $t('common.lang', 2) }}</q-item-section>
+                <q-item-section side>
+                  <q-icon name="keyboard_arrow_right" />
+                </q-item-section>
+                <q-menu anchor="top end" self="top start">
+                  <q-list>
+                    <q-item class="item" v-close-popup clickable>
+                      <q-item-section @click="langMenuItemOnclick('en')">{{ $t('langs.en') }}</q-item-section>
+                    </q-item>
+                    <q-item class="item" v-close-popup clickable>
+                      <q-item-section @click="langMenuItemOnclick('ja')">{{ $t('langs.ja') }}</q-item-section>
+                    </q-item>
+                  </q-list>
+                </q-menu>
+              </q-item>
+              <q-separator />
+              <!-- Sing-in or Sign-out -->
+              <q-item class="item" v-close-popup clickable>
+                <q-item-section @click="signInMenuItemOnClick">{{ isSignedIn ? $t('common.signOut') : $t('common.signIn') }}</q-item-section>
+              </q-item>
+            </q-list>
+          </q-menu>
+        </q-btn>
       </q-toolbar>
     </q-header>
 
@@ -36,6 +69,16 @@
           <q-item-section>
             <q-item-label>About</q-item-label>
             <q-item-label caption>about</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <q-item clickable tag="a" :to="`/${locale}/abc`">
+          <q-item-section avatar>
+            <q-icon name="code" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>ABC</q-item-label>
+            <q-item-label caption>abc</q-item-label>
           </q-item-section>
         </q-item>
 
@@ -97,10 +140,11 @@
   </q-layout>
 </template>
 
-<script>
-import { defineComponent, ref, watch } from 'vue'
+<script lang="ts">
+import { computed, defineComponent, ref, watch } from 'vue'
+import { useI18n, useI18nUtils } from '@/i18n'
+import { TestUsers } from '@/services/test-data'
 import { setupService } from '@/services'
-import { useI18n } from '@/i18n'
 import { useRouterUtils } from '@/router'
 
 export default defineComponent({
@@ -111,7 +155,11 @@ export default defineComponent({
   setup() {
     const services = setupService()
     const i18n = useI18n()
+    const { setI18nLanguage } = useI18nUtils()
     const { currentRoute } = useRouterUtils()
+
+    const leftDrawerOpen = ref(false)
+    const isSignedIn = computed(() => services.account.isSignedIn)
 
     watch(
       () => currentRoute.fullPath,
@@ -120,7 +168,20 @@ export default defineComponent({
       }
     )
 
-    function onClick(e) {
+    function langMenuItemOnclick(lang: string) {
+      setI18nLanguage(lang)
+    }
+
+    async function signInMenuItemOnClick() {
+      if (isSignedIn.value) {
+        await services.account.signOut()
+      } else {
+        const index = Math.floor(Math.random() * 2)
+        await services.account.signIn(TestUsers[index].id)
+      }
+    }
+
+    function onClick() {
       console.log(i18n.d(new Date(), 'dateSec', 'en'), ': en')
       console.log(i18n.d(new Date(), 'dateSec', 'en-US'), ':en-US')
       console.log(i18n.d(new Date(), 'dateSec', 'ja'), ': ja')
@@ -128,8 +189,11 @@ export default defineComponent({
     }
 
     return {
-      ...i18n,
-      leftDrawerOpen: ref(false),
+      locale: i18n.locale,
+      leftDrawerOpen,
+      isSignedIn,
+      langMenuItemOnclick,
+      signInMenuItemOnClick,
       onClick,
     }
   },

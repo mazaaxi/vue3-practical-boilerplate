@@ -72,7 +72,8 @@ type ToDeepRawDate<T> = {
 
 interface User extends TimestampEntity {
   email: string
-  displayName: string
+  first: string
+  last: string
 }
 
 interface Product extends TimestampEntity {
@@ -204,7 +205,8 @@ namespace User {
   export function populate<TO extends DeepPartial<User>, FM extends DeepPartial<DeepReadonly<User>>>(to: TO, from: FM): DeepUnreadonly<FM & TO> {
     if (typeof from.id === 'string') to.id = from.id
     if (typeof from.email === 'string') to.email = from.email
-    if (typeof from.displayName === 'string') to.displayName = from.displayName
+    if (typeof from.first === 'string') to.first = from.first
+    if (typeof from.last === 'string') to.last = from.last
     if (dayjs.isDayjs(from.createdAt)) to.createdAt = dayjs(from.createdAt)
     if (dayjs.isDayjs(from.updatedAt)) to.updatedAt = dayjs(from.updatedAt)
     return to as DeepUnreadonly<FM & TO>

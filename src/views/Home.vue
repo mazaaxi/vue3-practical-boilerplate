@@ -5,10 +5,6 @@
 <template>
   <q-page class="layout vertical center-center">
     <img alt="Quasar logo" src="../assets/logo.svg" style="width: 200px; height: 200px" />
-    <!--
-    <div>{{ msg }}</div>
-    <div>{{ t('common.cancel') }}</div>
-    -->
   </q-page>
 </template>
 
@@ -57,9 +53,7 @@ export default defineComponent({
       console.log(`Home onAfterRouteUpdate:`, { to: to.fullPath, from: from.fullPath })
     })
 
-    return {
-      ...i18n,
-    }
+    return {}
   },
 })
 </script>

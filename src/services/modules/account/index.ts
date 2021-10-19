@@ -52,7 +52,8 @@ namespace AccountService {
         throw new Error(`The specified User was not found: '${uid}'`)
       }
 
-      stores.user.set(user)
+      const exists = stores.user.get(user.id)
+      exists ? stores.user.set(user) : stores.user.add(user)
       helpers.account.signIn(user)
 
       // TODO

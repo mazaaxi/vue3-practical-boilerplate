@@ -11,34 +11,24 @@ import dayjs from 'dayjs'
 
 function User1(): User {
   return cloneDeep(
-    ((User1 as any).instance ??= {
+    ((User1 as any).instance ??= <User>{
       id: generateId(),
       email: 'taro.yamada@example.com',
-      displayName: 'タロー',
+      first: 'Taro',
+      last: 'Yamada',
       createdAt: dayjs(),
       updatedAt: dayjs(),
     })
   )
 }
 
-function User1_dummy(): User {
-  return cloneDeep(
-    ((User1 as any).instance ??= {
-      id: User1().id,
-      email: 'dummy@example.com',
-      displayName: 'ダミー',
-      createdAt: dayjs(0),
-      updatedAt: dayjs(0),
-    })
-  )
-}
-
 function User2(): User {
   return cloneDeep(
-    ((User2 as any).instance ??= {
+    ((User2 as any).instance ??= <User>{
       id: generateId(),
       email: 'ichiro.suzuki@example.com',
-      displayName: 'イチロー',
+      first: 'Ichiro',
+      last: 'Suzuki',
       createdAt: dayjs(),
       updatedAt: dayjs(),
     })
@@ -82,7 +72,7 @@ describe('UserStore', () => {
   describe('set', () => {
     it('basic case', () => {
       const { stores } = provideDependency()
-      stores.user.add(User1_dummy())
+      stores.user.add(User1())
 
       // run the test target
       const user1 = User1()

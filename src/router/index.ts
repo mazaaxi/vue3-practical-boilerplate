@@ -3,6 +3,7 @@ import { FlowStatus, RawRoute, Route } from '@/router/core'
 import { Router, createRouter, createWebHistory } from 'vue-router'
 import { SupportI18nLocales, useI18nUtils } from '@/i18n'
 import { UnwrapRef, WritableComputedRef, computed, reactive, ref, watch } from 'vue'
+import { AbcRoute } from '@/router/routes/abc'
 import { I18n } from 'vue-i18n'
 import { createNanoEvents } from 'nanoevents'
 import flatten from 'lodash/flatten'
@@ -23,6 +24,7 @@ interface AppRouterContainer {
 interface AppRoutes {
   home: ExampleRoute
   about: ExampleRoute
+  abc: AbcRoute
 }
 
 //==========================================================================
@@ -74,6 +76,7 @@ namespace AppRouterContainer {
     //--------------------------------------------------
 
     const example = ExampleRoutes.newInstance(locale)
+    const abc = AbcRoute.newInstance(locale)
 
     const fallback = reactive(
       Route.newRawInstance({
@@ -82,7 +85,7 @@ namespace AppRouterContainer {
       })
     )
 
-    const routeList: UnwrapRef<RawRoute>[] = [example.home, example.about, fallback]
+    const routeList: UnwrapRef<RawRoute>[] = [example.home, example.about, abc, fallback]
 
     //----------------------------------------------------------------------
     //
@@ -98,6 +101,7 @@ namespace AppRouterContainer {
     const routes: AppRoutes = {
       home: example.home,
       about: example.about,
+      abc,
     }
 
     const currentRoute: Route = reactive({

@@ -5,13 +5,21 @@ export default {
     reload: 'Reload',
     signIn: 'Sign In',
     signOut: 'Sign Out',
+    send: 'Send',
+    lang: 'Language | Languages',
+    title: 'Title | Titles',
+    message: 'Message | Messages',
+  },
+  langs: {
+    en: 'English',
+    ja: '日本語',
   },
   app: {
     updated: 'The application has been updated.',
   },
   abc: {
-    hello: 'Hi {name}!',
-    today: 'Today is {date}.',
+    signedInUser: '{name} <{email}>',
+    signedInTime: 'Signed-in Time: {time}',
   },
   shop: {
     products: 'Products',

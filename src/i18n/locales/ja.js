@@ -5,13 +5,21 @@ export default {
     reload: 'リロード',
     signIn: 'サインイン',
     signOut: 'サインアウト',
+    send: '送信',
+    lang: '言語',
+    title: 'タイトル',
+    message: 'メッセージ',
+  },
+  langs: {
+    en: 'English',
+    ja: '日本語',
   },
   app: {
     updated: 'アプリケーションが更新されました。',
   },
   abc: {
-    hello: 'こんにちは、{name}さん。',
-    today: '今日は {date} です。',
+    signedInUser: '{name} <{email}>',
+    signedInTime: 'サインイン時刻: {time}',
   },
   shop: {
     products: '商品一覧',

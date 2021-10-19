@@ -140,7 +140,8 @@ namespace UserStore {
     return {
       id: '',
       email: '',
-      displayName: '',
+      first: '',
+      last: '',
       createdAt: dayjs(0),
       updatedAt: dayjs(0),
     }

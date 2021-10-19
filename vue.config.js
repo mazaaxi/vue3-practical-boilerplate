@@ -81,19 +81,6 @@ module.exports = {
   },
 
   chainWebpack: config => {
-    // Vue I18n 単一ファイルコンポーネントの設定
-    // https://vue-i18n.intlify.dev/guide/advanced/sfc.html#vue-cli
-    config.module
-      .rule('i18n')
-      .resourceQuery(/blockType=i18n/)
-      .type('javascript/auto')
-      .use('i18n')
-        .loader('@kazupon/vue-i18n-loader')
-        .end()
-      .use('yaml')
-        .loader('yaml-loader')
-        .end()
-
     // copy the necessary resource files
     let copyFiles = [
       // add more if necessary
