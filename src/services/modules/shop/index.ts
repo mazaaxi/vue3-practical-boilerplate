@@ -25,6 +25,7 @@ interface RawShopService {
   addItemToCart(productId: string): Promise<void>
   removeItemFromCart(productId: string): Promise<void>
   checkout(): Promise<void>
+  getExchangeRate(locale: string): number
 }
 
 //==========================================================================
@@ -51,21 +52,21 @@ namespace ShopService {
     //
     //----------------------------------------------------------------------
 
-    const fetchProducts: ShopService['fetchProducts'] = async () => {
+    const fetchProducts: RawShopService['fetchProducts'] = async () => {
       const products = await apis.getProducts()
       stores.product.setAll(products)
       return Product.clone(stores.product.all)
     }
 
-    const fetchCartItems: ShopService['fetchCartItems'] = async () => {
+    const fetchCartItems: RawShopService['fetchCartItems'] = async () => {
       helpers.account.validateSignedIn()
 
-      const cartItems = await apis.getCartItems()
+      const cartItems = await apis.getCartItems(helpers.account.user.id)
       stores.cart.setAll(cartItems)
       return CartItem.clone(stores.cart.all)
     }
 
-    const addItemToCart: ShopService['addItemToCart'] = async productId => {
+    const addItemToCart: RawShopService['addItemToCart'] = async productId => {
       helpers.account.validateSignedIn()
 
       const product = stores.product.sgetById(productId)
@@ -81,7 +82,7 @@ namespace ShopService {
       }
     }
 
-    const removeItemFromCart: ShopService['removeItemFromCart'] = async productId => {
+    const removeItemFromCart: RawShopService['removeItemFromCart'] = async productId => {
       helpers.account.validateSignedIn()
 
       const cartItem = stores.cart.sgetByProductId(productId)
@@ -92,13 +93,23 @@ namespace ShopService {
       }
     }
 
-    const checkout: ShopService['checkout'] = async () => {
+    const checkout: RawShopService['checkout'] = async () => {
       helpers.account.validateSignedIn()
 
       await apis.checkoutCart()
 
       // カートを空にする
       stores.cart.removeByUID(helpers.account.user.id)
+    }
+
+    const getExchangeRate: RawShopService['getExchangeRate'] = locale => {
+      if (locale === 'en' || locale === 'en-US') {
+        return 1
+      } else if (locale === 'ja' || locale === 'ja-US') {
+        return 105
+      } else {
+        return 1
+      }
     }
 
     //----------------------------------------------------------------------
@@ -158,7 +169,7 @@ namespace ShopService {
           await fetchProducts()
           await fetchCartItems()
         }
-        // sign-in is not complete
+        // signed-out
         else {
           stores.cart.setAll([])
         }
@@ -180,6 +191,7 @@ namespace ShopService {
       addItemToCart,
       removeItemFromCart,
       checkout,
+      getExchangeRate,
     }
 
     return isImplemented<RawShopService, typeof instance>(instance)

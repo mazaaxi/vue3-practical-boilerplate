@@ -23,11 +23,12 @@ export default {
   },
   shop: {
     products: '商品一覧',
-    yourCurt: 'あなたのカート',
+    whoseCurt: '{name} のカート',
     price: '価格',
     stock: '在庫',
     total: '合計',
-    checkout: 'チェックアウト',
+    checkout: '精算',
+    cartIsEmpty: 'カートは空です。',
   },
   serviceWorker: {
     ready: 'ServiceWorkerが起動しました。',

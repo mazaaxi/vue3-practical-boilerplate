@@ -13,7 +13,7 @@
       <q-toolbar>
         <q-btn flat dense round @click="leftDrawerOpen = !leftDrawerOpen" aria-label="Menu" icon="menu" />
 
-        <q-toolbar-title @click="onClick"> Quasar App</q-toolbar-title>
+        <q-toolbar-title @click="onClick">Vue3 App</q-toolbar-title>
 
         <div>Quasar v{{ $q.version }}</div>
 
@@ -82,6 +82,18 @@
           </q-item-section>
         </q-item>
 
+        <q-item clickable tag="a" :to="`/${locale}/shop`">
+          <q-item-section avatar>
+            <q-icon name="fas fa-shopping-bag" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Shop</q-item-label>
+            <q-item-label caption>shop</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <q-item-label header>Quasar Items</q-item-label>
+
         <q-item clickable tag="a" target="_blank" href="https://quasar.dev">
           <q-item-section avatar>
             <q-icon name="school" />
@@ -94,7 +106,7 @@
 
         <q-item clickable tag="a" target="_blank" href="https://github.com/quasarframework/">
           <q-item-section avatar>
-            <q-icon name="code" />
+            <q-icon name="fab fa-github" />
           </q-item-section>
           <q-item-section>
             <q-item-label>Github</q-item-label>

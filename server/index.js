@@ -12,14 +12,14 @@ function getUserId(req, res) {
   const authorization = req.get('Authorization')
   if (!(authorization && authorization.startsWith('Bearer '))) {
     res.header('WWW-Authenticate', `Bearer realm="token_required"`)
-    sendError(res, 401, `Authorization failed because the authorization header is not set.`)
+    sendError(res, 401, `Authorization failed because an authorization header is not set.`)
     return
   }
 
   const encodedIdToken = authorization.split('Bearer ')[1]
   if (!encodedIdToken.trim()) {
     res.header('WWW-Authenticate', `Bearer realm="token_required"`)
-    sendError(res, 401, `Authorization failed because an id token could not be obtained from the HTTP request header.`)
+    sendError(res, 401, `Authorization failed because an id token could not be obtained from a HTTP request header.`)
     return
   }
 
@@ -28,13 +28,13 @@ function getUserId(req, res) {
     idTokenObject = JSON.parse(encodedIdToken)
   } catch (err) {
     res.header('WWW-Authenticate', `Bearer error="invalid_token"`)
-    sendError(res, 401, `Authentication failed because the decoding of the id token failed.`)
+    sendError(res, 401, `Authentication failed because a decoding of an id token failed.`)
     return
   }
 
   if (!idTokenObject.uid) {
     res.header('WWW-Authenticate', `Bearer error="invalid_token"`)
-    sendError(res, 401, `Authorization failed because an user id could not be obtained from the authorization header.`)
+    sendError(res, 401, `Authorization failed because an user id could not be obtained from an authorization header.`)
     return
   }
 
@@ -70,10 +70,10 @@ const db = router.db
 // ex. logger, static, cors and no-cache
 server.use(jsonServer.defaults())
 
-// set the parser to parse data sent by client requests
+// set a parser to parse data sent by client requests
 server.use(jsonServer.bodyParser)
 
-// set the router
+// set a router
 // cf. Prefix all requests in JSON Server with middleware
 //     https://stackoverflow.com/questions/49559454/prefix-all-requests-in-json-server-with-middleware
 server.use('api', router)
@@ -122,17 +122,17 @@ server.get(`/${APIPrefix}/products`, (req, res, next) => {
 server.get(`/${APIPrefix}/cartItems`, (req, res, next) => {
   const uid = getUserId(req, res)
   if (!uid) return
-  const ids = req.query.ids
 
-  let cartItems = []
-  if (ids) {
-    for (const id of ids) {
-      const cartItem = db.get('cartItems').find({ id, uid }).value()
-      cartItem && cartItems.push(cartItem)
-    }
-  } else {
-    cartItems = db.get('cartItems').filter({ uid }).value()
+  const uidOfQuery = req.query.uid
+
+  if (uidOfQuery !== uid) {
+    return sendError(res, 403, `A request user is trying to get someone else's cart.`, {
+      'request.uid': uid,
+      'request.query.uid': uidOfQuery || '',
+    })
   }
+
+  const cartItems = db.get('cartItems').filter({ uid }).value()
 
   res.json(cartItems)
 })
@@ -144,7 +144,7 @@ server.post(`/${APIPrefix}/cartItems`, (req, res, next) => {
 
   for (const input of inputs) {
     if (input.uid !== uid) {
-      return sendError(res, 403, `The request user is trying to add an item to someone else's cart.`, {
+      return sendError(res, 403, `A request user is trying to add an item to someone else's cart.`, {
         'request.uid': uid,
         'request.cartItem': input,
       })
@@ -155,7 +155,7 @@ server.post(`/${APIPrefix}/cartItems`, (req, res, next) => {
   for (const input of inputs) {
     let cartItem = db.get('cartItems').find({ uid, productId: input.productId }).value()
     if (cartItem) {
-      return sendError(res, 400, `The cart item trying to add already exists.`, {
+      return sendError(res, 400, `A cart item trying to add already exists.`, {
         'exists.cartItem': cartItem,
         'input.cartItem': input,
       })
@@ -214,7 +214,7 @@ server.put(`/${APIPrefix}/cartItems`, (req, res, next) => {
 
   for (const input of inputs) {
     if (input.uid !== uid) {
-      return sendError(res, 403, `The request user is trying to update an item to someone else's cart.`, {
+      return sendError(res, 403, `A request user is trying to update an item to someone else's cart.`, {
         'request.uid': uid,
         'request.cartItem': input,
       })
@@ -278,7 +278,7 @@ server.delete(`/${APIPrefix}/cartItems`, (req, res, next) => {
     if (!cartItem) continue
 
     if (cartItem.uid !== uid) {
-      return sendError(res, 403, `The request user is trying to remove an item to someone else's cart.`, {
+      return sendError(res, 403, `A request user is trying to remove an item to someone else's cart.`, {
         'request.uid': uid,
         'request.cartItem': { id: cartItemId },
       })

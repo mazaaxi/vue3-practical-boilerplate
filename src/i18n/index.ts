@@ -3,6 +3,7 @@ import { WritableComputedRef, nextTick } from 'vue'
 import axios from 'axios'
 import { datetimeFormats } from '@/i18n/date-time-formats'
 import en from '@/i18n/locales/en'
+import { numberFormats } from '@/i18n/number-formats'
 
 //----------------------------------------------------------------------
 //
@@ -51,6 +52,7 @@ namespace I18nContainer {
       fallbackLocale: 'en',
       messages: { en },
       datetimeFormats,
+      numberFormats,
       ...options,
     })
 

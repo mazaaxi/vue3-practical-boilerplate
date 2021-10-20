@@ -124,7 +124,7 @@ describe('ShopService', () => {
       const { stores, helpers, services } = provideDependency(({ apis, helpers }) => {
         // mock settings
         const getCartItems = td.replace<TestAPIContainer, 'getCartItems'>(apis, 'getCartItems')
-        td.when(getCartItems()).thenResolve(CartItems())
+        td.when(getCartItems(SignInUser.id)).thenResolve(CartItems())
         // sign-in user settings
         helpers.account.signIn(SignInUser)
       })
@@ -159,7 +159,7 @@ describe('ShopService', () => {
       const { stores, services } = provideDependency(({ apis, helpers }) => {
         // mock settings
         const getCartItems = td.replace<TestAPIContainer, 'getCartItems'>(apis, 'getCartItems')
-        td.when(getCartItems()).thenReject(expected)
+        td.when(getCartItems(SignInUser.id)).thenReject(expected)
         // sign-in user settings
         helpers.account.signIn(SignInUser)
       })

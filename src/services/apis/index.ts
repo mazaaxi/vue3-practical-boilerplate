@@ -11,8 +11,7 @@ import { isImplemented } from 'js-common-lib'
 interface APIContainer {
   getProduct(id: string): Promise<Product | undefined>
   getProducts(ids?: string[]): Promise<Product[]>
-  getCartItem(id: string): Promise<CartItem | undefined>
-  getCartItems(ids?: string[]): Promise<CartItem[]>
+  getCartItems(uid: string): Promise<CartItem[]>
   addCartItems(items: CartItemAddInput[]): Promise<CartItemEditResponse[]>
   updateCartItems(items: CartItemUpdateInput[]): Promise<CartItemEditResponse[]>
   removeCartItems(cartItemIds: string[]): Promise<CartItemEditResponse[]>
@@ -85,19 +84,10 @@ namespace APIContainer {
       return toEntities(response.data)
     }
 
-    const getCartItem: APIContainer['getCartItem'] = async id => {
+    const getCartItems: APIContainer['getCartItems'] = async uid => {
       const response = await client.get<ToRawEntity<CartItem>[]>('cartItems', {
         isAuth: true,
-        params: { ids: [id] },
-      })
-      if (response.data.length === 0) return
-      return toEntities(response.data)[0]
-    }
-
-    const getCartItems: APIContainer['getCartItems'] = async ids => {
-      const response = await client.get<ToRawEntity<CartItem>[]>('cartItems', {
-        isAuth: true,
-        params: { ids },
+        params: { uid },
       })
       return toEntities(response.data)
     }
@@ -134,7 +124,6 @@ namespace APIContainer {
     const instance = {
       getProduct,
       getProducts,
-      getCartItem,
       getCartItems,
       addCartItems,
       updateCartItems,

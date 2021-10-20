@@ -23,11 +23,12 @@ export default {
   },
   shop: {
     products: 'Products',
-    yourCurt: 'Your Curt',
+    whoseCurt: `{name}'s Curt`,
     price: 'Price',
     stock: 'Stock',
     total: 'Total',
     checkout: 'Checkout',
+    cartIsEmpty: 'The cart is empty.',
   },
   serviceWorker: {
     ready: 'ServiceWorker was launched from the cache.',

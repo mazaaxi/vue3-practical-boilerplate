@@ -59,7 +59,7 @@ function CartItems(): CartItem[] {
   return [
     {
       id: 'cartItem1',
-      uid: 'taro.yamada',
+      uid: SignInUser.id,
       productId: 'product1',
       title: 'iPad 4 Mini',
       price: 39700,
@@ -69,7 +69,7 @@ function CartItems(): CartItem[] {
     },
     {
       id: 'cartItem2',
-      uid: 'taro.yamada',
+      uid: SignInUser.id,
       productId: 'product2',
       title: 'Fire HD 8 Tablet',
       price: 8980,
@@ -149,23 +149,8 @@ describe('APIContainer', () => {
     })
   })
 
-  it('getCartItem', async () => {
-    const { apis } = provideDependency()
-    await apis.putTestData({
-      cartItems: RawCartItems(),
-    })
-
-    setTestIdToken()
-    const cartItem1 = CartItems()[0]
-
-    // run the test target
-    const actual = await apis.getCartItem(cartItem1.id)
-
-    expect(actual).toMatchObject(cartItem1)
-  })
-
   describe('getCartItems', () => {
-    it('basic case - without arguments', async () => {
+    it('basic case', async () => {
       const { apis } = provideDependency()
       await apis.putTestData({
         cartItems: RawCartItems(),
@@ -174,24 +159,9 @@ describe('APIContainer', () => {
       setTestIdToken()
 
       // run the test target
-      const actual = await apis.getCartItems()
+      const actual = await apis.getCartItems(SignInUser.id)
 
       expect(actual).toMatchObject(CartItems())
-    })
-
-    it('basic case - with arguments', async () => {
-      const { apis } = provideDependency()
-      await apis.putTestData({
-        cartItems: RawCartItems(),
-      })
-
-      setTestIdToken()
-      const [cartItem1, cartItem2] = CartItems()
-
-      // run the test target
-      const actual = await apis.getCartItems([cartItem1.id, cartItem2.id])
-
-      expect(actual).toMatchObject([cartItem1, cartItem2])
     })
   })
 
@@ -228,7 +198,7 @@ describe('APIContainer', () => {
       expect(addedCartItem.product.updatedAt.isAfter(now)).toBeTruthy()
 
       expect(addedCartItem).toMatchObject({
-        uid: 'taro.yamada',
+        uid: SignInUser.id,
         productId: product3.id,
         title: product3.title,
         price: product3.price,
@@ -340,7 +310,7 @@ describe('APIContainer', () => {
 
       expect(actual).toBeTruthy()
 
-      const current = await apis.getCartItems()
+      const current = await apis.getCartItems(SignInUser.id)
       expect(current.length).toBe(0)
     })
   })
