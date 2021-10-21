@@ -59,12 +59,12 @@ namespace AbcRoute {
     }
 
     base.after.body = (to, from) => {
-      // 自身のルートに移動された場合、メッセージオブジェクトを設定
+      // set message object when moved to own route
       if (base.isCurrent.value) {
         message.title = to.query.title as string | undefined
         message.body = to.query.body as string | undefined
       }
-      // 自身ではないルートに移動された場合、メッセージオブジェクトをクリア
+      // clear the message object if it is moved to a route that is not its own
       else {
         message.title = undefined
         message.body = undefined
@@ -76,19 +76,19 @@ namespace AbcRoute {
     const move: RawAbcRoute['move'] = async message => {
       const router = useRouter()
 
-      // 指定された情報で移動パスを生成
+      // generate a move path with the specified information
       const nextPath = toMovePath(message)
 
-      // カレントルートのパスと移動パスが同じ場合、何もせず終了
+      // if a path of the current route is the same as the move path, exit without doing anything
       const currentPath = removeEndSlash(router.currentRoute.value.fullPath)
       if (currentPath === nextPath) {
         return false
       }
 
-      // メッセージオブジェクトを設定
+      // set the message object
       Object.assign(message, pickProps(message || {}, ['title', 'body']))
 
-      // 新しい移動パスをルートに設定
+      // set new move path as route
       await router.push(nextPath)
       return true
     }

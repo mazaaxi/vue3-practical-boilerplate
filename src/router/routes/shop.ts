@@ -50,16 +50,16 @@ namespace ShopRoute {
     const move: RawShopRoute['move'] = async () => {
       const router = useRouter()
 
-      // 移動パスを生成
+      // generate a move path
       const nextPath = toMovePath()
 
-      // カレントルートのパスと移動パスが同じ場合、何もせず終了
+      // if a path of the current route is the same as the move path, exit without doing anything
       const currentPath = removeEndSlash(router.currentRoute.value.fullPath)
       if (currentPath === nextPath) {
         return false
       }
 
-      // 新しい移動パスをルートに設定
+      // set new move path as route
       await router.push(nextPath)
       return true
     }
