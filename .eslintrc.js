@@ -76,7 +76,7 @@ module.exports = {
     '@typescript-eslint/no-namespace': 'off',
     '@typescript-eslint/no-non-null-assertion': 'off',
     'no-redeclare': 'off',
-    '@typescript-eslint/no-redeclare': ['error'],
+    '@typescript-eslint/no-redeclare': 'off',
     '@typescript-eslint/no-unused-vars': 'off',
     '@typescript-eslint/no-use-before-define': 'off',
     '@typescript-eslint/no-var-requires': 'off',

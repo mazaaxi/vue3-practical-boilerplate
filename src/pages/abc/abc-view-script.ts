@@ -1,32 +1,28 @@
-import { QBtn, QCard, QInput } from 'quasar'
 import { SetupContext, computed, onUnmounted, reactive, ref, toRefs, watch, watchEffect } from 'vue'
-import { MessageInput } from '@/pages/abc/message-input.vue'
+import MessageInput from '@/pages/abc/message-input.vue'
 import { TestUsers } from '@/services/test-data'
 import { useRouterUtils } from '@/router'
 import { useService } from '@/services'
 
-//========================================================================
+//==========================================================================
 //
 //  Interfaces
 //
-//========================================================================
+//==========================================================================
 
 interface AbcView extends AbcView.Props {}
 
-//========================================================================
+//==========================================================================
 //
 //  Implementation
 //
-//========================================================================
+//==========================================================================
 
 namespace AbcView {
   export interface Props {}
 
   export const components = {
-    MessageInput: MessageInput.Component,
-    QCard: QCard,
-    QInput: QInput,
-    QBtn: QBtn,
+    MessageInput,
   }
 
   export function setup(props: Props, context: SetupContext) {
@@ -134,10 +130,10 @@ namespace AbcView {
   }
 }
 
-//========================================================================
+//==========================================================================
 //
 //  Export
 //
-//========================================================================
+//==========================================================================
 
 export { AbcView }

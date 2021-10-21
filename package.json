@@ -11,6 +11,7 @@
     "db:setup": "source ./package.scripts.sh && SetupDB",
     "db:revert": "source ./package.scripts.sh && RevertDB",
     "build": "vue-cli-service build",
+    "build:predeploy": "vue-cli-service build --mode predeploy",
     "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint"
   },

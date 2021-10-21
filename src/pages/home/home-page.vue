@@ -25,18 +25,13 @@
 </template>
 
 <script lang="ts">
-import { QBtn, QInput, QPage } from 'quasar'
-import { defineComponent, onMounted, onUnmounted, reactive } from 'vue'
+import { defineComponent, onUnmounted, reactive } from 'vue'
 import { useRouterUtils } from '@/router'
 
 export default defineComponent({
   name: 'HomePage',
 
-  components: {
-    QBtn,
-    QInput,
-    QPage,
-  },
+  components: {},
 
   setup() {
     //----------------------------------------------------------------------

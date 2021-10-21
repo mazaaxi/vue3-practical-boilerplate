@@ -123,118 +123,113 @@ import { computed, defineComponent, onMounted, reactive, toRefs } from 'vue'
 import { Loading } from 'quasar'
 import { TestUsers } from '@/services/test-data'
 import { useI18n } from '@/i18n'
-import { useRouterUtils } from '@/router'
 
-namespace ShopPage {
-  export const clazz = defineComponent({
-    name: 'ShopPage',
+export default defineComponent({
+  name: 'ShopPage',
 
-    setup(props, context) {
-      //----------------------------------------------------------------------
-      //
-      //  Variables
-      //
-      //----------------------------------------------------------------------
+  setup(props, context) {
+    //----------------------------------------------------------------------
+    //
+    //  Variables
+    //
+    //----------------------------------------------------------------------
 
-      const services = useService()
-      const i18n = useI18n()
+    const services = useService()
+    const i18n = useI18n()
 
-      const isSignedIn = computed(() => services.account.isSignedIn)
+    const isSignedIn = computed(() => services.account.isSignedIn)
 
-      const user = reactive({
-        ...toRefs(services.account.user),
-        fullName: computed(() => `${services.account.user.first} ${services.account.user.last}`),
-      })
+    const user = reactive({
+      ...toRefs(services.account.user),
+      fullName: computed(() => `${services.account.user.first} ${services.account.user.last}`),
+    })
 
-      const exchangeRate = computed(() => {
-        return services.shop.getExchangeRate(i18n.locale.value as string)
-      })
+    const exchangeRate = computed(() => {
+      return services.shop.getExchangeRate(i18n.locale.value as string)
+    })
 
-      const products = computed(() => {
-        return services.shop.products.map(product => ({
-          ...product,
-          exchangedPrice: product.price * exchangeRate.value,
-          outOfStock: product.stock === 0,
-        }))
-      })
+    const products = computed(() => {
+      return services.shop.products.map(product => ({
+        ...product,
+        exchangedPrice: product.price * exchangeRate.value,
+        outOfStock: product.stock === 0,
+      }))
+    })
 
-      const cartItems = computed(() => {
-        return services.shop.cartItems.map(cartItem => ({
-          ...cartItem,
-          exchangedPrice: cartItem.price * exchangeRate.value,
-        }))
-      })
+    const cartItems = computed(() => {
+      return services.shop.cartItems.map(cartItem => ({
+        ...cartItem,
+        exchangedPrice: cartItem.price * exchangeRate.value,
+      }))
+    })
 
-      const cartTotalPrice = computed(() => services.shop.cartTotalPrice * exchangeRate.value)
+    const cartTotalPrice = computed(() => services.shop.cartTotalPrice * exchangeRate.value)
 
-      const cartIsEmpty = computed(() => cartItems.value.length === 0)
+    const cartIsEmpty = computed(() => cartItems.value.length === 0)
 
-      //----------------------------------------------------------------------
-      //
-      //  Lifecycle hooks
-      //
-      //----------------------------------------------------------------------
+    //----------------------------------------------------------------------
+    //
+    //  Lifecycle hooks
+    //
+    //----------------------------------------------------------------------
 
-      onMounted(async () => {
-        Loading.show()
-        await services.shop.fetchProducts()
-        Loading.hide()
-      })
+    onMounted(async () => {
+      Loading.show()
+      await services.shop.fetchProducts()
+      Loading.hide()
+    })
 
-      //----------------------------------------------------------------------
-      //
-      //  Event listeners
-      //
-      //----------------------------------------------------------------------
+    //----------------------------------------------------------------------
+    //
+    //  Event listeners
+    //
+    //----------------------------------------------------------------------
 
-      async function signInOrOutButtonOnClick() {
-        if (isSignedIn.value) {
-          await services.account.signOut()
-        } else {
-          const index = Math.floor(Math.random() * 2)
-          await services.account.signIn(TestUsers[index].id)
-        }
+    async function signInOrOutButtonOnClick() {
+      if (isSignedIn.value) {
+        await services.account.signOut()
+      } else {
+        const index = Math.floor(Math.random() * 2)
+        await services.account.signIn(TestUsers[index].id)
       }
+    }
 
-      async function addButtonOnClick(product: Product) {
-        Loading.show()
-        await services.shop.addItemToCart(product.id)
-        Loading.hide()
-      }
+    async function addButtonOnClick(product: Product) {
+      Loading.show()
+      await services.shop.addItemToCart(product.id)
+      Loading.hide()
+    }
 
-      async function removeButtonOnClick(cartItem: CartItem) {
-        Loading.show()
-        await services.shop.removeItemFromCart(cartItem.productId)
-        Loading.hide()
-      }
+    async function removeButtonOnClick(cartItem: CartItem) {
+      Loading.show()
+      await services.shop.removeItemFromCart(cartItem.productId)
+      Loading.hide()
+    }
 
-      async function checkoutButtonOnClick() {
-        Loading.show()
-        await services.shop.checkout()
-        Loading.hide()
-      }
+    async function checkoutButtonOnClick() {
+      Loading.show()
+      await services.shop.checkout()
+      Loading.hide()
+    }
 
-      //----------------------------------------------------------------------
-      //
-      //  Event listeners
-      //
-      //----------------------------------------------------------------------
+    //----------------------------------------------------------------------
+    //
+    //  Event listeners
+    //
+    //----------------------------------------------------------------------
 
-      return {
-        isSignedIn,
-        user,
-        products,
-        cartItems,
-        cartTotalPrice,
-        cartIsEmpty,
-        signInOrOutButtonOnClick,
-        addButtonOnClick,
-        removeButtonOnClick,
-        checkoutButtonOnClick,
-      }
-    },
-  })
-}
-
-export default ShopPage.clazz
+    return {
+      isSignedIn,
+      user,
+      products,
+      cartItems,
+      cartTotalPrice,
+      cartIsEmpty,
+      signInOrOutButtonOnClick,
+      addButtonOnClick,
+      removeButtonOnClick,
+      checkoutButtonOnClick,
+    }
+  },
+})
 </script>

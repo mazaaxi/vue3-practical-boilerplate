@@ -84,19 +84,16 @@ import { defineComponent } from 'vue'
 
 interface AbcViewPC extends AbcView {}
 
-namespace AbcViewPC {
-  export const Component = defineComponent({
-    name: 'AbcViewPC',
+const AbcViewPC = defineComponent({
+  name: 'AbcViewPC',
 
-    components: { ...AbcView.components },
+  components: { ...AbcView.components },
 
-    setup(props: AbcView.Props, ctx) {
-      const base = AbcView.setup(props, ctx)
-      return { ...base }
-    },
-  })
-}
+  setup(props: AbcView.Props, ctx) {
+    const base = AbcView.setup(props, ctx)
+    return { ...base }
+  },
+})
 
-export default AbcViewPC.Component
-export { AbcViewPC }
+export default AbcViewPC
 </script>

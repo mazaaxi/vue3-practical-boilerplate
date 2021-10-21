@@ -87,19 +87,16 @@ import { defineComponent } from 'vue'
 
 interface AbcViewSP extends AbcView {}
 
-namespace AbcViewSP {
-  export const Component = defineComponent({
-    name: 'AbcViewSP',
+const AbcViewSP = defineComponent({
+  name: 'AbcViewSP',
 
-    components: { ...AbcView.components },
+  components: { ...AbcView.components },
 
-    setup(props: AbcView.Props, ctx) {
-      const base = AbcView.setup(props, ctx)
-      return { ...base }
-    },
-  })
-}
+  setup(props: AbcView.Props, ctx) {
+    const base = AbcView.setup(props, ctx)
+    return { ...base }
+  },
+})
 
-export default AbcViewSP.Component
-export { AbcViewSP }
+export default AbcViewSP
 </script>

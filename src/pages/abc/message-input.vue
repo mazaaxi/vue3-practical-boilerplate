@@ -21,6 +21,36 @@
 </template>
 
 <script lang="ts">
+import { ComputedRef, UnwrapRef, computed, defineComponent } from 'vue'
+import { isImplemented } from 'js-common-lib'
+
+//==========================================================================
+//
+//  Interfaces
+//
+//==========================================================================
+
+interface MessageInput extends MessageInput.Props, MessageInput.Features {}
+
+namespace MessageInput {
+  export interface Props {
+    readonly title: string
+    readonly modelValue: string
+  }
+
+  export type Features = UnwrapRef<MessageInput.RawFeatures>
+
+  export interface RawFeatures {
+    displayMessage: ComputedRef<string>
+  }
+}
+
+//==========================================================================
+//
+//  Implementation
+//
+//==========================================================================
+
 // Using v-model on Components
 // https://v3.vuejs.org/guide/component-basics.html#using-v-model-on-components
 //   - A property name `modelValue` is a special name used in `v-model`.
@@ -43,68 +73,54 @@
 //     `update:title` event with the new value.
 //     ex. ctx.emit('update:title', newTitle)
 
-import { ComputedRef, UnwrapRef, computed, defineComponent } from 'vue'
-import { QInput } from 'quasar'
-import { isImplemented } from 'js-common-lib'
+const MessageInput = defineComponent({
+  name: 'MessageInput',
 
-interface MessageInput extends MessageInput.Props, UnwrapRef<MessageInput.Features> {}
+  components: {},
 
-namespace MessageInput {
-  export interface Props {
-    readonly title: string
-    readonly modelValue: string
-  }
+  props: {
+    modelValue: { type: String, default: '' },
+    title: { type: String, default: '' },
+  },
 
-  export interface Features {
-    displayMessage: ComputedRef<string>
-  }
+  emits: {
+    'update:title': null,
+    'update:modelValue': null,
+  },
 
-  export const Component = defineComponent({
-    name: 'MessageInput',
+  setup(props: MessageInput.Props, ctx) {
+    const inputTitle = computed({
+      get: () => props.title,
+      set: v => ctx.emit('update:title', v),
+    })
 
-    components: {
-      QInput: QInput,
-    },
+    const inputMessage = computed({
+      get: () => props.modelValue,
+      set: v => ctx.emit('update:modelValue', v),
+    })
 
-    props: {
-      modelValue: { type: String, default: '' },
-      title: { type: String, default: '' },
-    },
-
-    emits: {
-      'update:title': null,
-      'update:modelValue': null,
-    },
-
-    setup(props: Props, ctx) {
-      const inputTitle = computed({
-        get: () => props.title,
-        set: v => ctx.emit('update:title', v),
-      })
-
-      const inputMessage = computed({
-        get: () => props.modelValue,
-        set: v => ctx.emit('update:modelValue', v),
-      })
-
-      const displayMessage = computed(() => {
-        if (!inputTitle.value && !inputMessage.value) {
-          return `NO MESSAGE`
-        }
-        return `${inputTitle.value}: ${inputMessage.value}`
-      })
-
-      const result = {
-        inputTitle,
-        inputMessage,
-        displayMessage,
+    const displayMessage = computed(() => {
+      if (!inputTitle.value && !inputMessage.value) {
+        return `NO MESSAGE`
       }
+      return `${inputTitle.value}: ${inputMessage.value}`
+    })
 
-      return isImplemented<Features, typeof result>(result)
-    },
-  })
-}
+    const result = {
+      inputTitle,
+      inputMessage,
+      displayMessage,
+    }
 
-export default MessageInput.Component
-export { MessageInput }
+    return isImplemented<MessageInput.RawFeatures, typeof result>(result)
+  },
+})
+
+//==========================================================================
+//
+//  Export
+//
+//==========================================================================
+
+export default MessageInput
 </script>
