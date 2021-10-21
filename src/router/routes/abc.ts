@@ -37,7 +37,7 @@ namespace AbcRoute {
 
     const base = Route.newRawInstance({
       routePath: `/:locale/abc`,
-      component: () => import(/* webpackChunkName: "views/abc" */ '@/views/abc'),
+      component: () => import(/* webpackChunkName: "pages/abc" */ '@/pages/abc'),
     })
 
     const message = reactive<AbcRouteMessage>({

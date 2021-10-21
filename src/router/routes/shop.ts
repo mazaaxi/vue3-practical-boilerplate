@@ -31,7 +31,7 @@ namespace ShopRoute {
 
     const base = Route.newRawInstance({
       routePath: `/:locale/shop`,
-      component: () => import(/* webpackChunkName: "views/shop" */ '@/views/shop'),
+      component: () => import(/* webpackChunkName: "pages/shop" */ '@/pages/shop'),
     })
 
     //----------------------------------------------------------------------

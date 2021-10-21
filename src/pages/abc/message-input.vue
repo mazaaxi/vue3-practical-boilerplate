@@ -13,13 +13,9 @@
   width: var(--message-input-width)
 </style>
 
-<style lang="sass" scoped>
-@import 'src/styles/app.variables'
-</style>
-
 <template>
   <div class="MessageInput">
-    <q-input v-model="inputTitle" class="input" input-class="message-input-class" :label="$t('common.title')" dense />
+    <q-input ref="hoge" v-model="inputTitle" class="input" input-class="message-input-class" :label="$t('common.title')" dense />
     <q-input v-model="inputMessage" class="input" input-class="message-input-class" :label="$t('common.message')" dense />
   </div>
 </template>

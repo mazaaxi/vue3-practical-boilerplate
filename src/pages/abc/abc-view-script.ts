@@ -1,6 +1,6 @@
 import { QBtn, QCard, QInput } from 'quasar'
 import { SetupContext, computed, onUnmounted, reactive, ref, toRefs, watch, watchEffect } from 'vue'
-import { MessageInput } from '@/views/abc/message-input.vue'
+import { MessageInput } from '@/pages/abc/message-input.vue'
 import { TestUsers } from '@/services/test-data'
 import { useRouterUtils } from '@/router'
 import { useService } from '@/services'
@@ -108,7 +108,7 @@ namespace AbcView {
     }
 
     const sendButtonOnClick = () => {
-      sentMessages[user.id] ??= []
+      sentMessages[user.id] = sentMessages[user.id] ?? []
       sentMessages[user.id].unshift(displayMessage.value)
     }
 

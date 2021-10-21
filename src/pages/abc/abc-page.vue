@@ -9,8 +9,8 @@
 
 <script lang="ts">
 import { computed, defineComponent, ref } from 'vue'
-import { AbcViewPC } from '@/views/abc/abc-view-pc.vue'
-import { AbcViewSP } from '@/views/abc/abc-view-sp.vue'
+import { AbcViewPC } from '@/pages/abc/abc-view-pc.vue'
+import { AbcViewSP } from '@/pages/abc/abc-view-sp.vue'
 import { useScreen } from '@/base'
 
 namespace AbcPage {

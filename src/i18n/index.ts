@@ -29,7 +29,7 @@ namespace I18nContainer {
   let instance: I18nContainer
 
   export function setupI18n(options?: { locale?: Locale }): I18n {
-    instance ??= newInstance(options)
+    instance = instance ?? newInstance(options)
     return instance.i18n
   }
 
@@ -43,8 +43,8 @@ namespace I18nContainer {
   }
 
   function newInstance(options?: { locale?: Locale }): I18nContainer {
-    options ??= {}
-    options.locale ??= 'en'
+    options = options ?? {}
+    options.locale = options.locale ?? 'en'
 
     const i18n: I18n = createI18n({
       legacy: false,

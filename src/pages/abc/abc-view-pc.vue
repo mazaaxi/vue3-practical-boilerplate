@@ -79,7 +79,7 @@
 </template>
 
 <script lang="ts">
-import { AbcView } from '@/views/abc/abc-view-script'
+import { AbcView } from '@/pages/abc/abc-view-script'
 import { defineComponent } from 'vue'
 
 interface AbcViewPC extends AbcView {}

@@ -1,5 +1,5 @@
 import './registerServiceWorker'
-import App from './App.vue'
+import AppPage from './pages/app'
 import { Quasar } from 'quasar'
 import { createApp } from 'vue'
 import quasarUserOptions from '@/quasar-user-options'
@@ -8,4 +8,4 @@ import { setupRouter } from '@/router'
 
 const i18n = setupI18n()
 const router = setupRouter(i18n)
-createApp(App).use(Quasar, quasarUserOptions).use(i18n).use(router).mount('#app')
+createApp(AppPage).use(Quasar, quasarUserOptions).use(i18n).use(router).mount('#app')

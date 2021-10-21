@@ -1,9 +1,9 @@
-import { ExampleRoute, ExampleRoutes } from '@/router/example'
 import { FlowStatus, RawRoute, Route } from '@/router/core'
 import { Router, createRouter, createWebHistory } from 'vue-router'
 import { SupportI18nLocales, useI18nUtils } from '@/i18n'
 import { UnwrapRef, WritableComputedRef, computed, reactive, ref, watch } from 'vue'
 import { AbcRoute } from '@/router/routes/abc'
+import { HomeRoute } from '@/router/routes/home'
 import { I18n } from 'vue-i18n'
 import { ShopRoute } from '@/router/routes/shop'
 import { createNanoEvents } from 'nanoevents'
@@ -23,8 +23,7 @@ interface AppRouterContainer {
 }
 
 interface AppRoutes {
-  home: ExampleRoute
-  about: ExampleRoute
+  home: HomeRoute
   abc: AbcRoute
   shop: ShopRoute
 }
@@ -77,7 +76,7 @@ namespace AppRouterContainer {
     //  Routes
     //--------------------------------------------------
 
-    const example = ExampleRoutes.newInstance(locale)
+    const home = HomeRoute.newInstance(locale)
     const abc = AbcRoute.newInstance(locale)
     const shop = ShopRoute.newInstance(locale)
 
@@ -88,7 +87,7 @@ namespace AppRouterContainer {
       })
     )
 
-    const routeList: UnwrapRef<RawRoute>[] = [example.home, example.about, abc, shop, fallback]
+    const routeList: UnwrapRef<RawRoute>[] = [home, abc, shop, fallback]
 
     //----------------------------------------------------------------------
     //
@@ -102,8 +101,7 @@ namespace AppRouterContainer {
     })
 
     const routes: AppRoutes = {
-      home: example.home,
-      about: example.about,
+      home,
       abc,
       shop,
     }

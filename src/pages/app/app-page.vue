@@ -62,16 +62,6 @@
           </q-item-section>
         </q-item>
 
-        <q-item clickable tag="a" :to="`/${locale}/about`">
-          <q-item-section avatar>
-            <q-icon name="description" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>About</q-item-label>
-            <q-item-label caption>about</q-item-label>
-          </q-item-section>
-        </q-item>
-
         <q-item clickable tag="a" :to="`/${locale}/abc`">
           <q-item-section avatar>
             <q-icon name="code" />
@@ -176,7 +166,7 @@ export default defineComponent({
     watch(
       () => currentRoute.fullPath,
       async (newValue, oldValue) => {
-        console.log(`currentRoute:`, { to: newValue, from: oldValue })
+        // console.log(`currentRoute:`, { to: newValue, from: oldValue })
       }
     )
 
