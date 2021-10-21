@@ -11,27 +11,31 @@ import dayjs from 'dayjs'
 
 function User1(): User {
   return cloneDeep(
-    ((User1 as any).instance ??= <User>{
-      id: generateId(),
-      email: 'taro.yamada@example.com',
-      first: 'Taro',
-      last: 'Yamada',
-      createdAt: dayjs(),
-      updatedAt: dayjs(),
-    })
+    ((User1 as any).instance =
+      (User1 as any).instance ??
+      <User>{
+        id: generateId(),
+        email: 'taro.yamada@example.com',
+        first: 'Taro',
+        last: 'Yamada',
+        createdAt: dayjs(),
+        updatedAt: dayjs(),
+      })
   )
 }
 
 function User2(): User {
   return cloneDeep(
-    ((User2 as any).instance ??= <User>{
-      id: generateId(),
-      email: 'ichiro.suzuki@example.com',
-      first: 'Ichiro',
-      last: 'Suzuki',
-      createdAt: dayjs(),
-      updatedAt: dayjs(),
-    })
+    ((User2 as any).instance =
+      (User2 as any).instance ??
+      <User>{
+        id: generateId(),
+        email: 'ichiro.suzuki@example.com',
+        first: 'Ichiro',
+        last: 'Suzuki',
+        createdAt: dayjs(),
+        updatedAt: dayjs(),
+      })
   )
 }
 
