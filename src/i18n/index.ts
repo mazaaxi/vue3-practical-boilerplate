@@ -13,10 +13,11 @@ import { numberFormats } from '@/i18n/number-formats'
 
 const SupportI18nLocales = ['ja', 'ja-JP', 'en', 'en-US']
 
+const DefaultI18nLocale = 'en'
+
 interface I18nContainer {
   i18n: I18n
-  setI18nLanguage(locale: string): void
-  loadI18nLocaleMessages(locale: string): Promise<void>
+  loadI18nLocaleMessages(locale?: string): Promise<void>
 }
 
 //----------------------------------------------------------------------
@@ -28,8 +29,8 @@ interface I18nContainer {
 namespace I18nContainer {
   let instance: I18nContainer
 
-  export function setupI18n(options?: { locale?: Locale }): I18n {
-    instance = instance ?? newInstance(options)
+  export function setupI18n(): I18n {
+    instance = instance ?? newInstance()
     return instance.i18n
   }
 
@@ -42,38 +43,51 @@ namespace I18nContainer {
     return others
   }
 
-  function newInstance(options?: { locale?: Locale }): I18nContainer {
-    options = options ?? {}
-    options.locale = options.locale ?? 'en'
-
+  function newInstance(): I18nContainer {
     const i18n: I18n = createI18n({
       legacy: false,
       globalInjection: true,
-      fallbackLocale: 'en',
+      fallbackLocale: DefaultI18nLocale,
+      locale: DefaultI18nLocale,
       messages: { en },
       datetimeFormats,
       numberFormats,
-      ...options,
     })
 
-    const setI18nLanguage: I18nContainer['setI18nLanguage'] = locale => {
-      ;(i18n.global.locale as WritableComputedRef<string>).value = locale
-      axios.defaults.headers.common['Accept-Language'] = locale
-    }
-
     const loadI18nLocaleMessages: I18nContainer['loadI18nLocaleMessages'] = async locale => {
-      // load locale messages with dynamic import
-      const messages = await import(/* webpackChunkName: "locale-[request]" */ `@/i18n/locales/${locale}.js`)
-      // set locale and locale message
-      i18n.global.setLocaleMessage(locale, messages.default)
+      locale = locale || getLocaleFromBrowser()
+
+      if (!SupportI18nLocales.includes(locale)) {
+        locale = DefaultI18nLocale
+      }
+
+      if (!i18n.global.availableLocales.includes(locale)) {
+        // load locale messages with dynamic import
+        const messages = await import(/* webpackChunkName: "locale-[request]" */ `@/i18n/locales/${locale}.js`)
+        // set locale and locale message
+        i18n.global.setLocaleMessage(locale, messages.default)
+      }
+
+      // set locale for i18n
+      ;(i18n.global.locale as WritableComputedRef<string>).value = locale
+      // set locale for HTTP request headers
+      axios.defaults.headers.common['Accept-Language'] = locale
+
       return nextTick()
     }
 
-    setI18nLanguage(options.locale)
+    function getLocaleFromBrowser(): Locale {
+      // get language + country from browser (ex. 'en', 'en-US', etc)
+      return (
+        (window.navigator.languages && window.navigator.languages[0]) ||
+        window.navigator.language ||
+        (window.navigator as any).userLanguage ||
+        (window.navigator as any).browserLanguage
+      )
+    }
 
     return {
       i18n,
-      setI18nLanguage,
       loadI18nLocaleMessages,
     }
   }

@@ -70,7 +70,7 @@ namespace AppRouterContainer {
 
     const emitter = createNanoEvents()
 
-    const { loadI18nLocaleMessages, setI18nLanguage } = useI18nUtils()
+    const { loadI18nLocaleMessages } = useI18nUtils()
 
     //--------------------------------------------------
     //  Routes
@@ -140,7 +140,7 @@ namespace AppRouterContainer {
     watch(
       () => locale.value,
       async (newValue, oldValue) => {
-        // When a language switch occurs, refresh the current route to embed the switched language in the path.
+        // when a language switch occurs, refresh the current route to embed the switched language in the path.
         const currentRoute = routeList.find(route => route.isCurrent)
         if (!currentRoute) return
         await currentRoute.refresh(router)
@@ -160,12 +160,7 @@ namespace AppRouterContainer {
       }
 
       // load locale messages
-      if (!i18n.global.availableLocales.includes(paramsLocale)) {
-        await loadI18nLocaleMessages(paramsLocale)
-      }
-
-      // set i18n language
-      setI18nLanguage(paramsLocale)
+      await loadI18nLocaleMessages(paramsLocale)
 
       // check if proceed a next route
       for (const route of routeList) {

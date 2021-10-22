@@ -166,7 +166,7 @@ export default defineComponent({
   setup() {
     const services = setupService()
     const i18n = useI18n()
-    const { setI18nLanguage } = useI18nUtils()
+    const { loadI18nLocaleMessages } = useI18nUtils()
     const { currentRoute } = useRouterUtils()
 
     const dialogContainer = ref<DialogContainer>()
@@ -182,8 +182,8 @@ export default defineComponent({
       }
     )
 
-    function langMenuItemOnclick(lang: string) {
-      setI18nLanguage(lang)
+    async function langMenuItemOnclick(lang: string) {
+      await loadI18nLocaleMessages(lang)
     }
 
     async function signInMenuItemOnClick() {
