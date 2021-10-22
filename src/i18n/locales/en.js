@@ -16,19 +16,25 @@ export default {
   },
   app: {
     updated: 'The application has been updated.',
+    anchorDialog: {
+      name: 'Anchor Dialog',
+      message: 'This dialog is an anchor dialog.\nReloading the browser will display this dialog again.',
+    },
   },
   abc: {
     signedInUser: '{name} <{email}>',
     signedInTime: 'Signed-in Time: {time}',
   },
   shop: {
+    shoppingCart: 'Shopping Cart',
     products: 'Products',
-    whoseCurt: `{name}'s Curt`,
+    whoseCart: `{name}'s Cart`,
     price: 'Price',
     stock: 'Stock',
     total: 'Total',
     checkout: 'Checkout',
     cartIsEmpty: 'The cart is empty.',
+    checkoutQ: 'Are you sure you want to check out?',
   },
   serviceWorker: {
     ready: 'ServiceWorker was launched from the cache.',

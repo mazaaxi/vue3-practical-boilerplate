@@ -79,7 +79,7 @@
 
     <div v-show="isSignedIn" class="spacing-mt-20">
       <div class="layout horizontal center">
-        <div class="title-text">{{ $t('shop.whoseCurt', { name: user.fullName }) }}</div>
+        <div class="title-text">{{ $t('shop.whoseCart', { name: user.fullName }) }}</div>
         <div class="flex-1"></div>
       </div>
       <hr style="width: 100%" />
@@ -122,6 +122,7 @@ import { CartItem, Product, useService } from '@/services'
 import { computed, defineComponent, onMounted, reactive, toRefs } from 'vue'
 import { Loading } from 'quasar'
 import { TestUsers } from '@/services/test-data'
+import { useDialogs } from '@/dialogs'
 import { useI18n } from '@/i18n'
 
 export default defineComponent({
@@ -136,6 +137,7 @@ export default defineComponent({
 
     const services = useService()
     const i18n = useI18n()
+    const dialogs = useDialogs()
 
     const isSignedIn = computed(() => services.account.isSignedIn)
 
@@ -181,7 +183,7 @@ export default defineComponent({
 
     //----------------------------------------------------------------------
     //
-    //  Event listeners
+    //  Events
     //
     //----------------------------------------------------------------------
 
@@ -207,6 +209,13 @@ export default defineComponent({
     }
 
     async function checkoutButtonOnClick() {
+      const confirmed = await dialogs.message.open({
+        type: 'confirm',
+        title: i18n.t('shop.shoppingCart'),
+        message: i18n.t('shop.checkoutQ'),
+      })
+      if (!confirmed) return
+
       Loading.show()
       await services.shop.checkout()
       Loading.hide()
@@ -214,7 +223,7 @@ export default defineComponent({
 
     //----------------------------------------------------------------------
     //
-    //  Event listeners
+    //  Result
     //
     //----------------------------------------------------------------------
 

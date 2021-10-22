@@ -13,13 +13,17 @@
       <q-toolbar>
         <q-btn flat dense round @click="leftDrawerOpen = !leftDrawerOpen" aria-label="Menu" icon="menu" />
 
-        <q-toolbar-title @click="onClick">Vue3 App</q-toolbar-title>
+        <q-toolbar-title>Vue3 App</q-toolbar-title>
 
         <div>Quasar v{{ $q.version }}</div>
 
         <q-btn class="spacing-ml-10" flat round dense color="white" icon="more_vert">
           <q-menu class="menu">
             <q-list class="list">
+              <!-- Sing-in or Sign-out -->
+              <q-item class="item" v-close-popup clickable>
+                <q-item-section @click="signInMenuItemOnClick">{{ isSignedIn ? $t('common.signOut') : $t('common.signIn') }}</q-item-section>
+              </q-item>
               <!-- Languages -->
               <q-item clickable>
                 <q-item-section>{{ $t('common.lang', 2) }}</q-item-section>
@@ -38,9 +42,9 @@
                 </q-menu>
               </q-item>
               <q-separator />
-              <!-- Sing-in or Sign-out -->
+              <!-- Anchor Dialog -->
               <q-item class="item" v-close-popup clickable>
-                <q-item-section @click="signInMenuItemOnClick">{{ isSignedIn ? $t('common.signOut') : $t('common.signIn') }}</q-item-section>
+                <q-item-section @click="anchorDialogItemOnClick">{{ $t('app.anchorDialog.name') }}</q-item-section>
               </q-item>
             </q-list>
           </q-menu>
@@ -140,9 +144,12 @@
       <router-view />
     </q-page-container>
   </q-layout>
+
+  <DialogContainer ref="dialogContainer" />
 </template>
 
 <script lang="ts">
+import { DialogContainer, setupDialogs } from '@/dialogs'
 import { computed, defineComponent, ref, watch } from 'vue'
 import { useI18n, useI18nUtils } from '@/i18n'
 import { TestUsers } from '@/services/test-data'
@@ -152,13 +159,18 @@ import { useRouterUtils } from '@/router'
 export default defineComponent({
   name: 'AppPage',
 
-  components: {},
+  components: {
+    DialogContainer,
+  },
 
   setup() {
     const services = setupService()
     const i18n = useI18n()
     const { setI18nLanguage } = useI18nUtils()
     const { currentRoute } = useRouterUtils()
+
+    const dialogContainer = ref<DialogContainer>()
+    const dialogs = setupDialogs(dialogContainer)
 
     const leftDrawerOpen = ref(false)
     const isSignedIn = computed(() => services.account.isSignedIn)
@@ -183,20 +195,21 @@ export default defineComponent({
       }
     }
 
-    function onClick() {
-      console.log(i18n.d(new Date(), 'dateSec', 'en'), ': en')
-      console.log(i18n.d(new Date(), 'dateSec', 'en-US'), ':en-US')
-      console.log(i18n.d(new Date(), 'dateSec', 'ja'), ': ja')
-      console.log(i18n.d(new Date(), 'dateSec', 'ja-JP'), ':ja-JP')
+    async function anchorDialogItemOnClick() {
+      dialogs.anchor.open({
+        title: i18n.t('app.anchorDialog.name'),
+        message: i18n.t('app.anchorDialog.message'),
+      })
     }
 
     return {
       locale: i18n.locale,
+      dialogContainer,
       leftDrawerOpen,
       isSignedIn,
       langMenuItemOnclick,
       signInMenuItemOnClick,
-      onClick,
+      anchorDialogItemOnClick,
     }
   },
 })

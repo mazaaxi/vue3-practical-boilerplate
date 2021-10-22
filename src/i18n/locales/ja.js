@@ -16,19 +16,25 @@ export default {
   },
   app: {
     updated: 'アプリケーションが更新されました。',
+    anchorDialog: {
+      name: 'アンカーダイアログ',
+      message: 'このダイアログはアンカーダイアログです。\nブラウザをリロードすると、再度このダイアログが表示されます。',
+    },
   },
   abc: {
     signedInUser: '{name} <{email}>',
     signedInTime: 'サインイン時刻: {time}',
   },
   shop: {
+    shoppingCart: 'ショッピングカート',
     products: '商品一覧',
-    whoseCurt: '{name} のカート',
+    whoseCart: '{name} のカート',
     price: '価格',
     stock: '在庫',
     total: '合計',
     checkout: '精算',
     cartIsEmpty: 'カートは空です。',
+    checkoutQ: '精算してもよろしいですか？',
   },
   serviceWorker: {
     ready: 'ServiceWorkerが起動しました。',
