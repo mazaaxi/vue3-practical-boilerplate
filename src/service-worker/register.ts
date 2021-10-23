@@ -1,3 +1,6 @@
+// This file has been implemented with reference to the following:
+// https://github.com/yyx990803/register-service-worker/blob/master/src/index.js
+
 import { UAParser } from 'ua-parser-js'
 
 //========================================================================
@@ -47,16 +50,6 @@ function register(serviceWorkerURL: string, hooks: Hooks = {}): void {
   //
   //----------------------------------------------------------------------
 
-  function isLocalhost(): boolean {
-    return Boolean(
-      window.location.hostname === 'localhost' ||
-        // [::1] is the IPv6 localhost address.
-        window.location.hostname === '[::1]' ||
-        // 127.0.0.1/8 is considered localhost for IPv4.
-        window.location.hostname.match(/^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/)
-    )
-  }
-
   const waitWindowLoad = new Promise<void>(resolve => {
     if (windowLoaded) {
       resolve()
@@ -70,16 +63,11 @@ function register(serviceWorkerURL: string, hooks: Hooks = {}): void {
 
   if ('serviceWorker' in navigator) {
     waitWindowLoad.then(async () => {
-      // サーバーがローカルホストで実行されている場合
-      if (isLocalhost()) {
-        // This is running on localhost. Lets check if a service worker still exists or not.
-        // ServiceWorkerの検証をした後、登録を行う
-        await checkAndRegisterServiceWorker(serviceWorkerURL, registrationOptions)
-      }
-      // サーバーがローカルホストでない場合
-      else {
-        // ServiceWorkerの検証はせず登録を行う
+      try {
+        // ServiceWorkerの登録実行
         await registerServiceWorker(serviceWorkerURL, registrationOptions)
+      } catch (err: any) {
+        handleError(err)
       }
     })
   }
@@ -198,27 +186,6 @@ function register(serviceWorkerURL: string, hooks: Hooks = {}): void {
     else {
       // TODO ここはどのような状況で入ってくるのか確認できていない
       console.warn(`ServiceWorker: This block is not supposed to be executed.`)
-    }
-  }
-
-  async function checkAndRegisterServiceWorker(serviceWorkerURL: string, registrationOptions: RegistrationOptions): Promise<void> {
-    try {
-      const response = await fetch(serviceWorkerURL)
-      // ServiceWorkerの挙動を実装したJSファイルが存在するか検証
-      if (response.status === 404) {
-        emit('error', new Error(`ServiceWorker not found at ${serviceWorkerURL}`))
-        await unregister()
-      } else if (response.headers.get('content-type')?.indexOf('javascript') === -1) {
-        emit('error', new Error(`Expected ${serviceWorkerURL} to have javascript content-type, but received ${response.headers.get('content-type')}`))
-        await unregister()
-      }
-      // ServiceWorkerの挙動を実装したJSファイルが存在する場合
-      else {
-        // ServiceWorkerの登録実行
-        await registerServiceWorker(serviceWorkerURL, registrationOptions)
-      }
-    } catch (err: any) {
-      handleError(err)
     }
   }
 
