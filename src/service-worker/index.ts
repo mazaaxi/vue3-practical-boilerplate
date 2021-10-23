@@ -13,12 +13,12 @@ import { useI18n } from '@/i18n'
 
 interface ServiceWorkerManager {
   /**
-   * ServiceWorkerの更新を実行します。
+   * Update a ServiceWorker.
    */
   update(): void
+
   /**
-   * ServiceWorkerの状態変化を監視します。
-   * @param cb
+   * Monitors changes in a state of a ServiceWorker.
    */
   onStateChange(cb: StateChangeCallback): Unsubscribe
 }
@@ -64,9 +64,9 @@ namespace ServiceWorkerManager {
 
     const config = useConfig()
 
-    // 実行モードが`remote`以外の場合、空インスタンスを返して終了
-    // ※開発時(ローカル環境)においてはServiceWorkerが邪魔になるため、
-    //   `ServiceWorkerManager`の空インスタンスを返す。
+    // if a execution mode is not `remote`, return an empty instance and exit
+    // NOTE: Return an empty instance of `ServiceWorkerManager`, since ServiceWorker
+    // gets in the way during development (local environment).
     if (config.env.executeMode !== 'remote') return EmptyInstance
 
     //----------------------------------------------------------------------
@@ -137,9 +137,7 @@ namespace ServiceWorkerManager {
     }
 
     /**
-     * ServiceWorkerの状態変更イベントを発火します。
-     * @param state
-     * @param message
+     * Fires the ServiceWorker state change event.
      */
     function emitStateChange(state: ServiceWorkerChangeState, message: string): void {
       const info: ServiceWorkerStateChangeInfo = { state, message }

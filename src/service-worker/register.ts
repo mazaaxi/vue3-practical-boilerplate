@@ -32,13 +32,13 @@ interface Hooks {
 //
 //========================================================================
 
-// `window`がロード済みかを表すフラグ
+// flag indicating whether a `window` has been loaded
 let windowLoaded = false
 
 /**
- * ServiceWorkerを登録します。
- * @param serviceWorkerURL ServiceWorkerの処理が記述されたjsファイルを指定します。
- * @param hooks ServiceWorkerのイベントフックを指定します。
+ * Register a ServiceWorker.
+ * @param serviceWorkerURL Specify a js file in which a ServiceWorker process is described.
+ * @param hooks Specifies a event hook for a ServiceWorker.
  */
 function register(serviceWorkerURL: string, hooks: Hooks = {}): void {
   const { registrationOptions = {} } = hooks
@@ -64,7 +64,6 @@ function register(serviceWorkerURL: string, hooks: Hooks = {}): void {
   if ('serviceWorker' in navigator) {
     waitWindowLoad.then(async () => {
       try {
-        // ServiceWorkerの登録実行
         await registerServiceWorker(serviceWorkerURL, registrationOptions)
       } catch (err: any) {
         handleError(err)
@@ -117,19 +116,19 @@ function register(serviceWorkerURL: string, hooks: Hooks = {}): void {
     if (registration.installing) {
       const serviceWorker = registration.installing
 
-      // ServiceWorkerにアップデートがあるかを取得
+      // get if there are updates to the ServiceWorker
       registration.onupdatefound = () => {
         emit('installing', registration)
       }
 
-      // インストール状態の変化を監視
+      // monitor changes in installation status
       registration.installing.onstatechange = async () => {
-        // ここでは次の順で状態(serviceWorker.state)が変化する
+        // in this block, `serviceWorker.state` changes in a following order
         // 'installed' -> 'activating' -> 'activated'
         if (serviceWorker.state === 'activated') {
-          // インストール完了イベントを発火
+          // fire the installation completion event
           emit('installed', registration)
-          // インストールされたServiceWorkerが使用可能になるまで待機
+          // wait until the installed ServiceWorker is ready to use
           await navigator.serviceWorker.ready.then()
           emit('ready', registration)
         }
@@ -139,39 +138,40 @@ function register(serviceWorkerURL: string, hooks: Hooks = {}): void {
     // active
     //
     else if (registration.active) {
-      // インストール済みServiceWorkerにアップデートがあるかを取得
+      // get if there are any updates to a installed ServiceWorker
       registration.onupdatefound = () => {
         emit('updating', registration)
       }
 
-      // インストール済みServiceWorkerのアップデート状態の変化を監視
+      // monitor changes in a update status of a installed ServiceWorker
       registration.active.onstatechange = async e => {
         const state = registration.active!.state
         if (state === 'activated' || state === 'redundant') {
-          // アップデート完了イベントを発火
+          // fire a update completion event
           emit('updated', registration)
 
-          // アップデートされたServiceWorkerが使用可能になるまで待機
+          // wait until the updated ServiceWorker is ready to use
           await navigator.serviceWorker.ready.then()
 
           // TODO
-          // Safariだとアップデートまでは完了するが、リロードするとメモリキャッシュが効いて
-          // しまい、ServiceWorker経由でリソースが取得されず、アプリケーションが更新されない。
-          // このため、ServiceWorkerを登録解除し、リロード時にインストールされるようにしている。
+          //  In Safari, it will complete the update process, but when it reloads,
+          //  due to the memory cache, resources will not be retrieved via ServiceWorker
+          //  and the application will not be updated. For this reason, I have
+          //  unregistered ServiceWorker so that it will be installed on reload.
           if (isSafari()) await unregister()
 
           emit('ready', registration)
         }
       }
 
-      // インストール済みServiceWorkerにアップデートがあるか確認
+      // check if there are any updates to a installed ServiceWorker
       await registration.update()
     }
     //
     // waiting
     //
     else if (registration.waiting) {
-      // TODO ここはどのような状況で入ってくるのか確認できていない
+      // TODO I haven't been able to confirm under what circumstances it is coming in here.
       console.warn(`ServiceWorker: This block is not supposed to be executed.`)
 
       const serviceWorker = registration.waiting
@@ -184,7 +184,7 @@ function register(serviceWorkerURL: string, hooks: Hooks = {}): void {
     // others
     //
     else {
-      // TODO ここはどのような状況で入ってくるのか確認できていない
+      // TODO I haven't been able to confirm under what circumstances it is coming in here.
       console.warn(`ServiceWorker: This block is not supposed to be executed.`)
     }
   }
@@ -204,7 +204,7 @@ function register(serviceWorkerURL: string, hooks: Hooks = {}): void {
 }
 
 /**
- * ServiceWorkerの登録を解除します。
+ * Unregister a ServiceWorker.
  */
 async function unregister() {
   if ('serviceWorker' in navigator) {

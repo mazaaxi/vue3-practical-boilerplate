@@ -13,9 +13,9 @@ interface Dialogs {
   readonly anchor: DialogContainer['anchor']
 
   /**
-   * ダイアログを開くためのクエリを生成します。
+   * Build a query to open a dialog.
    *
-   * ダイアログクエリの例:
+   * Example of a dialog query:
    *   dialogName=signIn&dialogParams=%257B%2522account%2522%253A%2522taro%2522%257D
    *
    * @param dialogName ダイアログの名前
@@ -24,12 +24,12 @@ interface Dialogs {
   buildQuery(dialogName: DialogNames, dialogParams?: any): string
 
   /**
-   * 現在URLにURLに付与されているダイアログクエリを取得します。
+   * Get a dialog query given to an URL of a current route.
    */
   getQuery: DialogContainer['getQuery']
 
   /**
-   * 現在URLに付与されているダイアログクエリを削除します。
+   * Remove a dialog query given to an URL of a current route.
    */
   clearQuery: DialogContainer['clearQuery']
 }
@@ -44,9 +44,9 @@ namespace Dialogs {
   let instance: Dialogs
 
   /**
-   * 様々なダイアログを扱うためのオブジェクトをセットアップします。
+   * Setup dialogs that are commonly used by the application.
    * @param dialogContainer
-   *   アプリケーションのメインページでインスタンス化されたダイアログコンテナを指定します。
+   *   Specifies a dialog container instantiated in the application's main page.
    */
   export function setupDialogs(dialogContainer: Ref<DialogContainer | undefined>): Dialogs {
     instance = newInstance(dialogContainer)
@@ -54,7 +54,7 @@ namespace Dialogs {
   }
 
   /**
-   * 様々なダイアログを扱うためのオブジェクトを提供します。
+   * Provides dialogs that are commonly used by the application.
    */
   export function useDialogs(): Dialogs {
     return instance

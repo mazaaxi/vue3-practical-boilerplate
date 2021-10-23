@@ -18,21 +18,21 @@
 <template>
   <BaseDialog ref="dialog" class="MessageDialog" :persistent="params.persistent">
     <q-card class="container">
-      <!-- タイトル -->
+      <!-- Title -->
       <q-card-section v-if="Boolean(params.title)">
         <div class="title">{{ params.title }}</div>
       </q-card-section>
 
-      <!-- コンテンツエリア -->
+      <!-- Content area -->
       <q-card-section class="row items-center">
         <div class="message">{{ params.message }}</div>
       </q-card-section>
 
-      <!-- ボタンエリア -->
+      <!-- Button area -->
       <q-card-actions class="layout horizontal center end-justified">
-        <!-- CANCELボタン -->
+        <!-- Cancel button -->
         <q-btn v-show="params.type === 'confirm'" flat rounded color="primary" :label="$t('common.cancel')" @click="closeDialog(false)" />
-        <!-- OKボタン -->
+        <!-- OK button -->
         <q-btn flat rounded color="primary" :label="$t('common.ok')" @click="closeDialog(true)" />
       </q-card-actions>
     </q-card>

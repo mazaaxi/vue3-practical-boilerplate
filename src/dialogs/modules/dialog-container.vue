@@ -115,48 +115,48 @@ const DialogContainer = defineComponent({
     //----------------------------------------------------------------------
 
     /**
-     * ダイアログを開くためのクエリをURLに付与してダイアログを開きます。
+     * Give a URL query to open the dialog and open a dialog.
      *
-     * URLに付与するダイアログクエリの例:
+     * Example of a URL with a dialog query:
      *   https://example.com/views/abc-page?dialogName=signIn&dialogParams=%257B%2522account%2522%253A%2522taro%2522%257D
      *
-     * @param dialogName ダイアログの名前
-     * @param dialogParams ダイアログに渡すパラメータ
+     * @param dialogName Name of a dialog.
+     * @param dialogParams Parameters to pass to a dialog.
      */
     function openDialog(dialogName: string, dialogParams?: any): Promise<any> {
       return new Promise((resolve, reject) => {
-        // ダイアログへの遷移を監視
+        // monitor a transition to a dialog
         const stopWatch = watch(
           () => currentRoute.fullPath,
           (newValue, oldValue) => {
-            // 監視を終了
+            // end monitoring
             stopWatch()
 
-            // URLからダイアログクエリを取得
+            // get a dialog query from an URL
             const info = getQuery()
             if (!info) {
               reject(new Error('A dialog query could not be retrieved from an URL.'))
               return
             }
 
-            // URLからダイアログクエリが取得できた場合、対象ダイアログのインスタンスを取得
+            // if the dialog query can be obtained from the URL, get an instance of a target dialog.
             const dialog = dialogs[info.dialogName]
             if (!dialog) {
               reject(new Error(`There is no dialog named ${info.dialogName}.`))
               return
             }
 
-            // ダイアログを開く
+            // open the target dialog
             dialog.value.open(info.dialogParams).then(result => {
-              // ダイアログが閉じられたら、URLからダイアログクエリを削除
+              // remove the dialog query from the URL when the dialog is closed
               clearQuery()
-              // ダイアログが閉じられたことを通知
+              // notify that the dialog has been closed
               resolve(result)
             })
           }
         )
 
-        // 引数で指定されたダイアログへ遷移開始
+        // start transition to a dialog specified by the argument
         router.push({
           path: currentRoute.path,
           query: Object.assign({}, currentRoute.query, {
@@ -168,24 +168,24 @@ const DialogContainer = defineComponent({
     }
 
     /**
-     * 指定されたルートのURLからダイアログ情報を取得し、
-     * ダイアログ情報が取得された場合はそのダイアログを開きます。
+     * Get a dialog information from an URL of a current route, and if the dialog
+     * information is retrieved, open the dialog.
      */
     function openDialogByCurrentRoute() {
-      // URLからダイアログクエリを取得
+      // get a dialog query from an URL
       const info = getQuery()
       if (!info) return
 
-      // URLからダイアログクエリが取得できた場合、対象ダイアログのインスタンスを取得
+      // if the dialog query can be obtained from the URL, get an instance of a target dialog.
       const dialog = dialogs[info.dialogName]
       if (!dialog) {
         console.warn(`There is no dialog named ${info.dialogName}.`)
         return
       }
 
-      // ダイアログを開く
+      // open the target dialog
       dialog.value.open(info.dialogParams).then(() => {
-        // ダイアログが閉じられたら、URLからダイアログクエリを削除
+        // remove the dialog query from the URL when the dialog is closed
         clearQuery()
       })
     }
