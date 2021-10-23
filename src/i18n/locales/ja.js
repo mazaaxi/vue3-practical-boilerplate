@@ -14,6 +14,10 @@ export default {
     en: 'English',
     ja: '日本語',
   },
+  site: {
+    updating: 'サイトをアップデートしています。',
+    updated: 'サイトのアップデートが完了しました。\nリロードするとアップデートが反映されます。',
+  },
   app: {
     updated: 'アプリケーションが更新されました。',
     anchorDialog: {

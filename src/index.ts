@@ -1,4 +1,3 @@
-import './registerServiceWorker'
 import { setupI18n, useI18nUtils } from '@/i18n'
 import AppPage from './pages/app'
 import { Quasar } from 'quasar'

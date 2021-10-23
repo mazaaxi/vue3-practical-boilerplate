@@ -154,6 +154,8 @@ import { computed, defineComponent, ref, watch } from 'vue'
 import { useI18n, useI18nUtils } from '@/i18n'
 import { TestUsers } from '@/services/test-data'
 import { setupService } from '@/services'
+import { setupServiceWorker } from '@/service-worker'
+import { showNotification } from '@/base'
 import { useRouterUtils } from '@/router'
 
 export default defineComponent({
@@ -164,7 +166,14 @@ export default defineComponent({
   },
 
   setup() {
+    //----------------------------------------------------------------------
+    //
+    //  Variables
+    //
+    //----------------------------------------------------------------------
+
     const services = setupService()
+    const serviceWorker = setupServiceWorker()
     const i18n = useI18n()
     const { loadI18nLocaleMessages } = useI18nUtils()
     const { currentRoute } = useRouterUtils()
@@ -175,12 +184,48 @@ export default defineComponent({
     const leftDrawerOpen = ref(false)
     const isSignedIn = computed(() => services.account.isSignedIn)
 
+    //----------------------------------------------------------------------
+    //
+    //  Events
+    //
+    //----------------------------------------------------------------------
+
+    let closeUpdatingNotification: Function | undefined
+
     watch(
       () => currentRoute.fullPath,
       async (newValue, oldValue) => {
         // console.log(`currentRoute:`, { to: newValue, from: oldValue })
       }
     )
+
+    serviceWorker.onStateChange(info => {
+      if (info.state === 'updating') {
+        closeUpdatingNotification = showNotification('info', i18n.t('site.updating'), {
+          timeout: 0,
+          actions: 'none',
+        })
+      }
+
+      if (info.state === 'updated') {
+        closeUpdatingNotification?.()
+        showNotification('info', i18n.t('site.updated'), {
+          actions: [
+            {
+              label: i18n.t('common.reload'),
+              handler: () => window.location.reload(),
+            },
+          ],
+          timeout: 0,
+        })
+      }
+
+      if (info.state === 'error') {
+        console.error(info.message)
+      } else {
+        console.log('ServiceWorker:', JSON.stringify(info, null, 2))
+      }
+    })
 
     async function langMenuItemOnclick(lang: string) {
       await loadI18nLocaleMessages(lang)
@@ -201,6 +246,12 @@ export default defineComponent({
         message: i18n.t('app.anchorDialog.message'),
       })
     }
+
+    //----------------------------------------------------------------------
+    //
+    //  Result
+    //
+    //----------------------------------------------------------------------
 
     return {
       locale: i18n.locale,
