@@ -6,6 +6,5 @@
 /src-capacitor
 /src-cordova
 /src-ssr
-.eslintrc.js
 babel.config.js
 quasar.conf.js
