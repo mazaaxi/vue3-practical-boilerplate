@@ -29,6 +29,7 @@ module.exports = configure(ctx => {
     // --> boot files are part of "main.js"
     // https://quasar.dev/quasar-cli/boot-files
     boot: [
+      'config',
       'i18n',
       'axios',
     ],
@@ -54,7 +55,7 @@ module.exports = configure(ctx => {
 
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
     build: {
-      vueRouterMode: 'hash', // available values: 'hash', 'history'
+      vueRouterMode: 'history', // available values: 'hash', 'history'
 
       // transpile: false,
       // publicPath: '/',
@@ -78,13 +79,17 @@ module.exports = configure(ctx => {
       chainWebpack(/* chain */) {
         //
       },
+
+      env: {
+        BUILD_ENV: process.env.BUILD_ENV,
+      },
     },
 
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-devServer
     devServer: {
       https: false,
-      port: 8080,
-      open: true, // opens browser window automatically
+      port: 5050,
+      open: false, // opens browser window automatically
     },
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-framework

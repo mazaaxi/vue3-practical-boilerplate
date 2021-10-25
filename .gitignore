@@ -31,3 +31,6 @@ yarn-error.log*
 *.ntvs*
 *.njsproj
 *.sln
+
+# Application files
+src/config/build.env.ts

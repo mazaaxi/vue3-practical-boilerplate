@@ -6,17 +6,23 @@
   "author": "mazaaxi <22339605+mazaaxi@users.noreply.github.com>",
   "private": true,
   "scripts": {
-    "serve": "quasar dev",
-    "build": "quasar build",
-    "build:pwa": "quasar build -m pwa",
+    "env:build": "source ./package.scripts.sh && BuildEnv",
+    "serve": "export BUILD_ENV=local && quasar dev",
+    "build": "export BUILD_ENV=remote && quasar build -m pwa",
+    "build:predeploy": "export BUILD_ENV=predeploy && quasar build -m pwa",
     "lint": "eslint --fix ./ --ext .js,.ts,.vue ./",
-    "test": "echo \"No test specified\" && exit 0"
+    "test": "export BUILD_ENV=test && echo \"No test specified\" && exit 0"
   },
   "dependencies": {
     "@quasar/extras": "^1.0.0",
+    "@types/lodash": "^4.14.176",
+    "@types/urijs": "^1.19.17",
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
+    "js-common-lib": "https://github.com/mazaaxi/js-common-lib.git",
+    "lodash": "^4.17.21",
     "quasar": "^2.0.0",
+    "urijs": "^1.19.7",
     "vue-i18n": "^9.0.0"
   },
   "devDependencies": {
