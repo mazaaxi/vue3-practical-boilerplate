@@ -1,7 +1,6 @@
 import * as _path from 'path'
+import { ServiceWorkerChangeState, register as registerServiceWorker } from '@/service-worker/register'
 import { Unsubscribe, createNanoEvents } from 'nanoevents'
-import { ServiceWorkerChangeState } from '@/service-worker/register'
-import { register as registerServiceWorker } from '@/service-worker/register'
 import { useConfig } from '@/config'
 import { useI18n } from '@/i18n'
 
@@ -113,25 +112,25 @@ namespace ServiceWorkerManager {
     function register(): void {
       registerServiceWorker(_path.join(process.env.BASE_URL ?? '', 'service-worker.js'), {
         ready: () => {
-          emitStateChange('ready', String(i18n.t('serviceWorker.ready')))
+          emitStateChange('ready', i18n.t('serviceWorker.ready'))
         },
         installing: () => {
-          emitStateChange('installing', String(i18n.t('serviceWorker.installing')))
+          emitStateChange('installing', i18n.t('serviceWorker.installing'))
         },
         updating: () => {
-          emitStateChange('updating', String(i18n.t('serviceWorker.updating')))
+          emitStateChange('updating', i18n.t('serviceWorker.updating'))
         },
         installed: () => {
-          emitStateChange('installed', String(i18n.t('serviceWorker.installed')))
+          emitStateChange('installed', i18n.t('serviceWorker.installed'))
         },
         updated: () => {
-          emitStateChange('updated', String(i18n.t('serviceWorker.updated')))
+          emitStateChange('updated', i18n.t('serviceWorker.updated'))
         },
         offline: () => {
-          emitStateChange('offline', String(i18n.t('serviceWorker.offline')))
+          emitStateChange('offline', i18n.t('serviceWorker.offline'))
         },
         error: (state, err) => {
-          emitStateChange('error', String(i18n.t('serviceWorker.error')))
+          emitStateChange('error', i18n.t('serviceWorker.error'))
         },
       })
     }

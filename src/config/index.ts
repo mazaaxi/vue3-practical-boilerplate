@@ -41,11 +41,12 @@ interface CreateConfigParams {
 namespace Config {
   let instance: Config
 
-  export function getInstance(params: CreateConfigParams = {}): Config {
-    instance = instance ?? newInstance()
+  export function setupConfig(params: CreateConfigParams = {}): Config {
+    instance = merge(newInstance(), params.api)
+    return instance
+  }
 
-    merge(instance.api, params.api)
-
+  export function useConfig(params: CreateConfigParams = {}): Config {
     return instance
   }
 
@@ -104,14 +105,11 @@ namespace Config {
   }
 }
 
-function useConfig(): Config {
-  return Config.getInstance()
-}
-
 //==========================================================================
 //
 //  Export
 //
 //==========================================================================
 
-export { APIConfig, Config, useConfig }
+const { setupConfig, useConfig } = Config
+export { APIConfig, Config, setupConfig, useConfig }

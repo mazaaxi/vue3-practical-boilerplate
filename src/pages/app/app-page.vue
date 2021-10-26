@@ -153,10 +153,10 @@ import { DialogContainer, setupDialogs } from '@/dialogs'
 import { computed, defineComponent, ref, watch } from 'vue'
 import { useI18n, useI18nUtils } from '@/i18n'
 import { TestUsers } from '@/services/test-data'
-import { setupService } from '@/services'
-import { setupServiceWorker } from '@/service-worker'
 import { showNotification } from '@/base'
 import { useRouterUtils } from '@/router'
+import { useService } from '@/services'
+import { useServiceWorker } from '@/service-worker'
 
 export default defineComponent({
   name: 'AppPage',
@@ -172,8 +172,9 @@ export default defineComponent({
     //
     //----------------------------------------------------------------------
 
-    const services = setupService()
-    const serviceWorker = setupServiceWorker()
+    const services = useService()
+    const serviceWorker = useServiceWorker()
+
     const i18n = useI18n()
     const { loadI18nLocaleMessages } = useI18nUtils()
     const { currentRoute } = useRouterUtils()

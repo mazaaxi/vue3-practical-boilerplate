@@ -11,7 +11,5 @@ SetupDB() {
 }
 
 RevertDB() {
-  if [ ! -e "$TO_DB_FILE" ]; then
-    cp -f "$FM_DB_FILE" "$TO_DB_FILE"
-  fi
+  cp -f "$FM_DB_FILE" "$TO_DB_FILE"
 }

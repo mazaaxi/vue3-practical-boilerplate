@@ -49,7 +49,7 @@ namespace AccountService {
     const signIn: AccountService['signIn'] = async uid => {
       const user = TestUsers.find(user => user.id === uid)
       if (!user) {
-        throw new Error(`The specified User was not found: '${uid}'`)
+        throw new Error(`The specified user does not exist: '${uid}'`)
       }
 
       const exists = stores.user.get(user.id)
