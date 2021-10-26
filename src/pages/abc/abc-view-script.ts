@@ -65,7 +65,7 @@ namespace AbcView {
 
     const reversedMessage = computed(() => message.body.split('').reverse().join(''))
 
-    const doubleReversedYourName = computed(() => reversedMessage.value.split('').reverse().join(''))
+    const doubleReversedMessage = computed(() => reversedMessage.value.split('').reverse().join(''))
 
     const watchEffectMessage = ref('')
 
@@ -122,7 +122,7 @@ namespace AbcView {
       sentMessagesLog,
       displayMessage,
       reversedMessage,
-      doubleReversedYourName,
+      doubleReversedMessage,
       watchEffectMessage,
       signInOrOutButtonOnClick,
       sendButtonOnClick,

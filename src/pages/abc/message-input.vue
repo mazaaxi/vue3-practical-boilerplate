@@ -15,8 +15,8 @@
 
 <template>
   <div class="MessageInput">
-    <q-input ref="hoge" v-model="inputTitle" class="input" input-class="message-input-class" :label="$t('common.title')" dense />
-    <q-input v-model="inputMessage" class="input" input-class="message-input-class" :label="$t('common.message')" dense />
+    <q-input v-model="inputTitle" class="input" input-class="message-input-class" :label="$t('common.title')" dense data-test="titleInput" />
+    <q-input v-model="inputMessage" class="input" input-class="message-input-class" :label="$t('common.message')" dense data-test="bodyInput" />
   </div>
 </template>
 

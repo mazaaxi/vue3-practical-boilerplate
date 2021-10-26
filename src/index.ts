@@ -10,7 +10,7 @@ import { setupServiceWorker } from '@/service-worker'
 
 async function init() {
   setupConfig()
-  const i18n = await setupI18n()
+  const i18n = setupI18n()
   await useI18nUtils().loadI18nLocaleMessages()
   const router = setupRouter(i18n)
   setupServiceWorker()

@@ -2,7 +2,7 @@ import MessageInput from '@/pages/abc/message-input.vue'
 import { mount } from '@vue/test-utils'
 
 describe('message-input.vue', () => {
-  it('template', () => {
+  it('verify the template when initially displayed', () => {
     const title = 'Quasar'
     const body = 'Beyond the framework.'
 
@@ -13,19 +13,17 @@ describe('message-input.vue', () => {
       },
       global: {
         stubs: {
-          QInput: {
-            template: '<div />',
-          },
+          QInput: { template: '<div />' },
         },
       },
     })
 
-    const titleInput = wrapper.element.children[0]
-    expect(titleInput.attributes.getNamedItem('modelValue')!.value).toBe(title)
-    expect(titleInput.attributes.getNamedItem('label')!.value).toBe('Title')
+    const titleInput = wrapper.get('[data-test="titleInput"]')
+    expect(titleInput.attributes('modelvalue')).toBe(title)
+    expect(titleInput.attributes('label')).toBe('Title')
 
-    const bodyInput = wrapper.element.children[1]
-    expect(bodyInput.attributes.getNamedItem('modelValue')!.value).toBe(body)
-    expect(bodyInput.attributes.getNamedItem('label')!.value).toBe('Message')
+    const messageInput = wrapper.get('[data-test="bodyInput"]')
+    expect(messageInput.attributes('modelvalue')).toBe(body)
+    expect(messageInput.attributes('label')).toBe('Message')
   })
 })

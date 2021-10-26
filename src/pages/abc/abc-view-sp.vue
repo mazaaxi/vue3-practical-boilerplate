@@ -69,7 +69,7 @@
 
     <div class="spacing-my-16">
       <span class="caption">Double Reversed Message: </span>
-      <span class="value">{{ doubleReversedYourName }}</span>
+      <span class="value">{{ doubleReversedMessage }}</span>
     </div>
 
     <div class="spacing-my-16">
