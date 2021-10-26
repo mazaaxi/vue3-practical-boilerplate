@@ -11,6 +11,8 @@ import { numberFormats } from '@/i18n/number-formats'
 //
 //----------------------------------------------------------------------
 
+type I18nComposer = ReturnType<typeof _useI18n>
+
 const SupportI18nLocales = ['ja', 'ja-JP', 'en', 'en-US']
 
 const DefaultI18nLocale = 'en'
@@ -34,8 +36,8 @@ namespace I18nContainer {
     return instance.i18n
   }
 
-  export function useI18n() {
-    return _useI18n({ useScope: 'global' })
+  export function useI18n(): I18nComposer {
+    return instance.i18n.global as any
   }
 
   export function useI18nUtils(): Omit<I18nContainer, 'i18n'> {
