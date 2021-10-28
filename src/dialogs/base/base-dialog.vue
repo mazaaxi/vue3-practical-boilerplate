@@ -1,5 +1,5 @@
 <template>
-  <q-dialog ref="el" v-model="opened" :persistent="persistent" @hide="close(false)">
+  <q-dialog ref="dialog" v-model="opened" :persistent="persistent" @hide="onHide">
     <slot></slot>
   </q-dialog>
 </template>
@@ -26,7 +26,7 @@ namespace BaseDialog {
 
   export interface RawFeatures<RESULT = void> {
     readonly opened: Ref<boolean>
-    open(): Promise<RESULT>
+    open(params: { onHide: () => void }): Promise<RESULT>
     close(result: RESULT): void
   }
 }
@@ -55,6 +55,8 @@ const BaseDialog = defineComponent({
 
     let closeResolve: ((value: RESULT) => void) | undefined
 
+    const onHide = ref<() => void>(() => {})
+
     //----------------------------------------------------------------------
     //
     //  Properties
@@ -69,7 +71,8 @@ const BaseDialog = defineComponent({
     //
     //----------------------------------------------------------------------
 
-    const open: BaseDialog<RESULT>['open'] = () => {
+    const open: BaseDialog<RESULT>['open'] = params => {
+      onHide.value = params.onHide || (() => {})
       return new Promise<RESULT>(resolve => {
         closeResolve = resolve
         opened.value = true
@@ -93,6 +96,7 @@ const BaseDialog = defineComponent({
       opened,
       open,
       close,
+      onHide,
     }
 
     return isImplemented<BaseDialog.RawFeatures<RESULT>, typeof result>(result)

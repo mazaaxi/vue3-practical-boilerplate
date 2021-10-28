@@ -50,7 +50,7 @@ import merge from 'lodash/merge'
 //
 //==========================================================================
 
-interface MessageDialog extends Dialog<MessageDialog.Props, boolean>, MessageDialog.Props {}
+interface MessageDialog extends Dialog<MessageDialog.Props | void, boolean>, MessageDialog.Props {}
 
 namespace MessageDialog {
   export interface Props {
@@ -114,7 +114,9 @@ const MessageDialog = defineComponent({
         const { type, title, message, persistent } = p
         merge(params, { type, title, message, persistent })
       }
-      return dialog.value!.open()
+      return dialog.value!.open({
+        onHide: () => close(false),
+      })
     }
 
     const close: MessageDialog['close'] = () => {
@@ -147,7 +149,13 @@ const MessageDialog = defineComponent({
     watch(
       () => props.modelValue,
       (newValue, oldValue) => {
-        newValue ? dialog.value!.open() : dialog.value!.close(false)
+        if (newValue) {
+          dialog.value!.open({
+            onHide: () => close(false),
+          })
+        } else {
+          dialog.value!.close(false)
+        }
       }
     )
 
