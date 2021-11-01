@@ -16,7 +16,7 @@
 </style>
 
 <template>
-  <BaseDialog ref="dialog" class="MessageDialog" :persistent="params.persistent">
+  <PromiseDialog ref="dialog" class="MessageDialog" :persistent="params.persistent">
     <q-card class="container">
       <!-- Title -->
       <q-card-section v-if="Boolean(params.title)">
@@ -31,16 +31,16 @@
       <!-- Button area -->
       <q-card-actions class="layout horizontal center end-justified">
         <!-- Cancel button -->
-        <q-btn v-show="params.type === 'confirm'" flat rounded color="primary" :label="$t('common.cancel')" @click="closeDialog(false)" />
+        <q-btn v-show="params.type === 'confirm'" flat rounded color="primary" :label="$t('common.cancel')" @click="close(false)" />
         <!-- OK button -->
-        <q-btn flat rounded color="primary" :label="$t('common.ok')" @click="closeDialog(true)" />
+        <q-btn flat rounded color="primary" :label="$t('common.ok')" @click="close(true)" />
       </q-card-actions>
     </q-card>
-  </BaseDialog>
+  </PromiseDialog>
 </template>
 
 <script lang="ts">
-import { BaseDialog, Dialog } from '@/dialogs/base'
+import { Dialog, PromiseDialog, PromiseDialogComp } from '@/dialogs/base'
 import { PropType, defineComponent, reactive, ref, watch } from 'vue'
 import merge from 'lodash/merge'
 
@@ -68,11 +68,11 @@ namespace MessageDialog {
 //
 //==========================================================================
 
-const MessageDialog = defineComponent({
+const MessageDialogComp = defineComponent({
   name: 'MessageDialog',
 
   components: {
-    BaseDialog,
+    PromiseDialog: PromiseDialogComp,
   },
 
   props: {
@@ -94,7 +94,7 @@ const MessageDialog = defineComponent({
     //
     //----------------------------------------------------------------------
 
-    const dialog = ref<BaseDialog<boolean>>()
+    const dialog = ref<PromiseDialog<boolean>>()
 
     const params = reactive<Required<Omit<MessageDialog.Props, 'modelValue'>>>({
       type: props.type!,
@@ -115,22 +115,12 @@ const MessageDialog = defineComponent({
         merge(params, { type, title, message, persistent })
       }
       return dialog.value!.open({
-        onHide: () => close(false),
+        onBeforeClose: () => close(false),
       })
     }
 
-    const close: MessageDialog['close'] = () => {
-      dialog.value!.close(false)
-    }
-
-    //----------------------------------------------------------------------
-    //
-    //  Internal methods
-    //
-    //----------------------------------------------------------------------
-
-    function closeDialog(isConfirmed: boolean): void {
-      dialog.value!.close(isConfirmed)
+    const close: MessageDialog['close'] = isOK => {
+      dialog.value!.close(isOK)
     }
 
     //----------------------------------------------------------------------
@@ -151,10 +141,10 @@ const MessageDialog = defineComponent({
       (newValue, oldValue) => {
         if (newValue) {
           dialog.value!.open({
-            onHide: () => close(false),
+            onBeforeClose: () => close(false),
           })
         } else {
-          dialog.value!.close(false)
+          close(false)
         }
       }
     )
@@ -170,7 +160,6 @@ const MessageDialog = defineComponent({
       params,
       open,
       close,
-      closeDialog,
     }
   },
 })
@@ -181,5 +170,6 @@ const MessageDialog = defineComponent({
 //
 //==========================================================================
 
-export default MessageDialog
+export default MessageDialogComp
+export { MessageDialog }
 </script>

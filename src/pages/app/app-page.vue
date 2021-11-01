@@ -149,7 +149,7 @@
 </template>
 
 <script lang="ts">
-import { DialogContainer, setupDialogs } from '@/dialogs'
+import { DialogContainer, DialogContainerComp, setupDialogs } from '@/dialogs'
 import { computed, defineComponent, ref, watch } from 'vue'
 import { useI18n, useI18nUtils } from '@/i18n'
 import { TestUsers } from '@/services/test-data'
@@ -158,11 +158,11 @@ import { useRouterUtils } from '@/router'
 import { useService } from '@/services'
 import { useServiceWorker } from '@/service-worker'
 
-export default defineComponent({
+const AppPageComp = defineComponent({
   name: 'AppPage',
 
   components: {
-    DialogContainer,
+    DialogContainer: DialogContainerComp,
   },
 
   setup() {
@@ -265,4 +265,6 @@ export default defineComponent({
     }
   },
 })
+
+export default AppPageComp
 </script>

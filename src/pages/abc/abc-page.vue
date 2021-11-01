@@ -8,17 +8,17 @@
 </template>
 
 <script lang="ts">
+import AbcViewPCComp, { AbcViewPC } from '@/pages/abc/abc-view-pc.vue'
+import AbcViewSPComp, { AbcViewSP } from '@/pages/abc/abc-view-sp.vue'
 import { computed, defineComponent, ref } from 'vue'
-import AbcViewPC from '@/pages/abc/abc-view-pc.vue'
-import AbcViewSP from '@/pages/abc/abc-view-sp.vue'
 import { useScreen } from '@/base'
 
-export default defineComponent({
+const AbcPageComp = defineComponent({
   name: 'AbcPage',
 
   components: {
-    AbcViewPC,
-    AbcViewSP,
+    AbcViewPC: AbcViewPCComp,
+    AbcViewSP: AbcViewSPComp,
   },
 
   setup(props, ctx) {
@@ -49,4 +49,6 @@ export default defineComponent({
     }
   },
 })
+
+export default AbcPageComp
 </script>

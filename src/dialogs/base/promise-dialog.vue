@@ -1,5 +1,5 @@
 <template>
-  <q-dialog ref="dialog" v-model="opened" :persistent="persistent" @hide="onHide">
+  <q-dialog ref="dialog" v-model="opened" :persistent="persistent" @show="onShow" @before-hide="onBeforeHide">
     <slot></slot>
   </q-dialog>
 </template>
@@ -15,20 +15,25 @@ import { isImplemented } from 'js-common-lib'
 //
 //==========================================================================
 
-interface BaseDialog<RESULT = void> extends BaseDialog.Props, BaseDialog.Features<RESULT> {}
+interface PromiseDialog<RESULT = void> extends PromiseDialog.Props, PromiseDialog.Features<RESULT> {}
 
-namespace BaseDialog {
+namespace PromiseDialog {
   export interface Props {
     readonly persistent?: boolean
   }
 
-  export type Features<RESULT = void> = UnwrapRef<BaseDialog.RawFeatures<RESULT>>
+  export type Features<RESULT = void> = UnwrapRef<PromiseDialog.RawFeatures<RESULT>>
 
   export interface RawFeatures<RESULT = void> {
     readonly opened: Ref<boolean>
-    open(params: { onHide: () => void }): Promise<RESULT>
+    open(params: OpenParams): Promise<RESULT>
     close(result: RESULT): void
   }
+}
+
+type OpenParams = {
+  onAfterOpen?: () => void
+  onBeforeClose: () => void
 }
 
 //==========================================================================
@@ -37,14 +42,19 @@ namespace BaseDialog {
 //
 //==========================================================================
 
-const BaseDialog = defineComponent({
-  name: 'BaseDialog',
+const PromiseDialogComp = defineComponent({
+  name: 'PromiseDialog',
 
   props: {
     persistent: { type: Boolean, default: false },
   },
 
-  setup<RESULT = void>(props: BaseDialog.Props, ctx: SetupContext) {
+  emits: {
+    show: null,
+    'before-hide': null,
+  },
+
+  setup<RESULT = void>(props: PromiseDialog.Props, ctx: SetupContext<{ show: null; 'before-hide': null }>) {
     //----------------------------------------------------------------------
     //
     //  Variables
@@ -55,7 +65,8 @@ const BaseDialog = defineComponent({
 
     let closeResolve: ((value: RESULT) => void) | undefined
 
-    const onHide = ref<() => void>(() => {})
+    let onAfterOpen: () => void = () => {}
+    let onBeforeClose: () => void = () => {}
 
     //----------------------------------------------------------------------
     //
@@ -71,18 +82,35 @@ const BaseDialog = defineComponent({
     //
     //----------------------------------------------------------------------
 
-    const open: BaseDialog<RESULT>['open'] = params => {
-      onHide.value = params.onHide || (() => {})
+    const open: PromiseDialog<RESULT>['open'] = params => {
+      onAfterOpen = params.onAfterOpen || (() => {})
+      onBeforeClose = params.onBeforeClose || (() => {})
       return new Promise<RESULT>(resolve => {
         closeResolve = resolve
         opened.value = true
       })
     }
 
-    const close: BaseDialog<RESULT>['close'] = value => {
+    const close: PromiseDialog<RESULT>['close'] = value => {
       closeResolve?.(value)
       closeResolve = undefined
       opened.value = false
+    }
+
+    //----------------------------------------------------------------------
+    //
+    //  Events
+    //
+    //----------------------------------------------------------------------
+
+    function onShow() {
+      ctx.emit('show')
+      onAfterOpen()
+    }
+
+    function onBeforeHide() {
+      ctx.emit('before-hide')
+      onBeforeClose()
     }
 
     //----------------------------------------------------------------------
@@ -96,10 +124,11 @@ const BaseDialog = defineComponent({
       opened,
       open,
       close,
-      onHide,
+      onShow,
+      onBeforeHide,
     }
 
-    return isImplemented<BaseDialog.RawFeatures<RESULT>, typeof result>(result)
+    return isImplemented<PromiseDialog.RawFeatures<RESULT>, typeof result>(result)
   },
 })
 
@@ -109,5 +138,6 @@ const BaseDialog = defineComponent({
 //
 //==========================================================================
 
-export default BaseDialog
+export default PromiseDialogComp
+export { PromiseDialog }
 </script>

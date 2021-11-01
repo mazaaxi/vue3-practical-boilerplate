@@ -7,9 +7,9 @@
 
 <script lang="ts">
 import { Dialog, DialogNames } from '@/dialogs/base'
+import MessageDialogComp, { MessageDialog } from '@/dialogs/modules/message-dialog.vue'
 import { Ref, UnwrapRef, defineComponent, ref, watch } from 'vue'
 import { useRouter, useRouterUtils } from '@/router'
-import MessageDialog from '@/dialogs/modules/message-dialog.vue'
 import debounce from 'lodash/debounce'
 import { isImplemented } from 'js-common-lib'
 
@@ -41,11 +41,11 @@ namespace DialogContainer {
 //
 //==========================================================================
 
-const DialogContainer = defineComponent({
+const DialogContainerComp = defineComponent({
   name: 'DialogContainer',
 
   components: {
-    MessageDialog,
+    MessageDialog: MessageDialogComp,
   },
 
   setup: (props: DialogContainer.Props, ctx) => {
@@ -225,5 +225,6 @@ const DialogContainer = defineComponent({
 //
 //==========================================================================
 
-export default DialogContainer
+export default DialogContainerComp
+export { DialogContainer }
 </script>

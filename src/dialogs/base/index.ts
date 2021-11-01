@@ -1,4 +1,4 @@
-import BaseDialog from '@/dialogs/base/base-dialog.vue'
+import PromiseDialogComp, { PromiseDialog } from '@/dialogs/base/promise-dialog.vue'
 
-export { BaseDialog }
+export { PromiseDialog, PromiseDialogComp }
 export * from '@/dialogs/base/types'

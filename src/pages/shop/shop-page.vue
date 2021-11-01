@@ -125,7 +125,7 @@ import { TestUsers } from '@/services/test-data'
 import { useDialogs } from '@/dialogs'
 import { useI18n } from '@/i18n'
 
-export default defineComponent({
+const ShopPageComp = defineComponent({
   name: 'ShopPage',
 
   setup(props, context) {
@@ -241,4 +241,6 @@ export default defineComponent({
     }
   },
 })
+
+export default ShopPageComp
 </script>

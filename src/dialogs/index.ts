@@ -1,5 +1,5 @@
-import { BaseDialog, DialogNames } from '@/dialogs/base'
-import { DialogContainer, MessageDialog } from '@/dialogs/modules'
+import { DialogContainer } from '@/dialogs/modules'
+import { DialogNames } from '@/dialogs/base'
 import { Ref } from 'vue'
 
 //==========================================================================
@@ -128,5 +128,5 @@ namespace Dialogs {
 
 const { setupDialogs, useDialogs } = Dialogs
 export { Dialogs, setupDialogs, useDialogs }
-
-export { BaseDialog, DialogContainer, MessageDialog }
+export * from '@/dialogs/base'
+export * from '@/dialogs/modules'

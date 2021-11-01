@@ -94,7 +94,7 @@ import { defineComponent } from 'vue'
 
 interface AbcViewPC extends AbcView {}
 
-const AbcViewPC = defineComponent({
+const AbcViewPCComp = defineComponent({
   name: 'AbcViewPC',
 
   components: { ...AbcView.components },
@@ -105,5 +105,6 @@ const AbcViewPC = defineComponent({
   },
 })
 
-export default AbcViewPC
+export default AbcViewPCComp
+export { AbcViewPC }
 </script>
