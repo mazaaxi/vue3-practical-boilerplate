@@ -4,6 +4,14 @@ const jsonServer = require('json-server')
 
 //========================================================================
 //
+//  Constants
+//
+//========================================================================
+
+const VUE_APP_API_PORT = 5041
+
+//========================================================================
+//
 //  Helpers
 //
 //========================================================================
@@ -340,6 +348,6 @@ server.put(`/${APIPrefix}/cartItems/checkout`, (req, res, next) => {
 //========================================================================
 
 // launch json-server
-server.listen(5041, () => {
-  console.log('API Server running at: http://localhost:5041/')
+server.listen(VUE_APP_API_PORT, () => {
+  console.log(`API Server running at: http://localhost:${VUE_APP_API_PORT}/`)
 })

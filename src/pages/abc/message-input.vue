@@ -38,7 +38,7 @@ namespace MessageInput {
     readonly modelValue: string
   }
 
-  export type Features = UnwrapRef<MessageInput.RawFeatures>
+  export type Features = UnwrapRef<RawFeatures>
 
   export interface RawFeatures {
     displayMessage: ComputedRef<string>
