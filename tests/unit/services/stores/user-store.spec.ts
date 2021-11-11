@@ -51,7 +51,7 @@ function User2(): User {
  */
 function getStoreUser(id: string): User | undefined {
   const { stores } = provideDependency()
-  return stores.user.state.all.find(user => user.id === id)
+  return stores.user.all.find(user => user.id === id)
 }
 
 //==========================================================================

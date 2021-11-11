@@ -1,5 +1,6 @@
-import { ComputedRef, UnwrapRef, computed, reactive } from 'vue'
 import { DeepPartial, DeepReadonly, isImplemented } from 'js-common-lib'
+import { Ref, ref } from 'vue'
+import { UnwrapNestedRefs } from '@vue/reactivity'
 import { User } from '@/services/base'
 import dayjs from 'dayjs'
 
@@ -9,12 +10,10 @@ import dayjs from 'dayjs'
 //
 //==========================================================================
 
-interface UserStore extends UnwrapRef<RawUserStore> {
-  readonly all: DeepReadonly<User>[]
-}
+interface UserStore extends UnwrapNestedRefs<RawUserStore> {}
 
 interface RawUserStore {
-  readonly all: ComputedRef<User[]>
+  readonly all: DeepReadonly<Ref<User[]>>
   get(id: string): User | undefined
   set(input: UserForSet): User
   add(user: User): User
@@ -39,21 +38,11 @@ namespace UserStore {
   export function newRawInstance() {
     //----------------------------------------------------------------------
     //
-    //  Variables
-    //
-    //----------------------------------------------------------------------
-
-    const state = reactive({
-      all: [] as User[],
-    })
-
-    //----------------------------------------------------------------------
-    //
     //  Properties
     //
     //----------------------------------------------------------------------
 
-    const all = computed(() => [...state.all])
+    const all = ref<User[]>([])
 
     //----------------------------------------------------------------------
     //
@@ -83,27 +72,27 @@ namespace UserStore {
       }
 
       const stateUser = User.clone(user)
-      state.all.push(stateUser)
+      all.value.push(stateUser)
       return User.clone(stateUser)
     }
 
     const remove: UserStore['remove'] = id => {
-      const index = state.all.findIndex(user => user.id === id)
+      const index = all.value.findIndex(user => user.id === id)
       if (index < 0) return undefined
 
-      const result = state.all.splice(index, 1)[0]
+      const result = all.value.splice(index, 1)[0]
       return User.clone(result)
     }
 
     const setAll: UserStore['setAll'] = inputs => {
       removeAll()
       for (const node of inputs) {
-        state.all.push(User.clone(node))
+        all.value.push(User.clone(node))
       }
     }
 
     const removeAll: UserStore['removeAll'] = () => {
-      return state.all.splice(0)
+      return all.value.splice(0)
     }
 
     //----------------------------------------------------------------------
@@ -113,7 +102,7 @@ namespace UserStore {
     //----------------------------------------------------------------------
 
     function getStateUser(id: string): User | undefined {
-      return state.all.find(item => item.id === id)
+      return all.value.find(item => item.id === id)
     }
 
     //----------------------------------------------------------------------
@@ -123,7 +112,6 @@ namespace UserStore {
     //----------------------------------------------------------------------
 
     const instance = {
-      state,
       all,
       get,
       set,

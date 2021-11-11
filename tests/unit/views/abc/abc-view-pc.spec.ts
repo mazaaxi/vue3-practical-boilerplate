@@ -9,7 +9,7 @@ describe('message-input.vue', () => {
   beforeEach(() => {
     provideDependency(({ stores, helpers, services }) => {
       const testUser = TestUsers[0]
-      td.replace<AccountService, 'signIn'>(services.account, 'signIn', (uid: string) => {
+      td.replace<AccountService, 'signIn'>(services.account, 'signIn', async (uid: string) => {
         stores.user.add(testUser)
         helpers.account.signIn(testUser)
       })

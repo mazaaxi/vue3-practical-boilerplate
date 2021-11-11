@@ -1,5 +1,6 @@
-import { ComputedRef, UnwrapRef, reactive } from 'vue'
+import { ComputedRef, reactive } from 'vue'
 import { RawRoute, Route } from '@/router/core'
+import { UnwrapNestedRefs } from '@vue/reactivity'
 import { removeEndSlash } from 'js-common-lib'
 import { useRouter } from '@/router'
 
@@ -9,7 +10,7 @@ import { useRouter } from '@/router'
 //
 //==========================================================================
 
-interface ShopRoute extends UnwrapRef<RawShopRoute> {}
+interface ShopRoute extends UnwrapNestedRefs<RawShopRoute> {}
 
 interface RawShopRoute extends RawRoute {
   readonly locale: ComputedRef<string>

@@ -7250,7 +7250,7 @@ js-beautify@^1.6.12, js-beautify@^1.6.14:
 
 "js-common-lib@https://github.com/mazaaxi/js-common-lib.git":
   version "0.0.1"
-  resolved "https://github.com/mazaaxi/js-common-lib.git#eb4a9dca14522541ffd781e49b068ae8e5935fd3"
+  resolved "https://github.com/mazaaxi/js-common-lib.git#5b0e97881d97cb600dde135d1571b5d159a3e133"
   dependencies:
     dayjs "^1.10.6"
 

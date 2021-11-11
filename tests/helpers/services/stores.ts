@@ -1,7 +1,8 @@
 import { CartItem, Product, User } from '@/services'
-import { UnwrapRef, reactive } from 'vue'
 import { DeepReadonly } from 'js-common-lib'
 import { StoreContainer } from '@/services/stores'
+import { UnwrapNestedRefs } from '@vue/reactivity'
+import { reactive } from 'vue'
 
 //==========================================================================
 //
@@ -9,7 +10,7 @@ import { StoreContainer } from '@/services/stores'
 //
 //==========================================================================
 
-interface TestStoreContainer extends UnwrapRef<ReturnType<typeof StoreContainer['newRawInstance']>> {}
+interface TestStoreContainer extends UnwrapNestedRefs<ReturnType<typeof StoreContainer['newRawInstance']>> {}
 
 //==========================================================================
 //
@@ -35,7 +36,7 @@ namespace TestStoreContainer {
 function toBeCopyUser<T extends DeepReadonly<User>>(stores: TestStoreContainer, actual: T): void {
   const items = Array.isArray(actual) ? (actual as T[]) : [actual as T]
   for (const item of items) {
-    const stateItem = stores.user.state.all.find(stateItem => stateItem.id === item.id)
+    const stateItem = stores.user.all.find(stateItem => stateItem.id === item.id)
     expect(item).not.toBe(stateItem)
   }
 }

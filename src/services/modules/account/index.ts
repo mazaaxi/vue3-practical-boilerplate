@@ -1,6 +1,7 @@
-import { ComputedRef, UnwrapRef, computed } from 'vue'
+import { ComputedRef, computed } from 'vue'
 import { DeepReadonly, isImplemented } from 'js-common-lib'
 import { TestUsers } from '@/services/test-data'
+import { UnwrapNestedRefs } from '@vue/reactivity'
 import { User } from '@/services/base'
 import { useHelper } from '@/services/helpers'
 import { useStore } from '@/services/stores'
@@ -11,12 +12,10 @@ import { useStore } from '@/services/stores'
 //
 //==========================================================================
 
-interface AccountService extends UnwrapRef<RawAccountService> {
-  readonly user: DeepReadonly<User>
-}
+interface AccountService extends UnwrapNestedRefs<RawAccountService> {}
 
 interface RawAccountService {
-  readonly user: ComputedRef<User>
+  readonly user: DeepReadonly<User>
   readonly isSignedIn: ComputedRef<boolean>
   signIn(uid: string): Promise<void>
   signOut(): Promise<void>
@@ -76,7 +75,7 @@ namespace AccountService {
     //----------------------------------------------------------------------
 
     const instance = {
-      user: computed(() => helpers.account.user),
+      user: helpers.account.user,
       isSignedIn: computed(() => helpers.account.isSignedIn),
       signIn,
       signOut,

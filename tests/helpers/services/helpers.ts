@@ -1,5 +1,6 @@
-import { UnwrapRef, reactive } from 'vue'
 import { HelperContainer } from '@/services/helpers'
+import { UnwrapNestedRefs } from '@vue/reactivity'
+import { reactive } from 'vue'
 
 //==========================================================================
 //
@@ -7,7 +8,7 @@ import { HelperContainer } from '@/services/helpers'
 //
 //==========================================================================
 
-interface TestHelperContainer extends UnwrapRef<ReturnType<typeof HelperContainer['newRawInstance']>> {}
+interface TestHelperContainer extends UnwrapNestedRefs<ReturnType<typeof HelperContainer['newRawInstance']>> {}
 
 //==========================================================================
 //

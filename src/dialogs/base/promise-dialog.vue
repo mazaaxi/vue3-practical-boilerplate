@@ -5,8 +5,9 @@
 </template>
 
 <script lang="ts">
-import { Ref, SetupContext, UnwrapRef, defineComponent, ref } from 'vue'
+import { Ref, SetupContext, defineComponent, ref } from 'vue'
 import { QDialog } from 'quasar'
+import { UnwrapNestedRefs } from '@vue/reactivity'
 import { isImplemented } from 'js-common-lib'
 
 //==========================================================================
@@ -22,7 +23,7 @@ namespace PromiseDialog {
     readonly persistent?: boolean
   }
 
-  export type Features<RESULT = void> = UnwrapRef<PromiseDialog.RawFeatures<RESULT>>
+  export type Features<RESULT = void> = UnwrapNestedRefs<RawFeatures<RESULT>>
 
   export interface RawFeatures<RESULT = void> {
     readonly opened: Ref<boolean>

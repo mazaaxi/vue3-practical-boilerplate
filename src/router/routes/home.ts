@@ -1,5 +1,6 @@
-import { ComputedRef, UnwrapRef, reactive } from 'vue'
+import { ComputedRef, reactive } from 'vue'
 import { RawRoute, Route } from '@/router/core'
+import { UnwrapNestedRefs } from '@vue/reactivity'
 
 //==========================================================================
 //
@@ -7,10 +8,10 @@ import { RawRoute, Route } from '@/router/core'
 //
 //==========================================================================
 
-interface HomeRoute extends UnwrapRef<RawExampleRoute> {}
+interface HomeRoute extends UnwrapNestedRefs<RawExampleRoute> {}
 
 interface RawExampleRoute extends RawRoute {
-  locale: ComputedRef<string>
+  readonly locale: ComputedRef<string>
 }
 
 namespace HomeRoute {

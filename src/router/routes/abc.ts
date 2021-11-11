@@ -1,6 +1,7 @@
-import { ComputedRef, UnwrapRef, reactive } from 'vue'
+import { ComputedRef, reactive } from 'vue'
 import { DeepReadonly, pickProps, removeEndSlash } from 'js-common-lib'
 import { RawRoute, Route } from '@/router/core'
+import { UnwrapNestedRefs } from '@vue/reactivity'
 import { useRouter } from '@/router'
 
 //==========================================================================
@@ -9,7 +10,7 @@ import { useRouter } from '@/router'
 //
 //==========================================================================
 
-interface AbcRoute extends UnwrapRef<RawAbcRoute> {}
+interface AbcRoute extends UnwrapNestedRefs<RawAbcRoute> {}
 
 interface RawAbcRoute extends RawRoute {
   readonly locale: ComputedRef<string>

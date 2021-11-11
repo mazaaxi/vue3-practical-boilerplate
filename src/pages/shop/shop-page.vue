@@ -141,6 +141,8 @@ const ShopPageComp = defineComponent({
 
     const isSignedIn = computed(() => services.account.isSignedIn)
 
+    // see below for why we use `toRefs`:
+    // https://v3.vuejs.org/guide/reactivity-fundamentals.html#destructuring-reactive-state
     const user = reactive({
       ...toRefs(services.account.user),
       fullName: computed(() => `${services.account.user.first} ${services.account.user.last}`),

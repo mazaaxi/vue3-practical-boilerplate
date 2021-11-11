@@ -1,5 +1,6 @@
-import { UnwrapRef, reactive } from 'vue'
 import { ServiceContainer } from '@/services'
+import { UnwrapNestedRefs } from '@vue/reactivity'
+import { reactive } from 'vue'
 
 //==========================================================================
 //
@@ -7,7 +8,7 @@ import { ServiceContainer } from '@/services'
 //
 //==========================================================================
 
-interface TestServiceContainer extends UnwrapRef<ReturnType<typeof ServiceContainer['newRawInstance']>> {}
+interface TestServiceContainer extends UnwrapNestedRefs<ReturnType<typeof ServiceContainer['newRawInstance']>> {}
 
 type TestShopService = TestServiceContainer['shop']
 

@@ -1,5 +1,6 @@
-import { ComputedRef, UnwrapRef, computed, reactive } from 'vue'
 import { DeepReadonly, isImplemented } from 'js-common-lib'
+import { Ref, computed, ref } from 'vue'
+import { UnwrapNestedRefs } from '@vue/reactivity'
 import { User } from '@/services'
 import { UserStore } from '@/services/stores/user'
 import { useStore } from '@/services/stores'
@@ -10,13 +11,11 @@ import { useStore } from '@/services/stores'
 //
 //==========================================================================
 
-interface AccountHelper extends UnwrapRef<RawAccountHelper> {
-  readonly user: DeepReadonly<User>
-}
+interface AccountHelper extends UnwrapNestedRefs<RawAccountHelper> {}
 
 interface RawAccountHelper {
-  readonly user: ComputedRef<User>
-  isSignedIn: ComputedRef<boolean>
+  readonly user: DeepReadonly<Ref<User>>
+  readonly isSignedIn: Ref<boolean>
   signIn(user: User): void
   signOut(): void
   validateSignedIn(): void
@@ -32,42 +31,39 @@ namespace AccountHelper {
   export function newRawInstance() {
     const stores = useStore()
 
-    const state = reactive({
-      user: UserStore.createEmptyUser(),
-      isSignedIn: false,
-    })
+    const user = ref<User>(UserStore.createEmptyUser())
 
-    const isSignedIn = computed(() => state.isSignedIn)
+    const isSignedIn = ref(false)
 
-    const signIn: AccountHelper['signIn'] = user => {
-      if (stores.user.get(user.id)) {
-        User.populate(state.user, stores.user.set(user))
+    const signIn: AccountHelper['signIn'] = signInUser => {
+      if (stores.user.get(signInUser.id)) {
+        User.populate(user.value, stores.user.set(signInUser))
       } else {
-        User.populate(state.user, stores.user.add(user))
+        User.populate(user.value, stores.user.add(signInUser))
       }
-      state.isSignedIn = true
+      isSignedIn.value = true
     }
 
     const signOut: AccountHelper['signOut'] = () => {
-      User.populate(state.user, UserStore.createEmptyUser())
-      state.isSignedIn = false
+      User.populate(user.value, UserStore.createEmptyUser())
+      isSignedIn.value = false
     }
 
     const validateSignedIn: AccountHelper['validateSignedIn'] = () => {
-      if (!state.isSignedIn) {
+      if (!isSignedIn.value) {
         throw new Error(`There is no user signed-in.`)
       }
     }
 
-    const instance = {
-      user: computed<User>(() => state.user),
+    const result = {
+      user: computed<User>(() => user.value),
       isSignedIn,
       signIn,
       signOut,
       validateSignedIn,
     }
 
-    return isImplemented<RawAccountHelper, typeof instance>(instance)
+    return isImplemented<RawAccountHelper, typeof result>(result)
   }
 }
 

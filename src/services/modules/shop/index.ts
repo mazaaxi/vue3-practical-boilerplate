@@ -1,7 +1,8 @@
 import { CartItem, Product } from '@/services/base'
 import { CartItemAddInput, CartItemUpdateInput, useAPI } from '@/services/apis'
-import { ComputedRef, UnwrapRef, computed, watch } from 'vue'
+import { ComputedRef, computed, watch } from 'vue'
 import { DeepReadonly, isImplemented } from 'js-common-lib'
+import { UnwrapNestedRefs } from '@vue/reactivity'
 import { useHelper } from '@/services/helpers'
 import { useStore } from '@/services/stores'
 
@@ -11,14 +12,11 @@ import { useStore } from '@/services/stores'
 //
 //==========================================================================
 
-interface ShopService extends UnwrapRef<RawShopService> {
-  readonly products: DeepReadonly<Product>[]
-  readonly cartItems: DeepReadonly<CartItem>[]
-}
+interface ShopService extends UnwrapNestedRefs<RawShopService> {}
 
 interface RawShopService {
-  readonly products: ComputedRef<Product[]>
-  readonly cartItems: ComputedRef<CartItem[]>
+  readonly products: DeepReadonly<Product[]>
+  readonly cartItems: DeepReadonly<CartItem[]>
   readonly cartTotalPrice: ComputedRef<number>
   fetchProducts(): Promise<Product[]>
   fetchCartItems(): Promise<CartItem[]>
@@ -183,8 +181,8 @@ namespace ShopService {
     //----------------------------------------------------------------------
 
     const instance = {
-      products: computed(() => stores.product.all),
-      cartItems: computed(() => stores.cart.all),
+      products: stores.product.all,
+      cartItems: stores.cart.all,
       cartTotalPrice: computed(() => stores.cart.totalPrice),
       fetchProducts,
       fetchCartItems,

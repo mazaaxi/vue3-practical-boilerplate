@@ -212,7 +212,7 @@ namespace User {
     return to as DeepUnreadonly<FM & TO>
   }
 
-  export function clone<T extends User | User[] | undefined | null>(source?: DeepReadonly<T>): T {
+  export function clone<T extends User | User[] | undefined | null>(source: DeepReadonly<T>): T {
     if (!source) return source as T
     if (Array.isArray(source)) {
       const list = source as DeepReadonly<User>[]
@@ -238,14 +238,15 @@ namespace Product {
     return to as DeepUnreadonly<FM & TO>
   }
 
-  export function clone<T extends Product | Product[] | undefined | null>(source?: DeepReadonly<T>): T {
-    if (!source) return source as T
+  export function clone<T extends DeepReadonly<Product> | DeepReadonly<Product[]> | undefined | null>(source: T): DeepUnreadonly<T> {
+    if (!source) return source as DeepUnreadonly<T>
     if (Array.isArray(source)) {
       const list = source as DeepReadonly<Product>[]
-      return list.map(item => clone(item)) as T
+      return list.map(item => clone(item)) as DeepUnreadonly<T>
     } else {
       const item = source as DeepReadonly<Product>
-      return populate({}, item) as T
+      const result: DeepReadonly<Product> = populate({}, item)
+      return result as DeepUnreadonly<T>
     }
   }
 }
@@ -266,14 +267,15 @@ namespace CartItem {
     return to as DeepUnreadonly<FM & TO>
   }
 
-  export function clone<T extends CartItem | CartItem[] | undefined | null>(source?: DeepReadonly<T>): T {
-    if (!source) return source as T
+  export function clone<T extends DeepReadonly<CartItem> | DeepReadonly<CartItem[]> | undefined | null>(source: T): DeepUnreadonly<T> {
+    if (!source) return source as DeepUnreadonly<T>
     if (Array.isArray(source)) {
       const list = source as DeepReadonly<CartItem>[]
-      return list.map(item => clone(item)) as T
+      return list.map(item => clone(item)) as DeepUnreadonly<T>
     } else {
-      const item = source as DeepReadonly<CartItem>
-      return populate({}, item) as T
+      const item = source as DeepUnreadonly<CartItem>
+      const result: DeepUnreadonly<CartItem> = populate({}, item)
+      return result as DeepUnreadonly<T>
     }
   }
 }

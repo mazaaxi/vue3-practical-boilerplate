@@ -1,11 +1,12 @@
 import { FlowStatus, RawRoute, Route } from '@/router/core'
 import { Router, createRouter, createWebHistory } from 'vue-router'
 import { SupportI18nLocales, useI18nUtils } from '@/i18n'
-import { UnwrapRef, WritableComputedRef, computed, reactive, ref, watch } from 'vue'
+import { WritableComputedRef, computed, reactive, ref, watch } from 'vue'
 import { AbcRoute } from '@/router/routes/abc'
 import { HomeRoute } from '@/router/routes/home'
 import { I18n } from 'vue-i18n'
 import { ShopRoute } from '@/router/routes/shop'
+import { UnwrapNestedRefs } from '@vue/reactivity'
 import { createNanoEvents } from 'nanoevents'
 import flatten from 'lodash/flatten'
 import { pickProps } from 'js-common-lib'
@@ -87,7 +88,7 @@ namespace AppRouterContainer {
       })
     )
 
-    const routeList: UnwrapRef<RawRoute>[] = [home, abc, shop, fallback]
+    const routeList: UnwrapNestedRefs<RawRoute>[] = [home, abc, shop, fallback]
 
     //----------------------------------------------------------------------
     //

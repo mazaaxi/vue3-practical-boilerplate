@@ -8,8 +8,9 @@
 <script lang="ts">
 import { Dialog, DialogNames } from '@/dialogs/base'
 import MessageDialogComp, { MessageDialog } from '@/dialogs/modules/message-dialog.vue'
-import { Ref, UnwrapRef, defineComponent, ref, watch } from 'vue'
+import { Ref, defineComponent, ref, watch } from 'vue'
 import { useRouter, useRouterUtils } from '@/router'
+import { UnwrapNestedRefs } from '@vue/reactivity'
 import debounce from 'lodash/debounce'
 import { isImplemented } from 'js-common-lib'
 
@@ -24,7 +25,7 @@ interface DialogContainer extends DialogContainer.Props, DialogContainer.Feature
 namespace DialogContainer {
   export interface Props {}
 
-  export type Features = UnwrapRef<DialogContainer.RawFeatures>
+  export type Features = UnwrapNestedRefs<RawFeatures>
 
   export interface RawFeatures {
     readonly message: { open: MessageDialog['open'] }

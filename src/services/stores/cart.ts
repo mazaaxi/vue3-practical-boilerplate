@@ -1,6 +1,7 @@
-import { ComputedRef, UnwrapRef, computed, reactive } from 'vue'
+import { ComputedRef, Ref, computed, ref } from 'vue'
 import { DeepReadonly, isImplemented } from 'js-common-lib'
 import { CartItem } from '@/services/base'
+import { UnwrapNestedRefs } from '@vue/reactivity'
 
 //==========================================================================
 //
@@ -8,12 +9,10 @@ import { CartItem } from '@/services/base'
 //
 //==========================================================================
 
-interface CartStore extends UnwrapRef<RawCartStore> {
-  readonly all: DeepReadonly<CartItem>[]
-}
+interface CartStore extends UnwrapNestedRefs<RawCartStore> {}
 
 interface RawCartStore {
-  readonly all: ComputedRef<CartItem[]>
+  readonly all: DeepReadonly<Ref<CartItem[]>>
   readonly totalPrice: ComputedRef<number>
   getById(cartItemId: string): CartItem | undefined
   sgetById(cartItemId: string): CartItem
@@ -42,24 +41,14 @@ namespace CartStore {
   export function newRawInstance() {
     //----------------------------------------------------------------------
     //
-    //  Variables
-    //
-    //----------------------------------------------------------------------
-
-    const state = reactive({
-      all: [] as CartItem[],
-    })
-
-    //----------------------------------------------------------------------
-    //
     //  Properties
     //
     //----------------------------------------------------------------------
 
-    const all = computed(() => [...state.all])
+    const all = ref<CartItem[]>([])
 
     const totalPrice = computed(() => {
-      const result = state.all.reduce((result, item) => {
+      const result = all.value.reduce((result, item) => {
         return result + item.price * item.quantity
       }, 0)
       return result
@@ -88,7 +77,7 @@ namespace CartStore {
     }
 
     const getByProductId: CartStore['getByProductId'] = productId => {
-      const stateItem = state.all.find(item => item.productId === productId)
+      const stateItem = all.value.find(item => item.productId === productId)
       return CartItem.clone(stateItem)
     }
 
@@ -101,9 +90,9 @@ namespace CartStore {
     }
 
     const setAll: CartStore['setAll'] = items => {
-      state.all.splice(0)
+      all.value.splice(0)
       for (const item of items) {
-        state.all.push(CartItem.clone(item))
+        all.value.push(CartItem.clone(item))
       }
     }
 
@@ -113,7 +102,7 @@ namespace CartStore {
       }
 
       const stateItem = CartItem.clone(item)
-      state.all.push(stateItem)
+      all.value.push(stateItem)
       return CartItem.clone(stateItem)
     }
 
@@ -127,10 +116,10 @@ namespace CartStore {
     }
 
     const remove: CartStore['remove'] = cartItemId => {
-      const foundIndex = state.all.findIndex(cartItem => cartItem.id === cartItemId)
+      const foundIndex = all.value.findIndex(cartItem => cartItem.id === cartItemId)
       if (foundIndex >= 0) {
-        const stateItem = state.all[foundIndex]
-        state.all.splice(foundIndex, 1)
+        const stateItem = all.value[foundIndex]
+        all.value.splice(foundIndex, 1)
         return CartItem.clone(stateItem)
       }
       return undefined
@@ -138,7 +127,7 @@ namespace CartStore {
 
     const removeByUID: CartStore['removeByUID'] = uid => {
       const result: CartItem[] = []
-      for (const cartItem of [...state.all]) {
+      for (const cartItem of [...all.value]) {
         if (cartItem.uid === uid) {
           result.push(remove(cartItem.id)!)
         }
@@ -147,7 +136,7 @@ namespace CartStore {
     }
 
     const clear: CartStore['clear'] = () => {
-      state.all.splice(0, state.all.length)
+      all.value.splice(0, all.value.length)
     }
 
     //----------------------------------------------------------------------
@@ -157,7 +146,7 @@ namespace CartStore {
     //----------------------------------------------------------------------
 
     function getStateCartItemById(cartItemId: string): CartItem | undefined {
-      return state.all.find(item => item.id === cartItemId)
+      return all.value.find(item => item.id === cartItemId)
     }
 
     //----------------------------------------------------------------------

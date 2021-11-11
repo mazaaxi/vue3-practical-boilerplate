@@ -1,6 +1,7 @@
-import { ComputedRef, UnwrapRef, computed, reactive } from 'vue'
 import { DeepReadonly, isImplemented } from 'js-common-lib'
+import { Ref, ref } from 'vue'
 import { Product } from '@/services/base'
+import { UnwrapNestedRefs } from '@vue/reactivity'
 
 //==========================================================================
 //
@@ -8,12 +9,10 @@ import { Product } from '@/services/base'
 //
 //==========================================================================
 
-interface ProductStore extends UnwrapRef<RawProductStore> {
-  readonly all: DeepReadonly<Product>[]
-}
+interface ProductStore extends UnwrapNestedRefs<RawProductStore> {}
 
 interface RawProductStore {
-  readonly all: ComputedRef<Product[]>
+  readonly all: DeepReadonly<Ref<Product[]>>
   getById(productId: string): DeepReadonly<Product> | undefined
   sgetById(productId: string): DeepReadonly<Product>
   exists(productId: string): boolean
@@ -38,21 +37,11 @@ namespace ProductStore {
   export function newRawInstance() {
     //----------------------------------------------------------------------
     //
-    //  Variables
-    //
-    //----------------------------------------------------------------------
-
-    const state = reactive({
-      all: [] as Product[],
-    })
-
-    //----------------------------------------------------------------------
-    //
     //  Properties
     //
     //----------------------------------------------------------------------
 
-    const all = computed(() => [...state.all])
+    const all = ref<Product[]>([])
 
     //----------------------------------------------------------------------
     //
@@ -77,9 +66,9 @@ namespace ProductStore {
     }
 
     const setAll: ProductStore['setAll'] = products => {
-      state.all.splice(0)
+      all.value.splice(0)
       for (const product of products) {
-        state.all.push(Product.clone(product))
+        all.value.push(Product.clone(product))
       }
     }
 
@@ -89,7 +78,7 @@ namespace ProductStore {
       }
 
       const stateItem = Product.clone(product)
-      state.all.push(stateItem)
+      all.value.push(stateItem)
       return Product.clone(stateItem)
     }
 
@@ -103,7 +92,7 @@ namespace ProductStore {
     }
 
     const decrementStock: ProductStore['decrementStock'] = productId => {
-      const product = state.all.find(item => item.id === productId)
+      const product = all.value.find(item => item.id === productId)
       if (!product) {
         throw new Error(`The specified Product was not found: '${productId}'`)
       }
@@ -111,7 +100,7 @@ namespace ProductStore {
     }
 
     const incrementStock: ProductStore['incrementStock'] = productId => {
-      const product = state.all.find(item => item.id === productId)
+      const product = all.value.find(item => item.id === productId)
       if (!product) {
         throw new Error(`The specified Product was not found: '${productId}'`)
       }
@@ -125,7 +114,7 @@ namespace ProductStore {
     //----------------------------------------------------------------------
 
     function getStateProductById(productId: string): Product | undefined {
-      return state.all.find(item => item.id === productId)
+      return all.value.find(item => item.id === productId)
     }
 
     //----------------------------------------------------------------------

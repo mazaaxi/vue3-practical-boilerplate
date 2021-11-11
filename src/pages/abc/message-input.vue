@@ -21,7 +21,8 @@
 </template>
 
 <script lang="ts">
-import { ComputedRef, UnwrapRef, computed, defineComponent } from 'vue'
+import { ComputedRef, computed, defineComponent } from 'vue'
+import { UnwrapNestedRefs } from '@vue/reactivity'
 import { isImplemented } from 'js-common-lib'
 
 //==========================================================================
@@ -38,10 +39,10 @@ namespace MessageInput {
     readonly modelValue: string
   }
 
-  export type Features = UnwrapRef<RawFeatures>
+  export type Features = UnwrapNestedRefs<RawFeatures>
 
   export interface RawFeatures {
-    displayMessage: ComputedRef<string>
+    readonly displayMessage: ComputedRef<string>
   }
 }
 
