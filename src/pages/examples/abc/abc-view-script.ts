@@ -1,4 +1,4 @@
-import MessageInputComp, { MessageInput } from '@/pages/abc/message-input.vue'
+import MessageInputComp, { MessageInput } from '@/pages/examples/abc/message-input.vue'
 import { SetupContext, computed, onUnmounted, reactive, ref, toRefs, watch, watchEffect } from 'vue'
 import { TestUsers } from '@/services/test-data'
 import { useRouterUtils } from '@/router'
@@ -44,7 +44,7 @@ namespace AbcView {
 
     const services = useService()
     const { routes } = useRouterUtils()
-    const route = routes.abc
+    const route = routes.examples.abc
 
     const isSignedIn = computed(() => services.account.isSignedIn)
 

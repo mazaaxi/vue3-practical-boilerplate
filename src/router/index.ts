@@ -2,7 +2,7 @@ import { FlowStatus, RawRoute, Route } from '@/router/core'
 import { Router, createRouter, createWebHistory } from 'vue-router'
 import { SupportI18nLocales, useI18nUtils } from '@/i18n'
 import { WritableComputedRef, computed, reactive, ref, watch } from 'vue'
-import { AbcRoute } from '@/router/routes/abc'
+import { ExamplesRoutes } from '@/router/routes/examples'
 import { HomeRoute } from '@/router/routes/home'
 import { I18n } from 'vue-i18n'
 import { ShopRoute } from '@/router/routes/shop'
@@ -25,8 +25,8 @@ interface AppRouterContainer {
 
 interface AppRoutes {
   home: HomeRoute
-  abc: AbcRoute
   shop: ShopRoute
+  examples: ExamplesRoutes
 }
 
 //==========================================================================
@@ -59,17 +59,11 @@ namespace AppRouterContainer {
     //
     //----------------------------------------------------------------------
 
-    const Events = {
-      RouterOnReady: 'routerOnReady',
-    } as const
-
     const locale = computed(() => (i18n.global.locale as WritableComputedRef<string>).value)
 
     const historyMove = ref(false)
 
     const routerReady = ref(false)
-
-    const emitter = createNanoEvents()
 
     const { loadI18nLocaleMessages } = useI18nUtils()
 
@@ -78,8 +72,8 @@ namespace AppRouterContainer {
     //--------------------------------------------------
 
     const home = HomeRoute.newInstance(locale)
-    const abc = AbcRoute.newInstance(locale)
     const shop = ShopRoute.newInstance(locale)
+    const examples = ExamplesRoutes.newInstance(locale)
 
     const fallback = reactive(
       Route.newRawInstance({
@@ -88,7 +82,7 @@ namespace AppRouterContainer {
       })
     )
 
-    const routeList: UnwrapNestedRefs<RawRoute>[] = [home, abc, shop, fallback]
+    const routeList: UnwrapNestedRefs<RawRoute>[] = [home, shop, examples.abc, examples.miniatureProject, fallback]
 
     //----------------------------------------------------------------------
     //
@@ -103,8 +97,8 @@ namespace AppRouterContainer {
 
     const routes: AppRoutes = {
       home,
-      abc,
       shop,
+      examples,
     }
 
     const currentRoute: Route = reactive({
@@ -131,7 +125,6 @@ namespace AppRouterContainer {
 
     router.isReady().then(() => {
       routerReady.value = true
-      emitter.emit(Events.RouterOnReady)
     })
 
     window.addEventListener('popstate', e => {

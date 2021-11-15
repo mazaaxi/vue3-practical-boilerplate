@@ -1,9 +1,9 @@
 import { Key, compile, pathToRegexp } from 'path-to-regexp'
 import { LocationQuery, LocationQueryValue, RouteLocationNormalized, RouteParams, RouteRecordRedirectOption, Router } from 'vue-router'
 import { Ref, nextTick, ref } from 'vue'
+import { isImplemented, removeEndSlash } from 'js-common-lib'
 import { Unsubscribe } from 'nanoevents'
 import { extensionMethod } from '@/base'
-import { removeEndSlash } from 'js-common-lib'
 
 //==========================================================================
 //
@@ -75,7 +75,6 @@ interface Route {
   onAfterRouteUpdate(cb: NavigationAfterCallback, options?: { immediate?: boolean }): Unsubscribe
   /**
    * Registers a callback when a route is changed from the base path to another route.
-   * @param cb
    */
   onAfterRouteLeave(cb: NavigationAfterCallback): Unsubscribe
 }
@@ -154,7 +153,6 @@ namespace Route {
     const routePath = ref(input.routePath ?? '')
     const component = ref(input.component)
     const redirect = ref(input.redirect) as Ref<RouteRecordRedirectOption | undefined>
-    const currentRoute = ref<VueRoute>()
     const beforeUpdateListeners: NavigationGuardChecker[] = []
     const beforeLeaveListeners: NavigationGuardChecker[] = []
     const afterUpdateListeners: NavigationAfterCallback[] = []
@@ -304,9 +302,6 @@ namespace Route {
     })
 
     const updateState = extensionMethod<RawRoute['updateState']>(async (to, extra) => {
-      // save a current route
-      // NOTE: Just because save a current route doesn't mean itself is a current root.
-      currentRoute.value = to
       // determine if itself is a current root
       isCurrent.value = getIsCurrent(to)
       // reconfigure its own base path
@@ -316,15 +311,10 @@ namespace Route {
       // path are the same. Otherwise, reconfigure a path will result in an incomplete path.
       if (isCurrent.value || baseRoutePath.value === routePath.value) {
         path.value = getPath(to)
+        fullPath.value = getFullPath(to)
       } else {
         path.value = ''
-      }
-      // get a full path
-      if (to.query) {
-        const queryString = to.fullPath.replace(to.path, '')
-        fullPath.value = `${path.value}${queryString}`
-      } else {
-        fullPath.value = path.value
+        fullPath.value = ''
       }
 
       // Setting properties other than the above
@@ -344,8 +334,13 @@ namespace Route {
       if (!isCurrent.value) return
 
       // if there is no change in the path, do nothing and exit
-      const currentPath = removeEndSlash(router.currentRoute.value.path)
-      const nextPath = toPath(routePath.value, router.currentRoute.value.params, router.currentRoute.value.query)
+      const currentPath = removeEndSlash(router.currentRoute.value.fullPath)
+      const nextPath = toPath({
+        routePath: routePath.value,
+        params: router.currentRoute.value.params,
+        query: router.currentRoute.value.query,
+        hash: router.currentRoute.value.hash,
+      })
       if (currentPath === nextPath) return
 
       // add the new path to the router
@@ -353,11 +348,15 @@ namespace Route {
     }
 
     const getBasePath = extensionMethod((route: VueRoute) => {
-      return toPath(baseRoutePath.value, route.params)
+      return toPath({ routePath: baseRoutePath.value, params: route.params })
     })
 
     const getPath = extensionMethod((route: VueRoute) => {
-      return toPath(routePath.value, route.params)
+      return toPath({ routePath: routePath.value, params: route.params })
+    })
+
+    const getFullPath = extensionMethod((route: VueRoute) => {
+      return toPath({ routePath: routePath.value, params: route.params, query: route.query, hash: route.hash })
     })
 
     const getIsCurrent = extensionMethod((route: VueRoute) => {
@@ -365,7 +364,9 @@ namespace Route {
       return regexp.test(route.path)
     })
 
-    const toPath = extensionMethod((routePath: string, params: RouteParams, query?: LocationQuery) => {
+    const toPath = extensionMethod((input: { routePath: string; params: RouteParams; query?: LocationQuery; hash?: string }) => {
+      const { routePath, params, query, hash } = input
+
       const keys: Key[] = []
       pathToRegexp(routePath, keys)
       let result = compile(routePath, { encode: encodeURIComponent })(params)
@@ -383,7 +384,21 @@ namespace Route {
         })
       }
 
+      hash && (result += hash)
+
       return result
+    })
+
+    const clear = extensionMethod(() => {
+      basePath.value = ''
+      path.value = ''
+      fullPath.value = ''
+      hash.value = ''
+      query.value = {}
+      params.value = {}
+      status.value = 'None'
+      isCurrent.value = false
+      historyMove.value = false
     })
 
     //----------------------------------------------------------------------
@@ -392,42 +407,38 @@ namespace Route {
     //
     //----------------------------------------------------------------------
 
-    return {
-      ...(<RawRoute>{
-        basePath,
-        path,
-        fullPath,
-        hash,
-        query,
-        params,
-        status,
-        isCurrent,
-        historyMove,
-        onBeforeRouteUpdate,
-        onBeforeRouteLeave,
-        onAfterRouteUpdate,
-        onAfterRouteLeave,
-        toRouteConfig,
-        proceed,
-        update,
-        after,
-        refresh,
-        updateState,
-      }),
+    const result = {
       baseRoutePath,
       routePath,
       component,
-      currentRoute,
+      basePath,
+      path,
+      fullPath,
+      hash,
+      query,
+      params,
+      status,
+      isCurrent,
+      historyMove,
+      onBeforeRouteUpdate,
+      onBeforeRouteLeave,
+      onAfterRouteUpdate,
+      onAfterRouteLeave,
       toRouteConfig,
       proceed,
       update,
       after,
+      refresh,
       updateState,
       getBasePath,
       getPath,
+      getFullPath,
       getIsCurrent,
       toPath,
+      clear,
     }
+
+    return isImplemented<RawRoute, typeof result>(result)
   }
 }
 

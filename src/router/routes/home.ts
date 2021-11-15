@@ -37,11 +37,16 @@ namespace HomeRoute {
     //
     //----------------------------------------------------------------------
 
-    base.toPath.body = (routePath, params, query) => {
+    base.toPath.body = input => {
+      const { routePath, params, query } = input
       // replace the language in `params` with the language selected by the application
       // NOTE: Except at a start of the application, the order of processing is
       // "change language" -> "change root".
-      return base.toPath.super(routePath, { ...params, locale: locale.value }, query)
+      return base.toPath.super({
+        routePath,
+        params: { ...params, locale: locale.value },
+        query,
+      })
     }
 
     //----------------------------------------------------------------------

@@ -1,4 +1,4 @@
-import MessageInput from '@/pages/abc/message-input.vue'
+import MessageInput from '@/pages/examples/abc/message-input.vue'
 import { mount } from '@vue/test-utils'
 
 describe('message-input.vue', () => {

@@ -8,8 +8,8 @@
 </template>
 
 <script lang="ts">
-import AbcViewPCComp, { AbcViewPC } from '@/pages/abc/abc-view-pc.vue'
-import AbcViewSPComp, { AbcViewSP } from '@/pages/abc/abc-view-sp.vue'
+import AbcViewPCComp, { AbcViewPC } from '@/pages/examples/abc/abc-view-pc.vue'
+import AbcViewSPComp, { AbcViewSP } from '@/pages/examples/abc/abc-view-sp.vue'
 import { computed, defineComponent, ref } from 'vue'
 import { useScreen } from '@/base'
 

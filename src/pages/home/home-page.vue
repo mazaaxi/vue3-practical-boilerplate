@@ -79,7 +79,7 @@ const HomePageComp = defineComponent({
     })
 
     async function moveToAbcPageButtonOnClick() {
-      routes.abc.move(message)
+      routes.examples.abc.move(message)
     }
 
     //----------------------------------------------------------------------

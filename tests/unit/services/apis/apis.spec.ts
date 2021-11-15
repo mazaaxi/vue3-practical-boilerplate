@@ -19,7 +19,7 @@ function Products(): Product[] {
     {
       id: 'product1',
       title: 'iPad 4 Mini',
-      price: 39700,
+      price: 397.0,
       stock: 1,
       createdAt: dayjs('2020-01-01T00:00:00.000Z'),
       updatedAt: dayjs('2020-01-02T00:00:00.000Z'),
@@ -27,7 +27,7 @@ function Products(): Product[] {
     {
       id: 'product2',
       title: 'Fire HD 8 Tablet',
-      price: 8980,
+      price: 89.8,
       stock: 5,
       createdAt: dayjs('2020-01-01T00:00:00.000Z'),
       updatedAt: dayjs('2020-01-02T00:00:00.000Z'),
@@ -35,7 +35,7 @@ function Products(): Product[] {
     {
       id: 'product3',
       title: 'MediaPad 10',
-      price: 26400,
+      price: 264.0,
       stock: 10,
       createdAt: dayjs('2020-01-01T00:00:00.000Z'),
       updatedAt: dayjs('2020-01-02T00:00:00.000Z'),
@@ -43,7 +43,7 @@ function Products(): Product[] {
     {
       id: 'product4',
       title: 'Surface Go',
-      price: 54290,
+      price: 542.9,
       stock: 0,
       createdAt: dayjs('2020-01-01T00:00:00.000Z'),
       updatedAt: dayjs('2020-01-02T00:00:00.000Z'),
@@ -62,7 +62,7 @@ function CartItems(): CartItem[] {
       uid: SignInUser.id,
       productId: 'product1',
       title: 'iPad 4 Mini',
-      price: 39700,
+      price: 397.0,
       quantity: 2,
       createdAt: dayjs('2020-01-01T00:00:00.000Z'),
       updatedAt: dayjs('2020-01-02T00:00:00.000Z'),
@@ -72,7 +72,7 @@ function CartItems(): CartItem[] {
       uid: SignInUser.id,
       productId: 'product2',
       title: 'Fire HD 8 Tablet',
-      price: 8980,
+      price: 89.8,
       quantity: 1,
       createdAt: dayjs('2020-01-01T00:00:00.000Z'),
       updatedAt: dayjs('2020-01-02T00:00:00.000Z'),

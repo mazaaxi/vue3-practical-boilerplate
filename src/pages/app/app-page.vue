@@ -62,17 +62,6 @@
           </q-item-section>
           <q-item-section>
             <q-item-label>Home</q-item-label>
-            <q-item-label caption>home</q-item-label>
-          </q-item-section>
-        </q-item>
-
-        <q-item clickable tag="a" :to="`/${locale}/abc`">
-          <q-item-section avatar>
-            <q-icon name="code" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>ABC</q-item-label>
-            <q-item-label caption>abc</q-item-label>
           </q-item-section>
         </q-item>
 
@@ -82,9 +71,23 @@
           </q-item-section>
           <q-item-section>
             <q-item-label>Shop</q-item-label>
-            <q-item-label caption>shop</q-item-label>
           </q-item-section>
         </q-item>
+
+        <q-expansion-item :model-value="true" expand-separator icon="code" label="Examples">
+          <q-card class="bg-grey-2">
+            <q-item clickable tag="a" :to="`/${locale}/examples/abc`">
+              <q-item-section>
+                <q-item-label>ABC</q-item-label>
+              </q-item-section>
+            </q-item>
+            <q-item clickable tag="a" :to="`/${locale}/examples/miniature-project`">
+              <q-item-section>
+                <q-item-label>Miniature Project</q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-card>
+        </q-expansion-item>
 
         <q-item-label header>Quasar Items</q-item-label>
 

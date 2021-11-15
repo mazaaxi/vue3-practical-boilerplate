@@ -5,9 +5,27 @@ import { UnwrapNestedRefs } from '@vue/reactivity'
 import { useRouter } from '@/router'
 
 //==========================================================================
-//
+//  ExamplesRoutes
+//==========================================================================
+
+interface ExamplesRoutes {
+  abc: AbcRoute
+}
+
+namespace ExamplesRoutes {
+  export function newInstance(locale: ComputedRef<string>) {
+    const abc = AbcRoute.newRawInstance(locale)
+    const miniatureProject = MiniatureProjectRoute.newRawInstance(locale)
+
+    return reactive({
+      abc,
+      miniatureProject,
+    })
+  }
+}
+
+//==========================================================================
 //  AbcRoute
-//
 //==========================================================================
 
 interface AbcRoute extends UnwrapNestedRefs<RawAbcRoute> {}
@@ -25,11 +43,7 @@ interface AbcRouteMessage {
 }
 
 namespace AbcRoute {
-  export function newInstance(locale: ComputedRef<string>): AbcRoute {
-    return reactive(newRawInstance(locale))
-  }
-
-  function newRawInstance(locale: ComputedRef<string>) {
+  export function newRawInstance(locale: ComputedRef<string>) {
     //----------------------------------------------------------------------
     //
     //  Variables
@@ -37,8 +51,8 @@ namespace AbcRoute {
     //----------------------------------------------------------------------
 
     const base = Route.newRawInstance({
-      routePath: `/:locale/abc`,
-      component: () => import(/* webpackChunkName: "pages/abc" */ '@/pages/abc'),
+      routePath: `/:locale/examples/abc`,
+      component: () => import(/* webpackChunkName: "pages/examples/abc" */ '@/pages/examples/abc'),
     })
 
     const message = reactive<AbcRouteMessage>({
@@ -52,11 +66,16 @@ namespace AbcRoute {
     //
     //----------------------------------------------------------------------
 
-    base.toPath.body = (routePath, params, query) => {
+    base.toPath.body = input => {
+      const { routePath, params, query } = input
       // replace the language in `params` with the language selected by the application
       // NOTE: Except at a start of the application, the order of processing is
       // "change language" -> "change root".
-      return base.toPath.super(routePath, { ...params, locale: locale.value }, query)
+      return base.toPath.super({
+        routePath,
+        params: { ...params, locale: locale.value },
+        query,
+      })
     }
 
     base.after.body = (to, from) => {
@@ -103,7 +122,11 @@ namespace AbcRoute {
         query.body = message.body
       }
 
-      return base.toPath(base.routePath.value, { locale: locale.value }, query)
+      return base.toPath({
+        routePath: base.routePath.value,
+        params: { locale: locale.value },
+        query,
+      })
     }
 
     //----------------------------------------------------------------------
@@ -123,9 +146,67 @@ namespace AbcRoute {
 }
 
 //==========================================================================
+//  MiniatureProjectRoute
+//==========================================================================
+
+interface MiniatureProjectRoute extends UnwrapNestedRefs<RawMiniatureProjectRoute> {}
+
+interface RawMiniatureProjectRoute extends RawRoute {
+  locale: ComputedRef<string>
+}
+
+namespace MiniatureProjectRoute {
+  export function newInstance(locale: ComputedRef<string>): MiniatureProjectRoute {
+    return reactive(newRawInstance(locale))
+  }
+
+  export function newRawInstance(locale: ComputedRef<string>) {
+    //----------------------------------------------------------------------
+    //
+    //  Variables
+    //
+    //----------------------------------------------------------------------
+
+    const base = Route.newRawInstance({
+      routePath: `/:locale/examples/miniature-project`,
+      component: () => import(/* webpackChunkName: "pages/examples/miniature-project" */ '@/pages/examples/miniature-project'),
+    })
+
+    //----------------------------------------------------------------------
+    //
+    //  Methods
+    //
+    //----------------------------------------------------------------------
+
+    base.toPath.body = input => {
+      const { routePath, params, query } = input
+      // replace the language in `params` with the language selected by the application
+      // NOTE: Except at a start of the application, the order of processing is
+      // "change language" -> "change root".
+      return base.toPath.super({
+        routePath,
+        params: { ...params, locale: locale.value },
+        query,
+      })
+    }
+
+    //----------------------------------------------------------------------
+    //
+    //  Result
+    //
+    //----------------------------------------------------------------------
+
+    return {
+      ...base,
+      locale,
+    }
+  }
+}
+
+//==========================================================================
 //
 //  Export
 //
 //==========================================================================
 
-export { AbcRoute }
+export { ExamplesRoutes }
