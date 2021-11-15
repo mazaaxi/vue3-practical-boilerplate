@@ -1,5 +1,6 @@
 import { DeepPartial, DeepReadonly, DeepUnreadonly, nonNullable } from 'js-common-lib'
 import dayjs, { Dayjs } from 'dayjs'
+import { customAlphabet } from 'nanoid'
 
 //==========================================================================
 //
@@ -193,12 +194,8 @@ function toRawEntities<T>(entities: T[]): ToDeepRawDate<T>[] {
 }
 
 function generateId(): string {
-  const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
-  let autoId = ''
-  for (let i = 0; i < 20; i++) {
-    autoId += CHARS.charAt(Math.floor(Math.random() * CHARS.length))
-  }
-  return autoId
+  const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', 20)
+  return nanoid()
 }
 
 namespace User {

@@ -1,6 +1,7 @@
 const path = require('path')
 const dayjs = require('dayjs')
 const jsonServer = require('json-server')
+const { customAlphabet } = require('nanoid')
 
 //========================================================================
 //
@@ -50,12 +51,8 @@ function getUserId(req, res) {
 }
 
 function generateId() {
-  const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
-  let autoId = ''
-  for (let i = 0; i < 20; i++) {
-    autoId += CHARS.charAt(Math.floor(Math.random() * CHARS.length))
-  }
-  return autoId
+  const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', 20)
+  return nanoid()
 }
 
 function sendError(res, code, message, detail) {

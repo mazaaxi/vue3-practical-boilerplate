@@ -23,6 +23,7 @@
     "js-common-lib": "https://github.com/mazaaxi/js-common-lib.git",
     "lodash": "^4.17.21",
     "nanoevents": "~5.1.13",
+    "nanoid": "^3.1.30",
     "path-to-regexp": "^6.2.0",
     "quasar": "^2.0.0",
     "ua-parser-js": "^1.0.1",
