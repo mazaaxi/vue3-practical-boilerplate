@@ -3,11 +3,11 @@
 
 import { UAParser } from 'ua-parser-js'
 
-//========================================================================
+//==========================================================================
 //
 //  Interfaces
 //
-//========================================================================
+//==========================================================================
 
 type ServiceWorkerChangeState = 'ready' | 'installing' | 'updating' | 'installed' | 'updated' | 'offline' | 'error'
 
@@ -26,11 +26,11 @@ interface Hooks {
   registrationOptions?: RegistrationOptions
 }
 
-//========================================================================
+//==========================================================================
 //
 //  Implementation
 //
-//========================================================================
+//==========================================================================
 
 // flag indicating whether a `window` has been loaded
 let windowLoaded = false
@@ -122,7 +122,8 @@ function register(serviceWorkerURL: string, hooks: Hooks = {}): void {
       }
 
       // monitor changes in installation status
-      registration.installing.onstatechange = async () => {
+      registration.installing.onstatechange = async e => {
+        const serviceWorker = e.target as ServiceWorker
         // in this block, `serviceWorker.state` changes in a following order
         // 'installed' -> 'activating' -> 'activated'
         if (serviceWorker.state === 'activated') {
@@ -145,8 +146,8 @@ function register(serviceWorkerURL: string, hooks: Hooks = {}): void {
 
       // monitor changes in a update status of a installed ServiceWorker
       registration.active.onstatechange = async e => {
-        const state = registration.active!.state
-        if (state === 'activated' || state === 'redundant') {
+        const serviceWorker = e.target as ServiceWorker
+        if (serviceWorker.state === 'activated' || serviceWorker.state === 'redundant') {
           // fire a update completion event
           emit('updated', registration)
 
@@ -174,9 +175,8 @@ function register(serviceWorkerURL: string, hooks: Hooks = {}): void {
       // TODO I haven't been able to confirm under what circumstances it is coming in here.
       console.warn(`ServiceWorker: This block is not supposed to be executed.`)
 
-      const serviceWorker = registration.waiting
-
-      registration.waiting.onstatechange = () => {
+      registration.waiting.onstatechange = e => {
+        const serviceWorker = e.target as ServiceWorker
         console.log('ServiceWorker waiting:', serviceWorker.state)
       }
     }
@@ -213,10 +213,10 @@ async function unregister() {
   }
 }
 
-//========================================================================
+//==========================================================================
 //
-//  Exports
+//  Export
 //
-//========================================================================
+//==========================================================================
 
 export { register, unregister, ServiceWorkerChangeState }

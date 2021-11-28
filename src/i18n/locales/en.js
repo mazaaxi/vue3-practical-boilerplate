@@ -15,8 +15,8 @@ export default {
     ja: '日本語',
   },
   site: {
-    updating: 'The site is being updated.',
-    updated: 'The site has been updated.\nReload to reflect the update.',
+    updating: 'Downloading the site update.',
+    updated: 'The site update has been downloaded.\nReload to apply the update.',
   },
   app: {
     updated: 'The application has been updated.',

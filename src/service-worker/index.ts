@@ -4,11 +4,11 @@ import { Unsubscribe, createNanoEvents } from 'nanoevents'
 import { useConfig } from '@/config'
 import { useI18n } from '@/i18n'
 
-//========================================================================
+//==========================================================================
 //
 //  Interfaces
 //
-//========================================================================
+//==========================================================================
 
 interface ServiceWorkerManager {
   /**
@@ -29,11 +29,11 @@ interface ServiceWorkerStateChangeInfo {
   message: string
 }
 
-//========================================================================
+//==========================================================================
 //
 //  Implementation
 //
-//========================================================================
+//==========================================================================
 
 namespace ServiceWorkerManager {
   let instance: ServiceWorkerManager
@@ -48,14 +48,17 @@ namespace ServiceWorkerManager {
   }
 
   function newInstance(): ServiceWorkerManager {
-    const StateChangeEvent = 'StateChange'
-
     const EmptyInstance: ServiceWorkerManager = (() => {
-      const emitter = createNanoEvents()
+      const emitter = createNanoEvents<{
+        stateChange: StateChangeCallback
+      }>()
+
       const update = () => {}
+
       const onStateChange: ServiceWorkerManager['onStateChange'] = cb => {
-        return emitter.on(StateChangeEvent, cb)
+        return emitter.on('stateChange', cb)
       }
+
       return { update, onStateChange }
     })()
 
@@ -65,7 +68,7 @@ namespace ServiceWorkerManager {
 
     // if a execution mode is not `remote`, return an empty instance and exit
     // NOTE: Return an empty instance of `ServiceWorkerManager`, since ServiceWorker
-    // gets in the way during development (local environment).
+    // gets in the way during development (except in `remote` environments).
     if (config.env.executeMode !== 'remote') return EmptyInstance
 
     //----------------------------------------------------------------------
@@ -74,7 +77,9 @@ namespace ServiceWorkerManager {
     //
     //----------------------------------------------------------------------
 
-    const emitter = createNanoEvents()
+    const emitter = createNanoEvents<{
+      stateChange: StateChangeCallback
+    }>()
 
     const i18n = useI18n()
 
@@ -97,7 +102,7 @@ namespace ServiceWorkerManager {
     }
 
     const onStateChange: ServiceWorkerManager['onStateChange'] = cb => {
-      return emitter.on(StateChangeEvent, cb)
+      return emitter.on('stateChange', cb)
     }
 
     //----------------------------------------------------------------------
@@ -140,7 +145,7 @@ namespace ServiceWorkerManager {
      */
     function emitStateChange(state: ServiceWorkerChangeState, message: string): void {
       const info: ServiceWorkerStateChangeInfo = { state, message }
-      emitter.emit(StateChangeEvent, info)
+      emitter.emit('stateChange', info)
     }
 
     //----------------------------------------------------------------------
@@ -156,11 +161,11 @@ namespace ServiceWorkerManager {
   }
 }
 
-//========================================================================
+//==========================================================================
 //
 //  Export
 //
-//========================================================================
+//==========================================================================
 
 const { setupServiceWorker, useServiceWorker } = ServiceWorkerManager
 export { ServiceWorkerChangeState, setupServiceWorker, useServiceWorker }

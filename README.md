@@ -5,25 +5,26 @@
 yarn install
 ```
 
-### Compiles and hot-reloads for development
+## Try to run the application
+
+Run the application.
+
 ```
 yarn serve
 ```
 
-### Compiles and minifies for production
+Run a different terminal from the above and run the API server.
+
 ```
-yarn build
+yarn serve:api
 ```
 
-### Run your unit tests
+Access the following URL from your browser.
+
 ```
-yarn test:unit
+http://localhost:5040
 ```
 
-### Lints and fixes files
-```
-yarn lint
-```
+## Official documentation
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+See [Practical Vue3 Project](https://ideacapsule.net/ja/article/items/ujf5syzpOC0tTLsEbCSb).

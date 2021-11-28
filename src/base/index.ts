@@ -67,9 +67,14 @@ function showNotification(
     timeout?: number
     actions?: any[] | 'none'
     html?: boolean
+    ignoreLineBreaks?: boolean
   }
 ): Function {
-  message = message.replace(/\r?\n/g, '<br>')
+  if (options?.ignoreLineBreaks) {
+    message = message.replace(/\r?\n/g, '')
+  } else {
+    message = message.replace(/\r?\n/g, '<br>')
+  }
 
   let actions: any[]
   if (options?.actions === 'none') {

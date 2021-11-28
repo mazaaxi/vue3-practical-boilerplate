@@ -154,9 +154,9 @@
 <script lang="ts">
 import { DialogContainer, DialogContainerComp, setupDialogs } from '@/dialogs'
 import { computed, defineComponent, ref, watch } from 'vue'
+import { showNotification, useScreen } from '@/base'
 import { useI18n, useI18nUtils } from '@/i18n'
 import { TestUsers } from '@/services/test-data'
-import { showNotification } from '@/base'
 import { useRouterUtils } from '@/router'
 import { useService } from '@/services'
 import { useServiceWorker } from '@/service-worker'
@@ -177,6 +177,7 @@ const AppPageComp = defineComponent({
 
     const services = useService()
     const serviceWorker = useServiceWorker()
+    const screen = useScreen()
 
     const i18n = useI18n()
     const { loadI18nLocaleMessages } = useI18nUtils()
@@ -221,6 +222,7 @@ const AppPageComp = defineComponent({
             },
           ],
           timeout: 0,
+          ignoreLineBreaks: screen.lt.md,
         })
       }
 
