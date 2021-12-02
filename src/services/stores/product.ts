@@ -19,6 +19,7 @@ interface RawProductStore {
   setAll(products: Product[]): void
   add(product: Product): DeepReadonly<Product>
   set(product: SetProduct): DeepReadonly<Product> | undefined
+  remove(productId: string): Product | undefined
   decrementStock(productId: string): void
   incrementStock(productId: string): void
 }
@@ -91,6 +92,16 @@ namespace ProductStore {
       return Product.clone(Product.populate(stateItem, product))
     }
 
+    const remove: ProductStore['remove'] = productId => {
+      const foundIndex = all.value.findIndex(product => product.id === productId)
+      if (foundIndex >= 0) {
+        const stateItem = all.value[foundIndex]
+        all.value.splice(foundIndex, 1)
+        return Product.clone(stateItem)
+      }
+      return undefined
+    }
+
     const decrementStock: ProductStore['decrementStock'] = productId => {
       const product = all.value.find(item => item.id === productId)
       if (!product) {
@@ -131,6 +142,7 @@ namespace ProductStore {
       setAll,
       set,
       add,
+      remove,
       decrementStock,
       incrementStock,
     }

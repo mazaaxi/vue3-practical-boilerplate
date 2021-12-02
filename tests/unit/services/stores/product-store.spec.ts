@@ -250,6 +250,32 @@ describe('ProductStore', () => {
     })
   })
 
+  describe('remove', () => {
+    it('basic case', () => {
+      const { stores } = provideDependency(({ stores }) => {
+        stores.product.setAll(Products())
+      })
+
+      // run the test target
+      const actual = stores.product.remove(Product1().id)!
+
+      expect(actual).toEqual(Product1())
+
+      toBeCopyProduct(stores, actual)
+    })
+
+    it('if a non-existent product item id is specified', () => {
+      const { stores } = provideDependency(({ stores }) => {
+        stores.product.setAll(Products())
+      })
+
+      // run the test target
+      const actual = stores.product.remove(Product1().id)
+
+      expect(actual).toBeDefined()
+    })
+  })
+
   describe('decrementStock', () => {
     it('basic case', () => {
       const { stores } = provideDependency(({ stores }) => {

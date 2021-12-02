@@ -259,7 +259,7 @@ namespace AdminService {
     const apis = useAPI()
     const stores = useStore()
     const emitter = createNanoEvents<{
-      changeUser: (newUser?: User, oldUser?: User) => void
+      userChange: (newUser?: User, oldUser?: User) => void
     }>()
 
     const fetchUsers: RawAdminService['fetchUsers'] = async () => {
@@ -268,10 +268,10 @@ namespace AdminService {
         const exists = stores.user.get(responseUser.id)
         if (exists) {
           const updated = stores.user.set(responseUser)
-          emitter.emit('changeUser', updated, exists)
+          emitter.emit('userChange', updated, exists)
         } else {
           const added = stores.user.add(responseUser)
-          emitter.emit('changeUser', added, undefined)
+          emitter.emit('userChange', added, undefined)
         }
       })
     }
@@ -279,7 +279,7 @@ namespace AdminService {
     const addUser: RawAdminService['addUser'] = async user => {
       const response = await apis.addUser(user)
       const added = stores.user.add(response)
-      emitter.emit('changeUser', added, undefined)
+      emitter.emit('userChange', added, undefined)
       return added
     }
 
@@ -287,14 +287,14 @@ namespace AdminService {
       const oldUser = stores.user.get(user.id)
       const response = await apis.setUser(user)
       const updated = stores.user.set(response)
-      emitter.emit('changeUser', updated, oldUser)
+      emitter.emit('userChange', updated, oldUser)
       return updated
     }
 
     const removeUser: RawAdminService['removeUser'] = async id => {
       const response = await apis.removeUser(id)
       const removed = stores.user.remove(response.id)
-      emitter.emit('changeUser', undefined, removed)
+      emitter.emit('userChange', undefined, removed)
       return removed
     }
 
@@ -303,7 +303,7 @@ namespace AdminService {
     }
 
     const onUsersChange: RawAdminService['onUsersChange'] = cb => {
-      return emitter.on('changeUser', cb)
+      return emitter.on('userChange', cb)
     }
 
     const result = {

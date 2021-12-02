@@ -249,7 +249,6 @@ const MiniatureProjectPageComp = defineComponent({
       operation && writeLogMessage(operation, newUser, oldUser)
     })
 
-    let prevNewUsers: UserRow[] | undefined
     watch(
       () => cloneDeep(users.value),
       debounce(async (newUsers: UserRow[], oldUsers: UserRow[]) => {

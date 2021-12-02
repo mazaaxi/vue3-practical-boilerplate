@@ -128,15 +128,6 @@ server.get(`/${APIPrefix}/cartItems`, (req, res, next) => {
   const uid = getUserId(req, res)
   if (!uid) return
 
-  const uidOfQuery = req.query.uid
-
-  if (uidOfQuery !== uid) {
-    return sendError(res, 403, `A request user is trying to get someone else's cart.`, {
-      'request.uid': uid,
-      'request.query.uid': uidOfQuery || '',
-    })
-  }
-
   const cartItems = db.get('cartItems').filter({ uid }).value()
 
   res.json(cartItems)

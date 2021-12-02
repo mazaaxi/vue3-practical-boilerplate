@@ -13,11 +13,11 @@ interface CartStore extends UnwrapNestedRefs<RawCartStore> {}
 
 interface RawCartStore {
   readonly all: DeepReadonly<Ref<CartItem[]>>
-  readonly totalPrice: ComputedRef<number>
   getById(cartItemId: string): CartItem | undefined
   sgetById(cartItemId: string): CartItem
   getByProductId(productId: string): CartItem | undefined
   sgetByProductId(productId: string): CartItem
+  getListByUID(uid: string): CartItem[]
   exists(productId: string): boolean
   setAll(items: CartItem[]): void
   add(item: CartItem): CartItem
@@ -46,13 +46,6 @@ namespace CartStore {
     //----------------------------------------------------------------------
 
     const all = ref<CartItem[]>([])
-
-    const totalPrice = computed(() => {
-      const result = all.value.reduce((result, item) => {
-        return result + item.price * item.quantity
-      }, 0)
-      return result
-    })
 
     //----------------------------------------------------------------------
     //
@@ -87,6 +80,10 @@ namespace CartStore {
         throw new Error(`The specified CartItem was not found: ${JSON.stringify({ productId })}`)
       }
       return result
+    }
+
+    const getListByUID: CartStore['getListByUID'] = uid => {
+      return all.value.filter(item => item.uid === uid).map(item => CartItem.clone(item))
     }
 
     const setAll: CartStore['setAll'] = items => {
@@ -157,12 +154,12 @@ namespace CartStore {
 
     const instance = {
       all,
-      totalPrice,
       exists,
       getById,
       sgetById,
       getByProductId,
       sgetByProductId,
+      getListByUID,
       setAll,
       set,
       add,

@@ -119,7 +119,7 @@
 
 <script lang="ts">
 import { CartItem, Product, useService } from '@/services'
-import { computed, defineComponent, onMounted, reactive, toRefs } from 'vue'
+import { computed, defineComponent, onMounted, onUnmounted, reactive, ref, toRefs } from 'vue'
 import { Loading } from 'quasar'
 import { TestUsers } from '@/services/test-data'
 import { useDialogs } from '@/dialogs'
@@ -129,6 +129,23 @@ const ShopPageComp = defineComponent({
   name: 'ShopPage',
 
   setup(props, context) {
+    //----------------------------------------------------------------------
+    //
+    //  Lifecycle hooks
+    //
+    //----------------------------------------------------------------------
+
+    onMounted(async () => {
+      Loading.show()
+      await services.shop.fetchProducts()
+      Loading.hide()
+    })
+
+    onUnmounted(() => {
+      offProductsChange()
+      offUserCartItemsChange()
+    })
+
     //----------------------------------------------------------------------
     //
     //  Variables
@@ -152,20 +169,9 @@ const ShopPageComp = defineComponent({
       return services.shop.getExchangeRate(i18n.locale.value as string)
     })
 
-    const products = computed(() => {
-      return services.shop.products.map(product => ({
-        ...product,
-        exchangedPrice: product.price * exchangeRate.value,
-        outOfStock: product.stock === 0,
-      }))
-    })
+    const products = ref<Product[]>([])
 
-    const cartItems = computed(() => {
-      return services.shop.cartItems.map(cartItem => ({
-        ...cartItem,
-        exchangedPrice: cartItem.price * exchangeRate.value,
-      }))
-    })
+    const cartItems = ref<CartItem[]>([])
 
     const cartTotalPrice = computed(() => services.shop.cartTotalPrice * exchangeRate.value)
 
@@ -173,21 +179,44 @@ const ShopPageComp = defineComponent({
 
     //----------------------------------------------------------------------
     //
-    //  Lifecycle hooks
-    //
-    //----------------------------------------------------------------------
-
-    onMounted(async () => {
-      Loading.show()
-      await services.shop.fetchProducts()
-      Loading.hide()
-    })
-
-    //----------------------------------------------------------------------
-    //
     //  Events
     //
     //----------------------------------------------------------------------
+
+    const offProductsChange = services.shop.onProductsChange((newProduct, oldProduct) => {
+      const toPageProduct = (product: Product) => ({
+        ...product,
+        exchangedPrice: product.price * exchangeRate.value,
+        outOfStock: product.stock === 0,
+      })
+
+      if (newProduct && !oldProduct) {
+        products.value.push(toPageProduct(newProduct))
+      } else if (newProduct && oldProduct) {
+        const targetProduct = products.value.find(product => product.id === newProduct.id)
+        targetProduct && Object.assign(targetProduct, toPageProduct(newProduct))
+      } else if (oldProduct) {
+        const targetProductIndex = products.value.findIndex(product => product.id === oldProduct.id)
+        targetProductIndex >= 0 && products.value.splice(targetProductIndex, 1)
+      }
+    })
+
+    const offUserCartItemsChange = services.shop.onUserCartItemsChange((newCartItem, oldCartItem) => {
+      const toPageCartItem = (cartItem: CartItem) => ({
+        ...cartItem,
+        exchangedPrice: cartItem.price * exchangeRate.value,
+      })
+
+      if (newCartItem && !oldCartItem) {
+        cartItems.value.push(toPageCartItem(newCartItem))
+      } else if (newCartItem && oldCartItem) {
+        const targetCartItem = cartItems.value.find(cartItem => cartItem.id === newCartItem.id)
+        targetCartItem && Object.assign(targetCartItem, toPageCartItem(newCartItem))
+      } else if (oldCartItem) {
+        const targetCartItemIndex = cartItems.value.findIndex(cartItem => cartItem.id === oldCartItem.id)
+        targetCartItemIndex >= 0 && cartItems.value.splice(targetCartItemIndex, 1)
+      }
+    })
 
     async function signInOrOutButtonOnClick() {
       if (isSignedIn.value) {
@@ -200,13 +229,13 @@ const ShopPageComp = defineComponent({
 
     async function addButtonOnClick(product: Product) {
       Loading.show()
-      await services.shop.addItemToCart(product.id)
+      await services.shop.incrementCartItem(product.id)
       Loading.hide()
     }
 
     async function removeButtonOnClick(cartItem: CartItem) {
       Loading.show()
-      await services.shop.removeItemFromCart(cartItem.productId)
+      await services.shop.decrementCartItem(cartItem.productId)
       Loading.hide()
     }
 

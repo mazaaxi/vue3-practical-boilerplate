@@ -159,7 +159,7 @@ describe('APIContainer', () => {
       setTestIdToken()
 
       // run the test target
-      const actual = await apis.getCartItems(SignInUser.id)
+      const actual = await apis.getCartItems()
 
       expect(actual).toMatchObject(CartItems())
     })
@@ -310,7 +310,7 @@ describe('APIContainer', () => {
 
       expect(actual).toBeTruthy()
 
-      const current = await apis.getCartItems(SignInUser.id)
+      const current = await apis.getCartItems()
       expect(current.length).toBe(0)
     })
   })

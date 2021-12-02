@@ -1,5 +1,5 @@
 import { CartItem, Product, User, generateId } from '@/services'
-import { TestAPIContainer, TestHelperContainer, provideDependency, toBeCopyCartItem, toBeCopyProduct } from '../../../../helpers'
+import { TestAPIContainer, TestHelperContainer, provideDependency } from '../../../../helpers'
 import { AccountHelper } from '@/services/helpers'
 import { CartItemEditResponse } from '@/services/apis'
 import { TestUsers } from '@/services/test-data'
@@ -12,7 +12,8 @@ import dayjs from 'dayjs'
 //
 //==========================================================================
 
-const SignInUser = TestUsers[0]
+const TaroYamada = TestUsers[0]
+const IchiroSuzuki = TestUsers[1]
 
 function Products(): Product[] {
   return [
@@ -55,7 +56,7 @@ function CartItems(): CartItem[] {
   return [
     {
       id: 'cartItem1',
-      uid: SignInUser.id,
+      uid: TaroYamada.id,
       productId: 'product1',
       title: 'iPad 4 Mini',
       price: 397.0,
@@ -65,7 +66,7 @@ function CartItems(): CartItem[] {
     },
     {
       id: 'cartItem2',
-      uid: SignInUser.id,
+      uid: TaroYamada.id,
       productId: 'product2',
       title: 'Fire HD 8 Tablet',
       price: 89.8,
@@ -73,7 +74,21 @@ function CartItems(): CartItem[] {
       createdAt: dayjs('2020-01-01'),
       updatedAt: dayjs('2020-01-02'),
     },
+    {
+      id: 'cartItem3',
+      uid: IchiroSuzuki.id,
+      productId: 'product1',
+      title: 'iPad 4 Mini',
+      price: 39700,
+      quantity: 1,
+      createdAt: dayjs('2020-01-01'),
+      updatedAt: dayjs('2020-01-02'),
+    },
   ]
+}
+
+function sortIdFunc(a: { id: string }, b: { id: string }): number {
+  return a.id < b.id ? -1 : a.id > b.id ? 1 : 0
 }
 
 //==========================================================================
@@ -91,6 +106,9 @@ describe('ShopService', () => {
         get user() {
           return signInUser
         },
+        get isSignedIn() {
+          return Boolean(signInUser.id)
+        },
         signIn: user => {
           signInUser = user
         },
@@ -104,37 +122,222 @@ describe('ShopService', () => {
     })
   })
 
-  it('fetchProducts', async () => {
-    const { stores, services } = provideDependency(({ apis }) => {
-      // mock settings
-      const getProducts = td.replace<TestAPIContainer, 'getProducts'>(apis, 'getProducts')
-      td.when(getProducts()).thenResolve(Products())
+  it('totalPrice', async () => {
+    const { services, helpers } = provideDependency(({ stores, helpers }) => {
+      // store settings
+      stores.cart.setAll(CartItems())
+      // sign-in user settings
+      helpers.account.signIn(TaroYamada)
     })
 
-    // run the test target
-    const actual = await services.shop.fetchProducts()
+    const actual = services.shop.cartTotalPrice
 
-    expect(actual).toEqual(Products())
-    expect(stores.product.all).toEqual(Products())
-    toBeCopyProduct(stores, actual)
+    expect(actual).toBe(883.8)
   })
 
-  describe('fetchCartItems', () => {
-    it('basic case', async () => {
-      const { stores, helpers, services } = provideDependency(({ apis, helpers }) => {
+  describe('fetchProducts', () => {
+    it('if products has not yet been loaded', async () => {
+      const newProduct1: Product = Products()[0]
+      const newProduct2: Product = Products()[1]
+      const newProduct3: Product = Products()[2]
+      const newProduct4: Product = Products()[3]
+      const expectedStoreProducts = [newProduct1, newProduct2, newProduct3, newProduct4]
+      const expectedEventProducts = {
+        [newProduct1.id]: { newProduct: newProduct1, oldProduct: undefined },
+        [newProduct2.id]: { newProduct: newProduct2, oldProduct: undefined },
+        [newProduct3.id]: { newProduct: newProduct3, oldProduct: undefined },
+        [newProduct4.id]: { newProduct: newProduct4, oldProduct: undefined },
+      }
+
+      const { services, stores } = provideDependency(({ apis }) => {
         // mock settings
-        const getCartItems = td.replace<TestAPIContainer, 'getCartItems'>(apis, 'getCartItems')
-        td.when(getCartItems(SignInUser.id)).thenResolve(CartItems())
-        // sign-in user settings
-        helpers.account.signIn(SignInUser)
+        const getProducts = td.replace<TestAPIContainer, 'getProducts'>(apis, 'getProducts')
+        td.when(getProducts()).thenResolve(expectedStoreProducts)
+      })
+
+      // event validation
+      services.shop.onProductsChange((newProduct, oldProduct) => {
+        const id = (newProduct?.id || oldProduct?.id) as string
+        expect(expectedEventProducts[id]).toEqual({ newProduct, oldProduct })
       })
 
       // run the test target
-      const actual = await services.shop.fetchCartItems()
+      await services.shop.fetchProducts()
 
-      expect(actual).toEqual(CartItems())
-      expect(stores.cart.all).toEqual(CartItems())
-      toBeCopyCartItem(stores, actual)
+      // store validation
+      const actual = [...stores.product.all].sort(sortIdFunc)
+      expect(actual).toEqual(Products().sort(sortIdFunc))
+    })
+
+    it('if part of products has already been loaded', async () => {
+      const oldProduct2 = Products()[1]
+      const newProduct1: Product = Products()[0]
+      const newProduct2: Product = { ...oldProduct2, title: 'FIRE HD 8 TABLET' }
+      const newProduct3: Product = Products()[2]
+      const newProduct4: Product = Products()[3]
+      const expectedStoreProducts = [newProduct1, newProduct2, newProduct3, newProduct4]
+      const expectedEventProducts = {
+        [newProduct1.id]: { newProduct: newProduct1, oldProduct: undefined },
+        [newProduct2.id]: { newProduct: newProduct2, oldProduct: oldProduct2 },
+        [newProduct3.id]: { newProduct: newProduct3, oldProduct: undefined },
+        [newProduct4.id]: { newProduct: newProduct4, oldProduct: undefined },
+      }
+
+      const { services, stores } = provideDependency(({ apis, stores }) => {
+        // store settings
+        stores.product.add(oldProduct2)
+        // mock settings
+        const getProducts = td.replace<TestAPIContainer, 'getProducts'>(apis, 'getProducts')
+        td.when(getProducts()).thenResolve(expectedStoreProducts)
+      })
+
+      // event validation
+      services.shop.onProductsChange((newProduct, oldProduct) => {
+        const productId = (newProduct?.id || oldProduct?.id) as string
+        expect(expectedEventProducts[productId]).toEqual({ newProduct, oldProduct })
+      })
+
+      // run the test target
+      await services.shop.fetchProducts()
+
+      // store validation
+      const actual = [...stores.product.all].sort(sortIdFunc)
+      expect(actual).toEqual(expectedStoreProducts.sort(sortIdFunc))
+    })
+
+    it('if a non-existent product has been loaded', async () => {
+      const oldProduct2 = Products()[1] // the product that exist locally, but not on the server
+      const newProduct1: Product = Products()[0]
+      const newProduct3: Product = Products()[2]
+      const newProduct4: Product = Products()[3]
+      const expectedStoreProducts = [newProduct1, newProduct3, newProduct4]
+      const expectedEventProducts = {
+        [newProduct1.id]: { newProduct: newProduct1, oldProduct: undefined },
+        [oldProduct2.id]: { newProduct: undefined, oldProduct: oldProduct2 },
+        [newProduct3.id]: { newProduct: newProduct3, oldProduct: undefined },
+        [newProduct4.id]: { newProduct: newProduct4, oldProduct: undefined },
+      }
+
+      const { services, stores } = provideDependency(({ apis, stores }) => {
+        // store settings
+        stores.product.add(oldProduct2)
+        // mock settings
+        const getProducts = td.replace<TestAPIContainer, 'getProducts'>(apis, 'getProducts')
+        td.when(getProducts()).thenResolve(expectedStoreProducts)
+      })
+
+      // event validation
+      services.shop.onProductsChange((newProduct, oldProduct) => {
+        const productId = (newProduct?.id || oldProduct?.id) as string
+        expect(expectedEventProducts[productId]).toEqual({ newProduct, oldProduct })
+      })
+
+      // run the test target
+      await services.shop.fetchProducts()
+
+      // store validation
+      const actual = [...stores.product.all].sort(sortIdFunc)
+      expect(actual).toEqual(expectedStoreProducts.sort(sortIdFunc))
+    })
+  })
+
+  describe('fetchCartItems', () => {
+    it('if cart items has not yet been loaded', async () => {
+      const newCartItem1: CartItem = CartItems()[0]
+      const newCartItem2: CartItem = CartItems()[1]
+      const expectedStoreCartItems = [newCartItem1, newCartItem2]
+      const expectedEventCartItems = {
+        [newCartItem1.id]: { newCartItem: newCartItem1, oldCartItem: undefined },
+        [newCartItem2.id]: { newCartItem: newCartItem2, oldCartItem: undefined },
+      }
+
+      const { services, stores, helpers } = provideDependency(({ apis, helpers }) => {
+        // mock settings
+        const getCartItems = td.replace<TestAPIContainer, 'getCartItems'>(apis, 'getCartItems')
+        td.when(getCartItems()).thenResolve(expectedStoreCartItems)
+        // sign-in user settings
+        helpers.account.signIn(TaroYamada)
+      })
+
+      // event validation
+      services.shop.onUserCartItemsChange((newCartItem, oldCartItem) => {
+        const id = (newCartItem?.id || oldCartItem?.id) as string
+        expect(expectedEventCartItems[id]).toEqual({ newCartItem, oldCartItem })
+      })
+
+      // run the test target
+      await services.shop.fetchUserCartItems()
+
+      // store validation
+      const actual = [...stores.cart.all].sort(sortIdFunc)
+      expect(actual).toEqual(expectedStoreCartItems.sort(sortIdFunc))
+    })
+
+    it('if part of cart items has already been loaded', async () => {
+      const oldCartItem2: CartItem = CartItems()[1]
+      const newCartItem1: CartItem = CartItems()[0]
+      const newCartItem2: CartItem = { ...oldCartItem2, price: 90, title: 'FIRE HD 8 TABLET' }
+      const expectedStoreCartItems = [newCartItem1, newCartItem2]
+      const expectedEventCartItems = {
+        [newCartItem1.id]: { newCartItem: newCartItem1, oldCartItem: undefined },
+        [newCartItem2.id]: { newCartItem: newCartItem2, oldCartItem: oldCartItem2 },
+      }
+
+      const { services, stores } = provideDependency(({ apis, stores, helpers }) => {
+        // store settings
+        stores.cart.add(oldCartItem2)
+        // mock settings
+        const getCartItems = td.replace<TestAPIContainer, 'getCartItems'>(apis, 'getCartItems')
+        td.when(getCartItems()).thenResolve(expectedStoreCartItems)
+        // sign-in user settings
+        helpers.account.signIn(TaroYamada)
+      })
+
+      // event validation
+      services.shop.onUserCartItemsChange((newCartItem, oldCartItem) => {
+        const id = (newCartItem?.id || oldCartItem?.id) as string
+        expect(expectedEventCartItems[id]).toEqual({ newCartItem, oldCartItem })
+      })
+
+      // run the test target
+      await services.shop.fetchUserCartItems()
+
+      // store validation
+      const actual = [...stores.cart.all].sort(sortIdFunc)
+      expect(actual).toEqual(expectedStoreCartItems.sort(sortIdFunc))
+    })
+
+    it('if a non-existent cart item has been loaded', async () => {
+      const oldCartItem2: CartItem = CartItems()[1] // the cart item that exist locally, but not on the server
+      const newCartItem1: CartItem = CartItems()[0]
+      const expectedStoreCartItems = [newCartItem1]
+      const expectedEventCartItems = {
+        [newCartItem1.id]: { newCartItem: newCartItem1, oldCartItem: undefined },
+        [oldCartItem2.id]: { newCartItem: undefined, oldCartItem: oldCartItem2 },
+      }
+
+      const { services, stores } = provideDependency(({ apis, stores, helpers }) => {
+        // store settings
+        stores.cart.add(oldCartItem2)
+        // mock settings
+        const getCartItems = td.replace<TestAPIContainer, 'getCartItems'>(apis, 'getCartItems')
+        td.when(getCartItems()).thenResolve(expectedStoreCartItems)
+        // sign-in user settings
+        helpers.account.signIn(TaroYamada)
+      })
+
+      // event validation
+      services.shop.onUserCartItemsChange((newCartItem, oldCartItem) => {
+        const id = (newCartItem?.id || oldCartItem?.id) as string
+        expect(expectedEventCartItems[id]).toEqual({ newCartItem, oldCartItem })
+      })
+
+      // run the test target
+      await services.shop.fetchUserCartItems()
+
+      // store validation
+      const actual = [...stores.cart.all].sort(sortIdFunc)
+      expect(actual).toEqual(expectedStoreCartItems.sort(sortIdFunc))
     })
 
     it('if not signed-in', async () => {
@@ -143,14 +346,14 @@ describe('ShopService', () => {
       let actual!: Error
       try {
         // run the test target
-        await services.shop.fetchCartItems()
+        await services.shop.fetchUserCartItems()
       } catch (err: any) {
         actual = err
       }
 
       expect(actual.message).toBe(`Not signed-in.`)
 
-      // verify that there is no change in the store
+      // validate that there is no change in the store
       expect(stores.cart.all.length).toBe(0)
     })
 
@@ -159,58 +362,63 @@ describe('ShopService', () => {
       const { stores, services } = provideDependency(({ apis, helpers }) => {
         // mock settings
         const getCartItems = td.replace<TestAPIContainer, 'getCartItems'>(apis, 'getCartItems')
-        td.when(getCartItems(SignInUser.id)).thenReject(expected)
+        td.when(getCartItems()).thenReject(expected)
         // sign-in user settings
-        helpers.account.signIn(SignInUser)
+        helpers.account.signIn(TaroYamada)
       })
 
       let actual!: Error
       try {
         // run the test target
-        await services.shop.fetchCartItems()
+        await services.shop.fetchUserCartItems()
       } catch (err: any) {
         actual = err
       }
 
       expect(actual).toBe(expected)
-      // verify that there is no change in the store
+      // validate that there is no change in the store
       expect(stores.cart.all.length).toBe(0)
     })
   })
 
-  describe('addItemToCart', () => {
+  describe('incrementCartItem', () => {
     it('basic case - add', async () => {
-      // set a number of items in stock for a current product
-      const products = Products()
-      const product3 = products[2]
-      product3.stock = 10
-      // response object after API execution
-      const response: CartItemEditResponse = {
+      const quantity = 1
+
+      const oldProduct3 = Products()[2]
+      const newProduct3: Product = { ...oldProduct3, stock: oldProduct3.stock - quantity, updatedAt: dayjs() }
+      const expectedStoreProduct = newProduct3
+      const expectedEventProduct = { newProduct: newProduct3, oldProduct: oldProduct3 }
+
+      const newCartItem3: CartItem = {
         id: generateId(),
-        uid: SignInUser.id,
-        productId: product3.id,
-        title: product3.title,
-        price: product3.price,
-        quantity: 1,
+        uid: TaroYamada.id,
+        productId: newProduct3.id,
+        title: newProduct3.title,
+        price: newProduct3.price,
+        quantity,
         createdAt: dayjs(),
         updatedAt: dayjs(),
+      }
+      const expectedStoreCartItem = newCartItem3
+      const expectedEventCartItem = { newCartItem: newCartItem3, oldCartItem: undefined }
+
+      const response: CartItemEditResponse = {
+        ...newCartItem3,
         product: {
-          id: product3.id,
-          stock: product3.stock - 1,
-          createdAt: dayjs(),
-          updatedAt: dayjs(),
+          ...newProduct3,
         },
       }
 
-      const { stores, helpers, services } = provideDependency(({ apis, stores, helpers }) => {
+      const { services, stores } = provideDependency(({ apis, stores, helpers }) => {
         // store settings
-        stores.product.setAll(products)
+        stores.product.setAll(Products())
         // mock settings
         const addCartItems = td.replace<TestAPIContainer, 'addCartItems'>(apis, 'addCartItems')
         td.when(
           addCartItems([
             {
-              uid: SignInUser.id,
+              uid: TaroYamada.id,
               productId: response.productId,
               title: response.title,
               price: response.price,
@@ -219,60 +427,82 @@ describe('ShopService', () => {
           ])
         ).thenResolve([response])
         // sign-in user settings
-        helpers.account.signIn(SignInUser)
+        helpers.account.signIn(TaroYamada)
+      })
+
+      // event validation
+      services.shop.onProductsChange((newProduct, oldProduct) => {
+        expect(expectedEventProduct).toEqual({ newProduct, oldProduct })
+      })
+      services.shop.onUserCartItemsChange((newCartItem, oldCartItem) => {
+        expect(expectedEventCartItem).toEqual({ newCartItem, oldCartItem })
       })
 
       // run the test target
-      await services.shop.addItemToCart(response.product.id)
+      await services.shop.incrementCartItem(response.product.id)
 
-      // verify that the item has added to the cart
-      const cartItem = stores.cart.sgetById(response.id)
-      expect(cartItem.quantity).toBe(response.quantity)
-      // verify that the number of products in stock has properly decremented
-      const product = stores.product.sgetById(response.productId)
-      expect(product.stock).toBe(response.product.stock)
+      // store validation
+      expect(stores.product.getById(expectedStoreProduct.id)).toEqual(expectedStoreProduct)
+      expect(stores.cart.getById(expectedStoreCartItem.id)).toEqual(expectedStoreCartItem)
     })
 
     it('basic case - update', async () => {
-      // set a number of items in stock for a current product
-      const products = Products()
-      const product1 = products[0]
-      product1.stock = 10
-      // response object after API execution
-      const cartItem1 = CartItems()[0]
-      expect(cartItem1.productId).toBe(product1.id)
-      const response: CartItemEditResponse = {
-        ...cartItem1,
-        quantity: cartItem1.quantity + 1,
+      const quantity = 1
+
+      const oldProduct1 = Products()[0]
+      const newProduct1: Product = { ...oldProduct1, stock: oldProduct1.stock - quantity, updatedAt: dayjs() }
+      const expectedStoreProduct = newProduct1
+      const expectedEventProduct = { newProduct: newProduct1, oldProduct: oldProduct1 }
+
+      const oldCartItem1 = CartItems()[0]
+      const newCartItem1: CartItem = {
+        ...oldCartItem1,
+        quantity: oldCartItem1.quantity + quantity,
         updatedAt: dayjs(),
+      }
+      const expectedStoreCartItem = newCartItem1
+      const expectedEventCartItem = { newCartItem: newCartItem1, oldCartItem: oldCartItem1 }
+
+      const response: CartItemEditResponse = {
+        ...newCartItem1,
         product: {
-          id: cartItem1.productId,
-          stock: product1.stock - 1,
-          createdAt: product1.createdAt,
-          updatedAt: dayjs(),
+          ...newProduct1,
         },
       }
 
-      const { stores, helpers, services } = provideDependency(({ apis, stores, helpers }) => {
+      const { services, stores } = provideDependency(({ apis, stores, helpers }) => {
         // store settings
-        stores.product.setAll(products)
-        stores.cart.setAll(CartItems())
+        stores.product.setAll(Products())
+        stores.cart.add(oldCartItem1)
         // mock settings
         const updateCartItems = td.replace<TestAPIContainer, 'updateCartItems'>(apis, 'updateCartItems')
-        td.when(updateCartItems([{ id: response.id, uid: SignInUser.id, quantity: response.quantity }])).thenResolve([response])
+        td.when(
+          updateCartItems([
+            {
+              uid: TaroYamada.id,
+              id: response.id,
+              quantity: response.quantity,
+            },
+          ])
+        ).thenResolve([response])
         // sign-in user settings
-        helpers.account.signIn(SignInUser)
+        helpers.account.signIn(TaroYamada)
+      })
+
+      // event validation
+      services.shop.onProductsChange((newProduct, oldProduct) => {
+        expect(expectedEventProduct).toEqual({ newProduct, oldProduct })
+      })
+      services.shop.onUserCartItemsChange((newCartItem, oldCartItem) => {
+        expect(expectedEventCartItem).toEqual({ newCartItem, oldCartItem })
       })
 
       // run the test target
-      await services.shop.addItemToCart(response.product.id)
+      await services.shop.incrementCartItem(response.product.id)
 
-      // verify the number of cart items has properly incremented
-      const cartItem = stores.cart.sgetById(response.id)
-      expect(cartItem.quantity).toBe(response.quantity)
-      // verify that the number of products in stock has properly decremented
-      const product = stores.product.sgetById(response.productId)
-      expect(product.stock).toBe(response.product.stock)
+      // store validation
+      expect(stores.product.getById(expectedStoreProduct.id)).toEqual(expectedStoreProduct)
+      expect(stores.cart.getById(expectedStoreCartItem.id)).toEqual(expectedStoreCartItem)
     })
 
     it('if do not have enough stock', async () => {
@@ -288,20 +518,20 @@ describe('ShopService', () => {
         const addCartItems = td.replace<TestAPIContainer, 'addCartItems'>(apis, 'addCartItems')
         td.when(addCartItems(td.matchers.anything())).thenReject(new Error())
         // sign-in user settings
-        helpers.account.signIn(SignInUser)
+        helpers.account.signIn(TaroYamada)
       })
 
       let actual!: Error
       try {
         // run the test target
-        await services.shop.addItemToCart(product1.id)
+        await services.shop.incrementCartItem(product1.id)
       } catch (err: any) {
         actual = err
       }
 
       expect(actual).toBeInstanceOf(Error)
 
-      // verify that there is no change in the store
+      // validate that there is no change in the store
       expect(stores.product.all).toEqual(products)
       expect(stores.cart.all.length).toBe(0)
     })
@@ -318,14 +548,14 @@ describe('ShopService', () => {
       let actual!: Error
       try {
         // run the test target
-        await services.shop.addItemToCart(product1.id)
+        await services.shop.incrementCartItem(product1.id)
       } catch (err: any) {
         actual = err
       }
 
       expect(actual.message).toBe(`Not signed-in.`)
 
-      // verify that there is no change in the store
+      // validate that there is no change in the store
       expect(stores.product.all).toEqual(products)
       expect(stores.cart.all.length).toBe(0)
     })
@@ -342,113 +572,130 @@ describe('ShopService', () => {
         const addCartItems = td.replace<TestAPIContainer, 'addCartItems'>(apis, 'addCartItems')
         td.when(addCartItems(td.matchers.anything())).thenReject(expected)
         // sign-in user settings
-        helpers.account.signIn(SignInUser)
+        helpers.account.signIn(TaroYamada)
       })
 
       let actual!: Error
       try {
         // run the test target
-        await services.shop.addItemToCart(product1.id)
+        await services.shop.incrementCartItem(product1.id)
       } catch (err: any) {
         actual = err
       }
 
       expect(actual).toBe(expected)
 
-      // verify that there is no change in the store
+      // validate that there is no change in the store
       expect(stores.product.all).toEqual(products)
       expect(stores.cart.all.length).toBe(0)
     })
   })
 
-  describe('removeItemFromCart', () => {
+  describe('decrementCartItem', () => {
     it('basic case - update', async () => {
-      // set a number of items in stock for a current product
-      const products = Products()
-      const product1 = products[0]
-      product1.stock = 10
-      // set a current cart quantity
-      const cartItems = CartItems()
-      const cartItem1 = cartItems[0]
-      cartItem1.quantity = 2
-      // response object after API execution
-      expect(cartItem1.productId).toBe(product1.id)
+      const quantity = 1
+
+      const oldProduct1 = Products()[0]
+      const newProduct1: Product = { ...oldProduct1, stock: oldProduct1.stock + quantity, updatedAt: dayjs() }
+      const expectedStoreProduct = newProduct1
+      const expectedEventProduct = { newProduct: newProduct1, oldProduct: oldProduct1 }
+
+      const oldCartItem1 = CartItems()[0]
+      const newCartItem1: CartItem = {
+        ...oldCartItem1,
+        quantity: oldCartItem1.quantity - quantity,
+        updatedAt: dayjs(),
+      }
+      const expectedStoreCartItem = newCartItem1
+      const expectedEventCartItem = { newCartItem: newCartItem1, oldCartItem: oldCartItem1 }
+
       const response: CartItemEditResponse = {
-        ...cartItem1,
-        quantity: cartItem1.quantity - 1,
+        ...newCartItem1,
         product: {
-          id: cartItem1.productId,
-          stock: product1.stock + 1,
-          createdAt: product1.updatedAt,
-          updatedAt: dayjs(),
+          ...newProduct1,
         },
       }
 
-      const { stores, helpers, services } = provideDependency(({ apis, stores, helpers }) => {
+      const { services, stores } = provideDependency(({ apis, stores, helpers }) => {
         // store settings
-        stores.product.setAll(products)
-        stores.cart.setAll(cartItems)
+        stores.product.setAll(Products())
+        stores.cart.add(oldCartItem1)
         // mock settings
         const updateCartItems = td.replace<TestAPIContainer, 'updateCartItems'>(apis, 'updateCartItems')
-        td.when(updateCartItems([{ id: response.id, uid: SignInUser.id, quantity: response.quantity }])).thenResolve([response])
+        td.when(
+          updateCartItems([
+            {
+              uid: TaroYamada.id,
+              id: response.id,
+              quantity: response.quantity,
+            },
+          ])
+        ).thenResolve([response])
         // sign-in user settings
-        helpers.account.signIn(SignInUser)
+        helpers.account.signIn(TaroYamada)
+      })
+
+      // event validation
+      services.shop.onProductsChange((newProduct, oldProduct) => {
+        expect(expectedEventProduct).toEqual({ newProduct, oldProduct })
+      })
+      services.shop.onUserCartItemsChange((newCartItem, oldCartItem) => {
+        expect(expectedEventCartItem).toEqual({ newCartItem, oldCartItem })
       })
 
       // run the test target
-      await services.shop.removeItemFromCart(response.product.id)
+      await services.shop.decrementCartItem(response.product.id)
 
-      // verify that the number of cart items has properly decremented
-      const cartItem = stores.cart.sgetById(response.id)
-      expect(cartItem.quantity).toBe(response.quantity)
-      // verify that the number of products in stock has properly incremented
-      const product = stores.product.sgetById(response.productId)
-      expect(product.stock).toBe(response.product.stock)
+      // store validation
+      expect(stores.product.getById(expectedStoreProduct.id)).toEqual(expectedStoreProduct)
+      expect(stores.cart.getById(expectedStoreCartItem.id)).toEqual(expectedStoreCartItem)
     })
 
     it('basic case - remove', async () => {
-      // set a number of items in stock for a current product
-      const products = Products()
-      const product1 = products[0]
-      product1.stock = 10
-      // set a current cart quantity
-      const cartItems = CartItems()
-      const cartItem1 = cartItems[0]
-      cartItem1.quantity = 1
-      // response object after API execution
-      expect(cartItem1.productId).toBe(product1.id)
+      const quantity = 1
+
+      const oldProduct1 = Products()[0]
+      const newProduct1: Product = { ...oldProduct1, stock: oldProduct1.stock + quantity, updatedAt: dayjs() }
+      const expectedStoreProduct = newProduct1
+      const expectedEventProduct = { newProduct: newProduct1, oldProduct: oldProduct1 }
+
+      const oldCartItem1: CartItem = { ...CartItems()[0], quantity }
+      const expectedStoreCartItem = oldCartItem1
+      const expectedEventCartItem = { newCartItem: undefined, oldCartItem: oldCartItem1 }
+
       const response: CartItemEditResponse = {
-        ...cartItem1,
-        quantity: cartItem1.quantity - 1,
+        ...oldCartItem1,
+        quantity: oldCartItem1.quantity - 1,
         product: {
-          id: cartItem1.productId,
-          stock: product1.stock + 1,
-          createdAt: product1.updatedAt,
-          updatedAt: dayjs(),
+          ...newProduct1,
         },
       }
 
-      const { stores, helpers, services } = provideDependency(({ apis, stores, helpers }) => {
+      const { services, stores } = provideDependency(({ apis, stores, helpers }) => {
         // store settings
-        stores.product.setAll(products)
-        stores.cart.setAll(cartItems)
+        stores.product.setAll(Products())
+        stores.cart.add(oldCartItem1)
         // mock settings
         const removeCartItems = td.replace<TestAPIContainer, 'removeCartItems'>(apis, 'removeCartItems')
-        td.when(removeCartItems([response.id])).thenResolve([response])
+        td.when(removeCartItems([oldCartItem1.id])).thenResolve([response])
         // sign-in user settings
-        helpers.account.signIn(SignInUser)
+        helpers.account.signIn(TaroYamada)
+      })
+
+      // event validation
+      services.shop.onProductsChange((newProduct, oldProduct) => {
+        expect(expectedEventProduct).toEqual({ newProduct, oldProduct })
+      })
+      services.shop.onUserCartItemsChange((newCartItem, oldCartItem) => {
+        expect(expectedEventCartItem).toEqual({ newCartItem, oldCartItem })
       })
 
       // run the test target
-      await services.shop.removeItemFromCart(response.product.id)
+      await services.shop.decrementCartItem(response.product.id)
 
-      // verify that cart items have removed
-      const cartItem = stores.cart.getById(response.id)
-      expect(cartItem).toBeUndefined()
-      // 商品の在庫数が適切にプラスされたか検証
-      // verify that the number of products in stock has properly incremented
-      const product = stores.product.sgetById(response.productId)
-      expect(product.stock).toBe(response.product.stock)
+      // store validation
+      expect(stores.product.getById(expectedStoreProduct.id)).toEqual(expectedStoreProduct)
+      expect(stores.cart.getById(expectedStoreCartItem.id)).toBeUndefined()
     })
 
     it('if not signed-in', async () => {
@@ -465,14 +712,14 @@ describe('ShopService', () => {
       let actual!: Error
       try {
         // run the test target
-        await services.shop.removeItemFromCart(product1.id)
+        await services.shop.decrementCartItem(product1.id)
       } catch (err: any) {
         actual = err
       }
 
       expect(actual.message).toBe(`Not signed-in.`)
 
-      // verify that there is no change in the store
+      // validate that there is no change in the store
       expect(stores.product.all).toEqual(products)
       expect(stores.cart.all).toEqual(cartItems)
     })
@@ -494,20 +741,20 @@ describe('ShopService', () => {
         const removeCartItems = td.replace<TestAPIContainer, 'removeCartItems'>(apis, 'removeCartItems')
         td.when(removeCartItems(td.matchers.anything())).thenReject(expected)
         // sign-in user settings
-        helpers.account.signIn(SignInUser)
+        helpers.account.signIn(TaroYamada)
       })
 
       let actual!: Error
       try {
         // run the test target
-        await services.shop.removeItemFromCart(product1.id)
+        await services.shop.decrementCartItem(product1.id)
       } catch (err: any) {
         actual = err
       }
 
       expect(actual).toBe(expected)
 
-      // verify that there is no change in the store
+      // validate that there is no change in the store
       expect(stores.product.all).toEqual(Products())
       expect(stores.cart.all).toEqual(cartItems)
     })
@@ -515,24 +762,39 @@ describe('ShopService', () => {
 
   describe('checkout', () => {
     it('basic case', async () => {
-      const { apis, services } = provideDependency(({ apis, stores, helpers }) => {
+      const newCartItem1: CartItem = CartItems()[0]
+      const newCartItem2: CartItem = CartItems()[1]
+      const expectedEventCartItems = {
+        [newCartItem1.id]: { newCartItem: undefined, oldCartItem: newCartItem1 },
+        [newCartItem2.id]: { newCartItem: undefined, oldCartItem: newCartItem2 },
+      }
+
+      const { apis, services, stores } = provideDependency(({ apis, stores, helpers }) => {
         // store settings
         stores.product.setAll(Products())
-        stores.cart.setAll(CartItems())
+        stores.cart.setAll([newCartItem1, newCartItem2])
         // mock settings
         const checkoutCart = td.replace<TestAPIContainer, 'checkoutCart'>(apis, 'checkoutCart')
         td.when(checkoutCart()).thenResolve(true)
         // sign-in user settings
-        helpers.account.signIn(SignInUser)
+        helpers.account.signIn(TaroYamada)
+      })
+
+      // event validation
+      services.shop.onUserCartItemsChange((newCartItem, oldCartItem) => {
+        const id = (newCartItem?.id || oldCartItem?.id) as string
+        expect(expectedEventCartItems[id]).toEqual({ newCartItem, oldCartItem })
       })
 
       // run the test target
       await services.shop.checkout()
 
-      expect(services.shop.cartItems.length).toBe(0)
-      expect(services.shop.products).toEqual(Products())
+      // store validation
+      expect(stores.cart.getById(newCartItem1.id)).toBeUndefined()
+      expect(stores.cart.getById(newCartItem2.id)).toBeUndefined()
+      expect(stores.product.all).toEqual(Products())
 
-      // verify that the API was called with the proper arguments
+      // validate that the API was called with the proper arguments
       const exp = td.explain(apis.checkoutCart)
       expect(exp.calls.length).toBe(1) // only be called once
       expect(exp.calls[0].args[0]).toBeUndefined() // the first call should be no argument
@@ -555,7 +817,7 @@ describe('ShopService', () => {
 
       expect(actual.message).toBe(`Not signed-in.`)
 
-      // verify that there is no change in the store
+      // validate that there is no change in the store
       expect(stores.product.all).toEqual(Products())
       expect(stores.cart.all).toEqual(CartItems())
     })
@@ -570,7 +832,7 @@ describe('ShopService', () => {
         const checkoutCart = td.replace<TestAPIContainer, 'checkoutCart'>(apis, 'checkoutCart')
         td.when(checkoutCart()).thenReject(expected)
         // sign-in user settings
-        helpers.account.signIn(SignInUser)
+        helpers.account.signIn(TaroYamada)
       })
 
       let actual!: Error
@@ -583,7 +845,7 @@ describe('ShopService', () => {
 
       expect(actual).toBe(expected)
 
-      // verify that there is no change in the store
+      // validate that there is no change in the store
       expect(stores.product.all).toEqual(Products())
       expect(stores.cart.all).toEqual(CartItems())
     })

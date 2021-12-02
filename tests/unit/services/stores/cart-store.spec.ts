@@ -1,5 +1,6 @@
 import { CartItem, generateId } from '@/services'
 import { provideDependency, toBeCopyCartItem } from '../../../helpers'
+import { TestUsers } from '@/services/test-data'
 import dayjs from 'dayjs'
 
 //==========================================================================
@@ -8,11 +9,14 @@ import dayjs from 'dayjs'
 //
 //==========================================================================
 
+const TaroYamada = TestUsers[0]
+const IchiroSuzuki = TestUsers[1]
+
 function CartItems(): CartItem[] {
   return [
     {
       id: 'cartItem1',
-      uid: 'taro.yamada',
+      uid: TaroYamada.id,
       productId: 'product1',
       title: 'iPad 4 Mini',
       price: 39700,
@@ -22,10 +26,20 @@ function CartItems(): CartItem[] {
     },
     {
       id: 'cartItem2',
-      uid: 'taro.yamada',
+      uid: TaroYamada.id,
       productId: 'product2',
       title: 'Fire HD 8 Tablet',
       price: 8980,
+      quantity: 1,
+      createdAt: dayjs('2020-01-01'),
+      updatedAt: dayjs('2020-01-02'),
+    },
+    {
+      id: 'cartItem3',
+      uid: IchiroSuzuki.id,
+      productId: 'product1',
+      title: 'iPad 4 Mini',
+      price: 39700,
       quantity: 1,
       createdAt: dayjs('2020-01-01'),
       updatedAt: dayjs('2020-01-02'),
@@ -35,6 +49,10 @@ function CartItems(): CartItem[] {
 
 function CartItem1(): CartItem {
   return CartItems()[0]
+}
+
+function CartItem2(): CartItem {
+  return CartItems()[1]
 }
 
 //==========================================================================
@@ -52,16 +70,6 @@ describe('CartStore', () => {
     const actual = stores.cart.all
 
     expect(actual).toEqual(CartItems())
-  })
-
-  it('totalPrice', async () => {
-    const { stores } = provideDependency(({ stores }) => {
-      stores.cart.setAll(CartItems())
-    })
-
-    const actual = stores.cart.totalPrice
-
-    expect(actual).toBe(88380)
   })
 
   describe('getById', () => {
@@ -173,6 +181,21 @@ describe('CartStore', () => {
       }
 
       expect(actual.message).toBe(`The specified CartItem was not found: {"productId":"9999"}`)
+    })
+  })
+
+  describe('getListByUID', () => {
+    it('basic case', () => {
+      const { stores } = provideDependency(({ stores }) => {
+        stores.cart.setAll(CartItems())
+      })
+
+      // run the test target
+      const actual = stores.cart.getListByUID(TaroYamada.id)
+
+      expect(actual[0]).toEqual(CartItem1())
+      expect(actual[1]).toEqual(CartItem2())
+      toBeCopyCartItem(stores, actual)
     })
   })
 
