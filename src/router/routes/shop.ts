@@ -1,7 +1,7 @@
 import { ComputedRef, reactive } from 'vue'
-import { RawRoute, Route } from '@/router/core'
+import { LocaleRoute, LocaleRouteContainerInput, LocaleRouteInput, RawLocaleRoute } from '@/router/base'
+import { isImplemented, removeEndSlash } from 'js-common-lib'
 import { UnwrapNestedRefs } from '@vue/reactivity'
-import { removeEndSlash } from 'js-common-lib'
 import { useRouter } from '@/router'
 
 //==========================================================================
@@ -12,46 +12,37 @@ import { useRouter } from '@/router'
 
 interface ShopRoute extends UnwrapNestedRefs<RawShopRoute> {}
 
-interface RawShopRoute extends RawRoute {
+interface RawShopRoute extends RawLocaleRoute {
   readonly locale: ComputedRef<string>
   move(): Promise<boolean>
   toMovePath(): string
 }
 
 namespace ShopRoute {
-  export function newInstance(locale: ComputedRef<string>): ShopRoute {
-    return reactive(newRawInstance(locale))
+  export function newInstance(input: LocaleRouteContainerInput): ShopRoute {
+    return reactive(
+      newRawInstance({
+        routePath: `/:locale/shop`,
+        component: () => import(/* webpackChunkName: "pages/shop" */ '@/pages/shop'),
+        ...input,
+      })
+    )
   }
 
-  function newRawInstance(locale: ComputedRef<string>) {
+  function newRawInstance(input: LocaleRouteInput) {
     //----------------------------------------------------------------------
     //
     //  Variables
     //
     //----------------------------------------------------------------------
 
-    const base = Route.newRawInstance({
-      routePath: `/:locale/shop`,
-      component: () => import(/* webpackChunkName: "pages/shop" */ '@/pages/shop'),
-    })
+    const base = LocaleRoute.newRawInstance(input)
 
     //----------------------------------------------------------------------
     //
     //  Methods
     //
     //----------------------------------------------------------------------
-
-    base.toPath.body = input => {
-      const { routePath, params, query } = input
-      // replace the language in `params` with the language selected by the application
-      // NOTE: Except at a start of the application, the order of processing is
-      // "change language" -> "change root".
-      return base.toPath.super({
-        routePath,
-        params: { ...params, locale: locale.value },
-        query,
-      })
-    }
 
     const move: RawShopRoute['move'] = async () => {
       const router = useRouter()
@@ -73,7 +64,7 @@ namespace ShopRoute {
     const toMovePath: RawShopRoute['toMovePath'] = () => {
       return base.toPath({
         routePath: base.routePath.value,
-        params: { locale: locale.value },
+        params: { locale: base.locale.value },
         query: {},
       })
     }
@@ -84,12 +75,13 @@ namespace ShopRoute {
     //
     //----------------------------------------------------------------------
 
-    return {
+    const result = {
       ...base,
-      locale,
       move,
       toMovePath,
     }
+
+    return isImplemented<RawShopRoute, typeof result>(result)
   }
 }
 

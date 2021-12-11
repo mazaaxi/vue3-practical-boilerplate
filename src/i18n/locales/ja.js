@@ -40,6 +40,12 @@ export default {
     cartIsEmpty: 'カートは空です。',
     checkoutQ: '精算してもよろしいですか？',
   },
+  routing: {
+    backHistory: '前の履歴へ',
+    forwardHistory: '次の履歴へ',
+    logCurrentRoute: '現在のルートをログ表示',
+    clearLog: 'ログをクリア',
+  },
   serviceWorker: {
     ready: 'ServiceWorkerが起動しました。',
     installing: 'ServiceWorkerをインストールしています。',

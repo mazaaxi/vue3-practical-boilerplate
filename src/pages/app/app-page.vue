@@ -81,6 +81,11 @@
                 <q-item-label>ABC</q-item-label>
               </q-item-section>
             </q-item>
+            <q-item clickable tag="a" :to="`/${locale}/examples/routing`">
+              <q-item-section>
+                <q-item-label>Routing</q-item-label>
+              </q-item-section>
+            </q-item>
             <q-item clickable tag="a" :to="`/${locale}/examples/miniature-project`">
               <q-item-section>
                 <q-item-label>Miniature Project</q-item-label>

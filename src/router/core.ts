@@ -1,8 +1,7 @@
+import { ComputedRef, Ref, computed, ref } from 'vue'
 import { Key, compile, pathToRegexp } from 'path-to-regexp'
 import { LocationQuery, LocationQueryValue, RouteLocationNormalized, RouteParams, RouteRecordRedirectOption, Router } from 'vue-router'
-import { Ref, nextTick, ref } from 'vue'
 import { isImplemented, removeEndSlash } from 'js-common-lib'
-import { Unsubscribe } from 'nanoevents'
 import { extensionMethod } from '@/base'
 
 //==========================================================================
@@ -48,35 +47,50 @@ interface Route {
    */
   readonly params: RouteParams
   /**
-   * A status of the route.
-   */
-  readonly status: FlowStatus
-  /**
    * A flag indicating whether the current route is itself.
    */
   readonly isCurrent: boolean
   /**
+   * This flag indicates whether the history is currently being moved.
+   */
+  readonly isHistoryMoving: boolean
+  /**
    * This flag indicates whether a history move has performed.
    */
-  readonly historyMove: boolean
+  readonly hasHistoryMoved: boolean
+}
+
+interface RawRoute
+  extends Omit<
+    Route,
+    'basePath' | 'path' | 'fullPath' | 'hash' | 'query' | 'params' | 'status' | 'isCurrent' | 'isHistoryMoving' | 'hasHistoryMoved'
+  > {
+  readonly basePath: Ref<string>
+  readonly path: Ref<string>
+  readonly fullPath: Ref<string>
+  readonly hash: Ref<string>
+  readonly query: Ref<LocationQuery>
+  readonly params: Ref<RouteParams>
+  readonly isCurrent: Ref<boolean>
+  readonly isHistoryMoving: Ref<boolean>
+  readonly hasHistoryMoved: Ref<boolean>
   /**
-   * This is a navigation guard when the path below the base path is changed.
-   * If you don't want to transition to the next, return `false` as the return value.
+   * Converts itself to the Vue Router configuration format.
    */
-  onBeforeRouteUpdate(guard: NavigationGuardChecker): Unsubscribe
+  toRouteConfig(): RouteConfig | RouteConfig[]
   /**
-   * This is a navigation guard when you change from the base path to another route.
-   * If you don't want to transition to the next, return `false` as the return value.
+   * Updates its own status based on the information passed to it.
    */
-  onBeforeRouteLeave(guard: NavigationGuardChecker): Unsubscribe
+  updateByFlow(to: VueRoute, from: VueRoute): Promise<void>
   /**
-   * Registers a callback after a path lower than the base path is changed.
+   * Updates the state based on the specified route.
    */
-  onAfterRouteUpdate(cb: NavigationAfterCallback, options?: { immediate?: boolean }): Unsubscribe
+  update(route: VueRoute): Promise<void>
   /**
-   * Registers a callback when a route is changed from the base path to another route.
+   * Refresh the current route. If itself is not the current route, nothing will be done.
+   * This function is executed when the language is switched, and is used to reflect the switched language in the URL.
    */
-  onAfterRouteLeave(cb: NavigationAfterCallback): Unsubscribe
+  refresh(router: Router): Promise<void>
 }
 
 interface RouteConfig {
@@ -85,54 +99,11 @@ interface RouteConfig {
   redirect?: RouteRecordRedirectOption
 }
 
-interface RawRoute<EXTRA extends { historyMove?: boolean } = { historyMove?: boolean }>
-  extends Omit<Route, 'basePath' | 'path' | 'fullPath' | 'hash' | 'query' | 'params' | 'status' | 'isCurrent' | 'historyMove'> {
-  readonly basePath: Ref<string>
-  readonly path: Ref<string>
-  readonly fullPath: Ref<string>
-  readonly hash: Ref<string>
-  readonly query: Ref<LocationQuery>
-  readonly params: Ref<RouteParams>
-  readonly status: Ref<FlowStatus>
-  readonly isCurrent: Ref<boolean>
-  readonly historyMove: Ref<boolean>
-  /**
-   * Converts itself to the Vue Router configuration format.
-   */
-  toRouteConfig(): RouteConfig | RouteConfig[]
-  /**
-   * Checks if the route can proceed to the next route.
-   */
-  proceed(to: VueRoute, from: VueRoute): Promise<boolean>
-  /**
-   * Updates its own status based on the information passed to it.
-   */
-  update(to: VueRoute, from: VueRoute, extra?: EXTRA): Promise<void>
-  /**
-   * Perform post-processing of route movement.
-   */
-  after(to: VueRoute, from: VueRoute): void
-  /**
-   * Refresh the current route. If itself is not the current route, nothing will be done.
-   * This function is executed when the language is switched, and is used to reflect the switched language in the URL.
-   */
-  refresh(router: Router, extra?: { historyMove?: boolean }): Promise<void>
-  /**
-   * Updates the state based on the specified route.
-   */
-  updateState(to: VueRoute, extra?: EXTRA): Promise<void>
-}
-
-type NavigationGuardChecker = (to: VueRoute, from: VueRoute) => Promise<void | boolean>
-
-type NavigationAfterCallback = (to: VueRoute, from: VueRoute) => any
-
-type FlowStatus = 'None' | 'Enter' | 'Update' | 'Leave'
-
 interface RouteInput {
   routePath?: string
   component?: any
   redirect?: RouteRecordRedirectOption
+  isHistoryMoving: ComputedRef<boolean>
 }
 
 //==========================================================================
@@ -153,12 +124,6 @@ namespace Route {
     const routePath = ref(input.routePath ?? '')
     const component = ref(input.component)
     const redirect = ref(input.redirect) as Ref<RouteRecordRedirectOption | undefined>
-    const beforeUpdateListeners: NavigationGuardChecker[] = []
-    const beforeLeaveListeners: NavigationGuardChecker[] = []
-    const afterUpdateListeners: NavigationAfterCallback[] = []
-    const afterLeaveListeners: NavigationAfterCallback[] = []
-
-    const navigating: { to: VueRoute; from: VueRoute } = {} as any
 
     //----------------------------------------------------------------------
     //
@@ -172,58 +137,11 @@ namespace Route {
     const hash = ref('')
     const query = ref<LocationQuery>({})
     const params = ref<RouteParams>({})
-    const status = ref<FlowStatus>('None')
     const isCurrent = ref(false)
-    const historyMove = ref(false)
+    const isHistoryMoving = input.isHistoryMoving
 
-    //----------------------------------------------------------------------
-    //
-    //  Methods
-    //
-    //----------------------------------------------------------------------
-
-    const onBeforeRouteUpdate: Route['onBeforeRouteUpdate'] = guard => {
-      beforeUpdateListeners.push(guard)
-      return () => {
-        const index = beforeUpdateListeners.indexOf(guard)
-        index >= 0 && beforeUpdateListeners.splice(index, 1)
-      }
-    }
-
-    const onBeforeRouteLeave: Route['onBeforeRouteLeave'] = guard => {
-      beforeLeaveListeners.push(guard)
-      return () => {
-        const index = beforeLeaveListeners.indexOf(guard)
-        index >= 0 && beforeLeaveListeners.splice(index, 1)
-      }
-    }
-
-    const onAfterRouteUpdate: Route['onAfterRouteUpdate'] = (cb, options = { immediate: true }) => {
-      afterUpdateListeners.push(cb)
-
-      // if `options.immediate` is `true` and itself is the current root
-      if (options?.immediate && isCurrent.value) {
-        // When the callback is about to be registered, it waits for a while before executing the callback.
-        // This is because it takes into account the time it takes for the calling component to complete
-        // its preparation.
-        nextTick(() => {
-          cb(navigating.to, navigating.from)
-        })
-      }
-
-      return () => {
-        const index = afterUpdateListeners.indexOf(cb)
-        index >= 0 && afterUpdateListeners.splice(index, 1)
-      }
-    }
-
-    const onAfterRouteLeave: Route['onAfterRouteLeave'] = cb => {
-      afterLeaveListeners.push(cb)
-      return () => {
-        const index = afterLeaveListeners.indexOf(cb)
-        index >= 0 && afterLeaveListeners.splice(index, 1)
-      }
-    }
+    const _hasHistoryMoved = ref(false)
+    const hasHistoryMoved = computed(() => isCurrent.value && _hasHistoryMoved.value)
 
     //----------------------------------------------------------------------
     //
@@ -235,104 +153,39 @@ namespace Route {
       return { path: baseRoutePath.value, component: component.value, redirect: redirect.value }
     })
 
-    const proceed = extensionMethod<RawRoute['proceed']>(async (to, from) => {
-      Object.assign(navigating, { to, from })
-      const toIsCurrent = getIsCurrent(to)
-      const fromIsCurrent = getIsCurrent(from)
-
-      // the next route is itself
-      if (toIsCurrent) {
-        // next route and previous route are the same
-        if (toIsCurrent === fromIsCurrent) {
-          status.value = 'Update'
-        }
-        // next route and previous route are not the same
-        else {
-          status.value = 'Enter'
-        }
-      }
-      // the next route is not itself
-      else {
-        // the previous route is itself
-        if (fromIsCurrent) {
-          status.value = 'Leave'
-        }
-        // the previous route is not itself
-        else {
-          status.value = 'None'
-        }
-      }
-
-      if (status.value === 'Update') {
-        // notifies listeners subscribed to itself that itself will be updated
-        for (const listener of beforeUpdateListeners) {
-          const ret = await listener(to, from)
-          if (ret === false) return false
-        }
-      } else if (status.value === 'Leave') {
-        // notifies listeners subscribed to itself that itself is leaving a current route
-        for (const listener of beforeLeaveListeners) {
-          const ret = await listener(to, from)
-          if (ret === false) return false
-        }
-      }
-
-      return true
+    const updateByFlow = extensionMethod<RawRoute['updateByFlow']>(async (to, from) => {
+      await update(to)
     })
 
-    const update = extensionMethod<RawRoute['update']>(async (to, from, extra) => {
-      Object.assign(navigating, { to, from })
-      await updateState(to, extra)
-    })
+    const update = extensionMethod<RawRoute['update']>(async route => {
+      // set the flag indicating whether a history move has been performed
+      // Note: if it is currently in the process of history move, it means
+      // "history move has been performed"
+      _hasHistoryMoved.value = isHistoryMoving.value
 
-    const after = extensionMethod<RawRoute['after']>((to, from) => {
-      Object.assign(navigating, { to, from })
-
-      if (status.value === 'Update') {
-        // notifies listeners subscribed to itself that itself has updated
-        for (const listener of afterUpdateListeners) {
-          listener(to, from)
-        }
-      } else if (status.value === 'Leave') {
-        // notifies listeners subscribed to itself that itself has left a current route
-        for (const listener of afterLeaveListeners) {
-          listener(to, from)
-        }
-      }
-    })
-
-    const updateState = extensionMethod<RawRoute['updateState']>(async (to, extra) => {
       // determine if itself is a current root
-      isCurrent.value = getIsCurrent(to)
+      isCurrent.value = getIsCurrent(route)
       // reconfigure its own base path
-      basePath.value = getBasePath(to)
+      basePath.value = getBasePath(route)
+
       // reconfigure its own path
       // NOTE: Reconfigure a path if itself is the current root or if the base root path and a root
       // path are the same. Otherwise, reconfigure a path will result in an incomplete path.
       if (isCurrent.value || baseRoutePath.value === routePath.value) {
-        path.value = getPath(to)
-        fullPath.value = getFullPath(to)
+        path.value = getPath(route)
+        fullPath.value = getFullPath(route)
       } else {
         path.value = ''
         fullPath.value = ''
       }
 
       // Setting properties other than the above
-      hash.value = to.hash
-      query.value = to.query
-      params.value = to.params
-      if (typeof extra?.historyMove === 'boolean') {
-        historyMove.value = extra.historyMove
-      }
+      hash.value = route.hash
+      query.value = route.query
+      params.value = route.params
     })
 
-    const refresh: RawRoute['refresh'] = async (router, extra) => {
-      // update its own route state
-      await updateState(router.currentRoute.value, extra)
-
-      // if itself is not a current route, exit
-      if (!isCurrent.value) return
-
+    const refresh = extensionMethod<RawRoute['refresh']>(async router => {
       // if there is no change in the path, do nothing and exit
       const currentPath = removeEndSlash(router.currentRoute.value.fullPath)
       const nextPath = toPath({
@@ -343,9 +196,9 @@ namespace Route {
       })
       if (currentPath === nextPath) return
 
-      // add the new path to the router
+      // push the new path to the router
       await router.push(nextPath)
-    }
+    })
 
     const getBasePath = extensionMethod((route: VueRoute) => {
       return toPath({ routePath: baseRoutePath.value, params: route.params })
@@ -369,7 +222,7 @@ namespace Route {
 
       const keys: Key[] = []
       pathToRegexp(routePath, keys)
-      let result = compile(routePath, { encode: encodeURIComponent })(params)
+      let result = compile(routePath)(params)
 
       if (query) {
         Object.keys(query).forEach((key, index) => {
@@ -396,9 +249,8 @@ namespace Route {
       hash.value = ''
       query.value = {}
       params.value = {}
-      status.value = 'None'
       isCurrent.value = false
-      historyMove.value = false
+      _hasHistoryMoved.value = false
     })
 
     //----------------------------------------------------------------------
@@ -417,19 +269,13 @@ namespace Route {
       hash,
       query,
       params,
-      status,
       isCurrent,
-      historyMove,
-      onBeforeRouteUpdate,
-      onBeforeRouteLeave,
-      onAfterRouteUpdate,
-      onAfterRouteLeave,
+      isHistoryMoving,
+      hasHistoryMoved,
       toRouteConfig,
-      proceed,
+      updateByFlow,
       update,
-      after,
       refresh,
-      updateState,
       getBasePath,
       getPath,
       getFullPath,
@@ -448,4 +294,4 @@ namespace Route {
 //
 //==========================================================================
 
-export { FlowStatus, RawRoute, Route, RouteInput, NavigationGuardChecker }
+export { RawRoute, Route, RouteInput }

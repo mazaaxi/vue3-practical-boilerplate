@@ -4,6 +4,7 @@ import { TestUsers } from '@/services/test-data'
 import { mount } from '@vue/test-utils'
 import { nextTick } from 'vue'
 import { provideDependency } from '../../../../helpers'
+import { useRouterUtils } from '@/router'
 
 describe('message-input.vue', () => {
   beforeEach(() => {
@@ -14,6 +15,9 @@ describe('message-input.vue', () => {
         helpers.account.signIn(testUser)
       })
     })
+
+    const { routes } = useRouterUtils()
+    td.replace<typeof routes['examples']['abc']>(routes.examples.abc, 'message', {})
   })
 
   it('if signIn button is clicked', async () => {

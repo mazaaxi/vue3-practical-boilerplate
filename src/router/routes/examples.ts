@@ -1,7 +1,11 @@
-import { ComputedRef, reactive } from 'vue'
-import { DeepReadonly, pickProps, removeEndSlash } from 'js-common-lib'
-import { RawRoute, Route } from '@/router/core'
+import { ComputedRef, Ref, reactive, ref } from 'vue'
+import { DeepReadonly, isImplemented, pickProps, removeEndSlash } from 'js-common-lib'
+import { LocaleRoute, LocaleRouteContainerInput, LocaleRouteInput, RawLocaleRoute } from '@/router/base'
+import { LocationQueryValue } from 'vue-router'
+import { RawRoute } from '@/router/core'
 import { UnwrapNestedRefs } from '@vue/reactivity'
+import { pathToRegexp } from 'path-to-regexp'
+import url from 'url'
 import { useRouter } from '@/router'
 
 //==========================================================================
@@ -9,18 +13,36 @@ import { useRouter } from '@/router'
 //==========================================================================
 
 interface ExamplesRoutes {
-  abc: AbcRoute
+  readonly miniatureProject: MiniatureProjectRoute
+  readonly abc: AbcRoute
+  readonly routing: RoutingRoute
 }
 
 namespace ExamplesRoutes {
-  export function newInstance(locale: ComputedRef<string>) {
-    const abc = AbcRoute.newRawInstance(locale)
-    const miniatureProject = MiniatureProjectRoute.newRawInstance(locale)
-
-    return reactive({
-      abc,
-      miniatureProject,
+  export function newInstance(input: LocaleRouteContainerInput) {
+    const miniatureProject = MiniatureProjectRoute.newRawInstance({
+      routePath: `/:locale/examples/miniature-project`,
+      component: () => import(/* webpackChunkName: "pages/examples/miniature-project" */ '@/pages/examples/miniature-project'),
+      ...input,
     })
+    const abc = AbcRoute.newRawInstance({
+      routePath: `/:locale/examples/abc`,
+      component: () => import(/* webpackChunkName: "pages/examples/abc" */ '@/pages/examples/abc'),
+      ...input,
+    })
+    const routing = RoutingRoute.newRawInstance({
+      routePath: `/:locale/examples/routing`,
+      component: () => import(/* webpackChunkName: "pages/home" */ '@/pages/examples/routing'),
+      ...input,
+    })
+
+    const result = reactive({
+      miniatureProject,
+      abc,
+      routing,
+    })
+
+    return isImplemented<ExamplesRoutes, typeof result>(result)
   }
 }
 
@@ -30,8 +52,7 @@ namespace ExamplesRoutes {
 
 interface AbcRoute extends UnwrapNestedRefs<RawAbcRoute> {}
 
-interface RawAbcRoute extends RawRoute {
-  readonly locale: ComputedRef<string>
+interface RawAbcRoute extends RawLocaleRoute {
   readonly message: DeepReadonly<AbcRouteMessage>
   move(message?: AbcRouteMessage): Promise<boolean>
   toMovePath(message?: AbcRouteMessage): string
@@ -43,17 +64,14 @@ interface AbcRouteMessage {
 }
 
 namespace AbcRoute {
-  export function newRawInstance(locale: ComputedRef<string>) {
+  export function newRawInstance(input: LocaleRouteInput) {
     //----------------------------------------------------------------------
     //
     //  Variables
     //
     //----------------------------------------------------------------------
 
-    const base = Route.newRawInstance({
-      routePath: `/:locale/examples/abc`,
-      component: () => import(/* webpackChunkName: "pages/examples/abc" */ '@/pages/examples/abc'),
-    })
+    const base = LocaleRoute.newRawInstance(input)
 
     const message = reactive<AbcRouteMessage>({
       title: undefined,
@@ -66,31 +84,19 @@ namespace AbcRoute {
     //
     //----------------------------------------------------------------------
 
-    base.toPath.body = input => {
-      const { routePath, params, query } = input
-      // replace the language in `params` with the language selected by the application
-      // NOTE: Except at a start of the application, the order of processing is
-      // "change language" -> "change root".
-      return base.toPath.super({
-        routePath,
-        params: { ...params, locale: locale.value },
-        query,
-      })
-    }
+    base.update.body = async route => {
+      await base.update.super(route)
 
-    base.after.body = (to, from) => {
       // set message object when moved to own route
       if (base.isCurrent.value) {
-        message.title = to.query.title as string | undefined
-        message.body = to.query.body as string | undefined
+        message.title = route.query.title as string | undefined
+        message.body = route.query.body as string | undefined
       }
       // clear the message object if it is moved to a route that is not its own
       else {
         message.title = undefined
         message.body = undefined
       }
-
-      base.after.super(to, from)
     }
 
     const move: RawAbcRoute['move'] = async message => {
@@ -101,9 +107,7 @@ namespace AbcRoute {
 
       // if a path of the current route is the same as the move path, exit without doing anything
       const currentPath = removeEndSlash(router.currentRoute.value.fullPath)
-      if (currentPath === nextPath) {
-        return false
-      }
+      if (currentPath === nextPath) return false
 
       // set the message object
       Object.assign(message, pickProps(message || {}, ['title', 'body']))
@@ -124,7 +128,7 @@ namespace AbcRoute {
 
       return base.toPath({
         routePath: base.routePath.value,
-        params: { locale: locale.value },
+        params: { locale: base.locale.value },
         query,
       })
     }
@@ -137,11 +141,142 @@ namespace AbcRoute {
 
     return {
       ...base,
-      locale,
       message,
       move,
       toMovePath,
     }
+  }
+}
+
+//==========================================================================
+//  RouteingExampleRoute
+//==========================================================================
+
+interface RoutingRoute extends UnwrapNestedRefs<RawRoutingRoute> {}
+
+interface RawRoutingRoute extends RawLocaleRoute {
+  readonly page: Ref<number>
+  move(page: number): Promise<boolean>
+  toMovePath(page: number): string
+  parse(path_or_fullPath: string): { page: number } | undefined
+  replacePage(page: number): Promise<void>
+}
+
+namespace RoutingRoute {
+  export function newRawInstance(input: LocaleRouteInput) {
+    //----------------------------------------------------------------------
+    //
+    //  Variables
+    //
+    //----------------------------------------------------------------------
+
+    const base = LocaleRoute.newRawInstance(input)
+
+    const page = ref<number>(NaN)
+
+    //----------------------------------------------------------------------
+    //
+    //  Methods
+    //
+    //----------------------------------------------------------------------
+
+    const move: RoutingRoute['move'] = async newPage => {
+      const router = useRouter()
+
+      // generate a move path
+      const nextPath = toMovePath(newPage)
+
+      // if a path of the current route is the same as the move path, exit without doing anything
+      const currentPath = removeEndSlash(router.currentRoute.value.fullPath)
+      if (currentPath === nextPath) return false
+
+      // set new move path as route
+      await router.push(nextPath)
+      return true
+    }
+
+    const toMovePath: RoutingRoute['toMovePath'] = page => {
+      return base.toPath({
+        routePath: base.routePath.value,
+        params: { locale: base.locale.value },
+        query: { page: page.toString() },
+      })
+    }
+
+    const parse: RoutingRoute['parse'] = path_or_fullPath => {
+      const parsedURL = url.parse(path_or_fullPath, true)
+      if (!parsedURL.pathname) return undefined
+
+      const reg = pathToRegexp(base.routePath.value)
+      const regArray = reg.exec(parsedURL.pathname)
+      if (!regArray || regArray?.length < 2) return undefined
+
+      return {
+        page: toPage(parsedURL.query.page),
+      }
+    }
+
+    const replacePage: RoutingRoute['replacePage'] = async page => {
+      const router = useRouter()
+
+      const nextPath = toMovePath(page)
+      const currentPath = removeEndSlash(router.currentRoute.value.fullPath)
+      if (currentPath === nextPath) return
+
+      await router.replace(nextPath)
+    }
+
+    //----------------------------------------------------------------------
+    //
+    //  Internal methods
+    //
+    //----------------------------------------------------------------------
+
+    base.update.body = async route => {
+      await base.update.super(route)
+
+      if (base.isCurrent.value) {
+        page.value = toPage(route.query.page)
+      } else {
+        page.value = 0
+      }
+    }
+
+    function isNumberString(pageString: string | string[] | LocationQueryValue | LocationQueryValue[] | undefined): pageString is string {
+      if (!pageString || Array.isArray(pageString)) return false
+      return !isNaN(parseInt(pageString))
+    }
+
+    function toPage(pageString: string | string[] | LocationQueryValue | LocationQueryValue[] | undefined): number {
+      // if no page is specified in the query, the page number should be "1"
+      // Note: even if there is no page specification, the URL will be considered normal
+      if (pageString === undefined) return 1
+      // if the page specified in the query is not a string, the page number should be "NaN"
+      // Note: determine that the URL is abnormal
+      if (typeof pageString !== 'string') return NaN
+
+      // if a number is specified in the page string, it will be successfully parsed into a page number.
+      // if an invalid string other than a number is specified in the page string, the page number will
+      // be parsed to "NaN".
+      return parseInt(pageString)
+    }
+
+    //----------------------------------------------------------------------
+    //
+    //  Result
+    //
+    //----------------------------------------------------------------------
+
+    const result = {
+      ...base,
+      page,
+      move,
+      toMovePath,
+      parse,
+      replacePage,
+    }
+
+    return isImplemented<RawRoutingRoute, typeof result>(result)
   }
 }
 
@@ -156,39 +291,14 @@ interface RawMiniatureProjectRoute extends RawRoute {
 }
 
 namespace MiniatureProjectRoute {
-  export function newInstance(locale: ComputedRef<string>): MiniatureProjectRoute {
-    return reactive(newRawInstance(locale))
-  }
-
-  export function newRawInstance(locale: ComputedRef<string>) {
+  export function newRawInstance(input: LocaleRouteInput) {
     //----------------------------------------------------------------------
     //
     //  Variables
     //
     //----------------------------------------------------------------------
 
-    const base = Route.newRawInstance({
-      routePath: `/:locale/examples/miniature-project`,
-      component: () => import(/* webpackChunkName: "pages/examples/miniature-project" */ '@/pages/examples/miniature-project'),
-    })
-
-    //----------------------------------------------------------------------
-    //
-    //  Methods
-    //
-    //----------------------------------------------------------------------
-
-    base.toPath.body = input => {
-      const { routePath, params, query } = input
-      // replace the language in `params` with the language selected by the application
-      // NOTE: Except at a start of the application, the order of processing is
-      // "change language" -> "change root".
-      return base.toPath.super({
-        routePath,
-        params: { ...params, locale: locale.value },
-        query,
-      })
-    }
+    const base = LocaleRoute.newRawInstance(input)
 
     //----------------------------------------------------------------------
     //
@@ -198,7 +308,6 @@ namespace MiniatureProjectRoute {
 
     return {
       ...base,
-      locale,
     }
   }
 }

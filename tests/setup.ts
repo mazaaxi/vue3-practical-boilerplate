@@ -1,5 +1,4 @@
-import { useRouter, useRouterUtils } from '@/router'
-import { Router } from 'vue-router'
+import { AppRouterContainer, setupRouter } from '@/router'
 import { clearProvidedDependency } from './helpers'
 import { config } from '@vue/test-utils'
 import { setupConfig } from '@/config'
@@ -24,10 +23,7 @@ beforeEach(async () => {
   setupConfig()
 
   const i18n = setupI18n()
-  td.replace(require('@/router'), 'useRouter', () => td.object<typeof useRouter>())
-  td.replace(require('@/router'), 'useRouterUtils', () => td.object<typeof useRouterUtils>())
-
-  const router = td.object<Router>()
+  const router = setupRouter(i18n, td.object<AppRouterContainer>())
 
   config.global.plugins = [i18n, router]
 })

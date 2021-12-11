@@ -40,6 +40,12 @@ export default {
     cartIsEmpty: 'The cart is empty.',
     checkoutQ: 'Are you sure you want to check out?',
   },
+  routing: {
+    backHistory: 'Back History',
+    forwardHistory: 'Forward History',
+    logCurrentRoute: 'Log the current route',
+    clearLog: 'Clear the log',
+  },
   serviceWorker: {
     ready: 'ServiceWorker was launched from the cache.',
     installing: 'ServiceWorker is installing.',

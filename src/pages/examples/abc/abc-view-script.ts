@@ -1,5 +1,5 @@
 import MessageInputComp, { MessageInput } from '@/pages/examples/abc/message-input.vue'
-import { SetupContext, computed, onUnmounted, reactive, ref, toRefs, watch, watchEffect } from 'vue'
+import { SetupContext, computed, onMounted, reactive, ref, toRefs, watch, watchEffect } from 'vue'
 import { TestUsers } from '@/services/test-data'
 import { useRouterUtils } from '@/router'
 import { useService } from '@/services'
@@ -32,8 +32,10 @@ namespace AbcView {
     //
     //----------------------------------------------------------------------
 
-    onUnmounted(() => {
-      offAfterRouteUpdate()
+    onMounted(() => {
+      const { title, body } = route.message
+      message.title = title || ''
+      message.body = body || ''
     })
 
     //----------------------------------------------------------------------
@@ -89,12 +91,6 @@ namespace AbcView {
       },
       { deep: true }
     )
-
-    const offAfterRouteUpdate = route.onAfterRouteUpdate(() => {
-      const { title, body } = route.message
-      message.title = title || ''
-      message.body = body || ''
-    })
 
     async function signInOrOutButtonOnClick() {
       if (isSignedIn.value) {

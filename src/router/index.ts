@@ -1,15 +1,15 @@
-import { FlowStatus, RawRoute, Route } from '@/router/core'
+import { ComputedRef, WritableComputedRef, computed, reactive, ref, watch } from 'vue'
+import { RawRoute, Route } from '@/router/core'
 import { Router, createRouter, createWebHistory } from 'vue-router'
 import { SupportI18nLocales, useI18nUtils } from '@/i18n'
-import { WritableComputedRef, computed, reactive, ref, watch } from 'vue'
 import { ExamplesRoutes } from '@/router/routes/examples'
 import { HomeRoute } from '@/router/routes/home'
 import { I18n } from 'vue-i18n'
+import { LocaleRouteContainerInput } from '@/router/base'
 import { ShopRoute } from '@/router/routes/shop'
 import { UnwrapNestedRefs } from '@vue/reactivity'
-import { createNanoEvents } from 'nanoevents'
 import flatten from 'lodash/flatten'
-import { pickProps } from 'js-common-lib'
+import { sleep } from 'js-common-lib'
 
 //==========================================================================
 //
@@ -38,8 +38,8 @@ interface AppRoutes {
 namespace AppRouterContainer {
   let instance: AppRouterContainer
 
-  export function setupRouter(i18n: I18n): Router {
-    instance = newInstance(i18n)
+  export function setupRouter(i18n: I18n, router?: AppRouterContainer): Router {
+    instance = router ?? newInstance(i18n)
     return instance.router
   }
 
@@ -48,8 +48,8 @@ namespace AppRouterContainer {
   }
 
   export function useRouterUtils(): Omit<AppRouterContainer, 'router'> {
-    const { router, ...others } = instance
-    return others
+    const { routes, currentRoute } = instance
+    return { routes, currentRoute }
   }
 
   function newInstance(i18n: I18n): AppRouterContainer {
@@ -61,28 +61,42 @@ namespace AppRouterContainer {
 
     const locale = computed(() => (i18n.global.locale as WritableComputedRef<string>).value)
 
-    const historyMove = ref(false)
+    const { loadI18nLocaleMessages } = useI18nUtils()
 
     const routerReady = ref(false)
 
-    const { loadI18nLocaleMessages } = useI18nUtils()
+    const isHistoryMoving = ref(false)
+
+    // The registration of `window.popstate` event should be done before the creation of `router`.
+    // This way, `window.popstate` will be fired before `router.beforeEach`.
+    // On the other hand, if you register the `window.popstate` event after the creation of `router`,
+    // `window.popstate` will be fired after `router.afterEach`.
+    window.addEventListener('popstate', e => {
+      isHistoryMoving.value = true
+    })
 
     //--------------------------------------------------
     //  Routes
     //--------------------------------------------------
 
-    const home = HomeRoute.newInstance(locale)
-    const shop = ShopRoute.newInstance(locale)
-    const examples = ExamplesRoutes.newInstance(locale)
+    const routeInput: LocaleRouteContainerInput = {
+      locale,
+      isHistoryMoving: isHistoryMoving as ComputedRef<boolean>,
+    }
+
+    const home = HomeRoute.newInstance(routeInput)
+    const shop = ShopRoute.newInstance(routeInput)
+    const examples = ExamplesRoutes.newInstance(routeInput)
 
     const fallback = reactive(
       Route.newRawInstance({
         routePath: `/:pathMatch(.*)*`,
         redirect: `/${locale.value}/home`,
+        isHistoryMoving: routeInput.isHistoryMoving,
       })
     )
 
-    const routeList: UnwrapNestedRefs<RawRoute>[] = [home, shop, examples.abc, examples.miniatureProject, fallback]
+    const routeList: UnwrapNestedRefs<RawRoute>[] = [home, shop, examples.abc, examples.miniatureProject, examples.routing, fallback]
 
     //----------------------------------------------------------------------
     //
@@ -108,14 +122,24 @@ namespace AppRouterContainer {
       hash: '',
       query: {},
       params: {},
-      status: 'None' as FlowStatus,
       isCurrent: false,
-      historyMove: false,
-      onBeforeRouteUpdate: () => () => {},
-      onBeforeRouteLeave: () => () => {},
-      onAfterRouteUpdate: () => () => {},
-      onAfterRouteLeave: () => () => {},
+      isHistoryMoving,
+      hasHistoryMoved: false,
     })
+
+    //----------------------------------------------------------------------
+    //
+    //  Internal methods
+    //
+    //----------------------------------------------------------------------
+
+    function updateCurrentRoute(): void {
+      const current = routeList.find(route => route.isCurrent)!
+      const props: (keyof Route)[] = ['basePath', 'path', 'fullPath', 'hash', 'query', 'params', 'isCurrent', 'hasHistoryMoved']
+      props.forEach(prop => {
+        ;(currentRoute as any)[prop] = current[prop]
+      })
+    }
 
     //----------------------------------------------------------------------
     //
@@ -127,23 +151,14 @@ namespace AppRouterContainer {
       routerReady.value = true
     })
 
-    window.addEventListener('popstate', e => {
-      historyMove.value = true
-    })
-
     watch(
       () => locale.value,
       async (newValue, oldValue) => {
         // when a language switch occurs, refresh the current route to embed the switched language in the path.
-        const currentRoute = routeList.find(route => route.isCurrent)
-        if (!currentRoute) return
-        await currentRoute.refresh(router)
+        const current = routeList.find(route => route.isCurrent)
+        current && (await current.refresh(router))
       }
     )
-
-    //--------------------------------------------------
-    //  Navigation guards
-    //--------------------------------------------------
 
     router.beforeEach(async (to, from, next) => {
       const paramsLocale = to.params.locale as string
@@ -156,47 +171,30 @@ namespace AppRouterContainer {
       // load locale messages
       await loadI18nLocaleMessages(paramsLocale)
 
-      // check if proceed a next route
-      for (const route of routeList) {
-        const ret = await route.proceed(to, from)
-        if (!ret) return next(false)
-      }
-
       // update each route object
-      for (const route of routeList) {
-        await route.update(to, from, { historyMove: historyMove.value })
-      }
+      await Promise.all(routeList.map(route => route.updateByFlow(to, from)))
 
-      return next()
+      next()
     })
 
-    router.afterEach((to, from) => {
-      // update the its own current route
-      const _currentRoute = routeList.find(route => route.isCurrent)!
-      Object.assign(
-        currentRoute,
-        pickProps(_currentRoute, [
-          'basePath',
-          'path',
-          'fullPath',
-          'hash',
-          'query',
-          'params',
-          'status',
-          'isCurrent',
-          'onBeforeRouteUpdate',
-          'onBeforeRouteLeave',
-          'onAfterRouteUpdate',
-          'onAfterRouteLeave',
-        ]),
-        { historyMove: historyMove.value }
-      )
+    router.afterEach(async (to, from, failure) => {
+      isHistoryMoving.value = false
 
-      historyMove.value = false
+      if (failure) {
+        // update each route object in the previous route
+        await Promise.all(routeList.map(route => route.update(from)))
 
-      // perform post-move processing for each route object.
-      for (const route of routeList) {
-        route.after(to, from)
+        updateCurrentRoute()
+
+        // If the routing fails in a history move, the `window.popstate` event will be fired.
+        // If this happens, `isHistoryMoving`, which was turned off above, will be turned on
+        // unintentionally. For this reason, we wait for a certain amount of time before
+        // turning off `isHistoryMoving`.
+        await sleep(100).then(() => {
+          isHistoryMoving.value = false
+        })
+      } else {
+        updateCurrentRoute()
       }
     })
 
@@ -221,5 +219,5 @@ namespace AppRouterContainer {
 //==========================================================================
 
 const { setupRouter, useRouter, useRouterUtils } = AppRouterContainer
-export { AppRoutes, setupRouter, useRouter, useRouterUtils }
+export { AppRouterContainer, AppRoutes, setupRouter, useRouter, useRouterUtils }
 export * from '@/router/core'

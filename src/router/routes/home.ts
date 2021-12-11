@@ -1,6 +1,7 @@
-import { ComputedRef, reactive } from 'vue'
-import { RawRoute, Route } from '@/router/core'
+import { LocaleRoute, LocaleRouteContainerInput, LocaleRouteInput, RawLocaleRoute } from '@/router/base'
 import { UnwrapNestedRefs } from '@vue/reactivity'
+import { isImplemented } from 'js-common-lib'
+import { reactive } from 'vue'
 
 //==========================================================================
 //
@@ -8,46 +9,29 @@ import { UnwrapNestedRefs } from '@vue/reactivity'
 //
 //==========================================================================
 
-interface HomeRoute extends UnwrapNestedRefs<RawExampleRoute> {}
+interface HomeRoute extends UnwrapNestedRefs<RawHomeRoute> {}
 
-interface RawExampleRoute extends RawRoute {
-  readonly locale: ComputedRef<string>
-}
+interface RawHomeRoute extends RawLocaleRoute {}
 
 namespace HomeRoute {
-  export function newInstance(locale: ComputedRef<string>): HomeRoute {
-    return reactive(newRawInstance(locale))
+  export function newInstance(input: LocaleRouteContainerInput): HomeRoute {
+    return reactive(
+      newRawInstance({
+        routePath: `/:locale/home`,
+        component: () => import(/* webpackChunkName: "pages/home" */ '@/pages/home'),
+        ...input,
+      })
+    )
   }
 
-  export function newRawInstance(locale: ComputedRef<string>) {
+  function newRawInstance(input: LocaleRouteInput) {
     //----------------------------------------------------------------------
     //
     //  Variables
     //
     //----------------------------------------------------------------------
 
-    const base = Route.newRawInstance({
-      routePath: `/:locale/home`,
-      component: () => import(/* webpackChunkName: "pages/home" */ '@/pages/home'),
-    })
-
-    //----------------------------------------------------------------------
-    //
-    //  Methods
-    //
-    //----------------------------------------------------------------------
-
-    base.toPath.body = input => {
-      const { routePath, params, query } = input
-      // replace the language in `params` with the language selected by the application
-      // NOTE: Except at a start of the application, the order of processing is
-      // "change language" -> "change root".
-      return base.toPath.super({
-        routePath,
-        params: { ...params, locale: locale.value },
-        query,
-      })
-    }
+    const base = LocaleRoute.newRawInstance(input)
 
     //----------------------------------------------------------------------
     //
@@ -55,10 +39,11 @@ namespace HomeRoute {
     //
     //----------------------------------------------------------------------
 
-    return {
+    const result = {
       ...base,
-      locale,
     }
+
+    return isImplemented<RawHomeRoute, typeof result>(result)
   }
 }
 

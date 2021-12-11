@@ -25,7 +25,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onUnmounted, reactive } from 'vue'
+import { defineComponent, reactive } from 'vue'
 import { useRouterUtils } from '@/router'
 
 const HomePageComp = defineComponent({
@@ -34,18 +34,6 @@ const HomePageComp = defineComponent({
   components: {},
 
   setup() {
-    //----------------------------------------------------------------------
-    //
-    //  Lifecycle hooks
-    //
-    //----------------------------------------------------------------------
-
-    onUnmounted(() => {
-      offAfterRouteUpdate()
-      offBeforeRouteUpdate()
-      offBeforeRouteLeave()
-    })
-
     //----------------------------------------------------------------------
     //
     //  Variables
@@ -65,18 +53,6 @@ const HomePageComp = defineComponent({
     //  Events
     //
     //----------------------------------------------------------------------
-
-    const offBeforeRouteUpdate = route.onBeforeRouteUpdate(async (to, from) => {
-      // console.log(`HomePage onBeforeRouteUpdate:`, { to: to.fullPath, from: from.fullPath })
-    })
-
-    const offBeforeRouteLeave = route.onBeforeRouteLeave(async (to, from) => {
-      // console.log(`HomePage onBeforeRouteLeave:`, { to: to.fullPath, from: from.fullPath })
-    })
-
-    const offAfterRouteUpdate = route.onAfterRouteUpdate(async (to, from) => {
-      // console.log(`HomePage onAfterRouteUpdate:`, { to: to.fullPath, from: from.fullPath })
-    })
 
     async function moveToAbcPageButtonOnClick() {
       routes.examples.abc.move(message)
