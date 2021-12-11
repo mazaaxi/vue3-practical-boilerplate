@@ -22,7 +22,7 @@ interface APIRequestConfig {
   params?: any
   paramsSerializer?: (params: any) => string
   responseType?: ResponseType
-  isAuth?: boolean
+  shouldAuth?: boolean
 }
 
 interface APIResponse<T = any> {
@@ -67,9 +67,9 @@ namespace APIClient {
         ...config,
         baseURL: `${removeBothEndsSlash(appConfig.api.baseURL)}/${apiPrefix || ''}`,
       }
-      delete axiosConfig.isAuth
+      delete axiosConfig.shouldAuth
 
-      if (config.isAuth) {
+      if (config.shouldAuth) {
         const idToken = await getIdToken()
         axiosConfig.headers = {
           ...(axiosConfig.headers || {}),

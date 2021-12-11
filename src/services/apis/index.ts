@@ -86,31 +86,31 @@ namespace APIContainer {
 
     const getCartItems: APIContainer['getCartItems'] = async () => {
       const response = await client.get<ToRawEntity<CartItem>[]>('cartItems', {
-        isAuth: true,
+        shouldAuth: true,
       })
       return toEntities(response.data)
     }
 
     const addCartItems: APIContainer['addCartItems'] = async items => {
-      const response = await client.post<ToRawEntity<CartItemEditResponse>[]>('cartItems', items, { isAuth: true })
+      const response = await client.post<ToRawEntity<CartItemEditResponse>[]>('cartItems', items, { shouldAuth: true })
       return toEntities(response.data)
     }
 
     const updateCartItems: APIContainer['updateCartItems'] = async items => {
-      const response = await client.put<ToRawEntity<CartItemEditResponse>[]>('cartItems', items, { isAuth: true })
+      const response = await client.put<ToRawEntity<CartItemEditResponse>[]>('cartItems', items, { shouldAuth: true })
       return toEntities(response.data)
     }
 
     const removeCartItems: APIContainer['removeCartItems'] = async cartItemIds => {
       const response = await client.delete<ToRawEntity<CartItemEditResponse>[]>('cartItems', {
-        isAuth: true,
+        shouldAuth: true,
         params: { ids: cartItemIds },
       })
       return toEntities(response.data)
     }
 
     const checkoutCart: APIContainer['checkoutCart'] = async () => {
-      const response = await client.put<boolean>('cartItems/checkout', undefined, { isAuth: true })
+      const response = await client.put<boolean>('cartItems/checkout', undefined, { shouldAuth: true })
       return response.data
     }
 

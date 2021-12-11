@@ -1,5 +1,6 @@
 import MessageInputComp, { MessageInput } from '@/pages/examples/abc/message-input.vue'
-import { SetupContext, computed, onMounted, reactive, ref, toRefs, watch, watchEffect } from 'vue'
+import { SetupContext, computed, nextTick, onMounted, reactive, ref, toRefs, watch, watchEffect } from 'vue'
+import { QInput } from 'quasar'
 import { TestUsers } from '@/services/test-data'
 import { useRouterUtils } from '@/router'
 import { useService } from '@/services'
@@ -58,6 +59,7 @@ namespace AbcView {
     })
 
     const messageInput = ref<MessageInput>()
+    const logInput = ref<QInput>()
 
     const message = reactive({ title: '', body: '' })
 
@@ -88,6 +90,10 @@ namespace AbcView {
       (newValue, oldValue) => {
         const latestMessage = sentMessages[user.id][0]
         sentMessagesLog.value = `[${user.id}] ${latestMessage}\n${sentMessagesLog.value}`
+        nextTick(() => {
+          const inputEl = logInput.value!.getNativeElement() as HTMLTextAreaElement
+          inputEl.scrollTop = inputEl.scrollHeight
+        })
       },
       { deep: true }
     )
@@ -114,6 +120,7 @@ namespace AbcView {
 
     return {
       messageInput,
+      logInput,
       isSignedIn,
       user,
       message,

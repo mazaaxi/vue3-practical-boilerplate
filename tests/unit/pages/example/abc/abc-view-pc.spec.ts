@@ -6,7 +6,7 @@ import { nextTick } from 'vue'
 import { provideDependency } from '../../../../helpers'
 import { useRouterUtils } from '@/router'
 
-describe('message-input.vue', () => {
+describe('abc-view-pc.vue', () => {
   beforeEach(() => {
     provideDependency(({ stores, helpers, services }) => {
       const testUser = TestUsers[0]

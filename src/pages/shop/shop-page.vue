@@ -138,6 +138,7 @@ const ShopPageComp = defineComponent({
     onMounted(async () => {
       Loading.show()
       await services.shop.fetchProducts()
+      isSignedIn.value && (await services.shop.fetchUserCartItems())
       Loading.hide()
     })
 
@@ -190,11 +191,13 @@ const ShopPageComp = defineComponent({
         outOfStock: product.stock === 0,
       })
 
-      if (newProduct && !oldProduct) {
-        products.value.push(toPageProduct(newProduct))
-      } else if (newProduct && oldProduct) {
+      if (newProduct) {
         const targetProduct = products.value.find(product => product.id === newProduct.id)
-        targetProduct && Object.assign(targetProduct, toPageProduct(newProduct))
+        if (!targetProduct) {
+          products.value.push(toPageProduct(newProduct))
+        } else {
+          Object.assign(targetProduct, toPageProduct(newProduct))
+        }
       } else if (oldProduct) {
         const targetProductIndex = products.value.findIndex(product => product.id === oldProduct.id)
         targetProductIndex >= 0 && products.value.splice(targetProductIndex, 1)
@@ -207,11 +210,13 @@ const ShopPageComp = defineComponent({
         exchangedPrice: cartItem.price * exchangeRate.value,
       })
 
-      if (newCartItem && !oldCartItem) {
-        cartItems.value.push(toPageCartItem(newCartItem))
-      } else if (newCartItem && oldCartItem) {
+      if (newCartItem) {
         const targetCartItem = cartItems.value.find(cartItem => cartItem.id === newCartItem.id)
-        targetCartItem && Object.assign(targetCartItem, toPageCartItem(newCartItem))
+        if (!targetCartItem) {
+          cartItems.value.push(toPageCartItem(newCartItem))
+        } else {
+          Object.assign(targetCartItem, toPageCartItem(newCartItem))
+        }
       } else if (oldCartItem) {
         const targetCartItemIndex = cartItems.value.findIndex(cartItem => cartItem.id === oldCartItem.id)
         targetCartItemIndex >= 0 && cartItems.value.splice(targetCartItemIndex, 1)

@@ -2,8 +2,9 @@
 @import 'src/styles/app.variables'
 
 .MiniatureProjectPage
-  .log-message
-    font-family: "Courier New", Consolas, monospace
+  .log-input
+    font-family: 'MS Gothic', 'Osaka-Mono', monospace
+    font-size: 13px
     width: 100%
     min-height: 300px
     margin-top: 24px
@@ -81,14 +82,14 @@
       </template>
     </q-table>
 
-    <q-input v-model="logMessage" class="log-message" type="textarea" filled readonly />
+    <q-input ref="logInput" v-model="logMessage" class="log-input" type="textarea" filled readonly />
   </q-page>
 </template>
 
 <script lang="ts">
-import { Loading, QTable } from 'quasar'
+import { Loading, QInput, QTable } from 'quasar'
 import { User, useService } from '@/pages/examples/miniature-project/services'
-import { defineComponent, onMounted, onUnmounted, ref, watch } from 'vue'
+import { defineComponent, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import debounce from 'lodash/debounce'
 import { generateId } from '@/services'
 const cloneDeep = require('rfdc')()
@@ -173,6 +174,8 @@ const MiniatureProjectPageComp = defineComponent({
       },
     ]
 
+    const logInput = ref<QInput>()
+
     const users = ref<UserRow[]>([])
 
     const logMessage = ref('')
@@ -212,14 +215,14 @@ const MiniatureProjectPageComp = defineComponent({
     }
 
     function writeLogMessage(operation: string, newUser?: User, oldUser?: User): void {
-      logMessage.value =
-        `[${operation}] UserNumber: ${users.value.length}, AverageAge: ${services.admin.averageUserAge}\nnewUser: ${JSON.stringify(
-          newUser,
-          null,
-          2
-        )}\noldUser: ${JSON.stringify(oldUser, null, 2)}` +
-        '\n\n\n' +
-        logMessage.value
+      const newUserDetail = JSON.stringify(newUser, null, 2)
+      const oldUserDetail = JSON.stringify(oldUser, null, 2)
+      logMessage.value += `[${operation}] UserCount: ${users.value.length}, AverageAge: ${services.admin.averageUserAge}\nnewUser: ${newUserDetail}\noldUser: ${oldUserDetail}\n\n`
+
+      nextTick(() => {
+        const inputEl = logInput.value!.getNativeElement() as HTMLTextAreaElement
+        inputEl.scrollTop = inputEl.scrollHeight
+      })
     }
 
     //----------------------------------------------------------------------
@@ -277,6 +280,7 @@ const MiniatureProjectPageComp = defineComponent({
     return {
       table,
       columns,
+      logInput,
       users,
       logMessage,
       addUserRow,

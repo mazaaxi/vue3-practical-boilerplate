@@ -25,6 +25,10 @@
 
 .value
   @extend %text-subtitle1
+
+.log-input
+  font-family: 'MS Gothic', 'Osaka-Mono', monospace
+  font-size: 13px
 </style>
 
 <template>
@@ -77,7 +81,7 @@
       <span class="value">{{ watchEffectMessage }}</span>
     </div>
 
-    <q-input v-model="sentMessagesLog" filled type="textarea" readonly />
+    <q-input ref="logInput" v-model="sentMessagesLog" class="log-input" type="textarea" filled readonly />
   </div>
 </template>
 
