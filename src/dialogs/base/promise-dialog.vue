@@ -1,5 +1,5 @@
 <template>
-  <q-dialog ref="dialog" v-model="opened" :persistent="persistent" @show="onShow" @before-hide="onBeforeHide">
+  <q-dialog ref="dialog" v-model="opened" :persistent="persistent" @before-show="onBeforeShow" @show="onShow" @before-hide="onBeforeHide">
     <slot></slot>
   </q-dialog>
 </template>
@@ -33,6 +33,7 @@ namespace PromiseDialog {
 }
 
 type OpenParams = {
+  onBeforeOpen?: () => void
   onAfterOpen?: () => void
   onBeforeClose: () => void
 }
@@ -51,11 +52,12 @@ const PromiseDialogComp = defineComponent({
   },
 
   emits: {
+    'before-show': null,
     show: null,
     'before-hide': null,
   },
 
-  setup<RESULT = void>(props: PromiseDialog.Props, ctx: SetupContext<{ show: null; 'before-hide': null }>) {
+  setup<RESULT = void>(props: PromiseDialog.Props, ctx: SetupContext<{ 'before-show': null; show: null; 'before-hide': null }>) {
     //----------------------------------------------------------------------
     //
     //  Variables
@@ -66,6 +68,7 @@ const PromiseDialogComp = defineComponent({
 
     let closeResolve: ((value: RESULT) => void) | undefined
 
+    let onBeforeOpen: () => void = () => {}
     let onAfterOpen: () => void = () => {}
     let onBeforeClose: () => void = () => {}
 
@@ -84,6 +87,7 @@ const PromiseDialogComp = defineComponent({
     //----------------------------------------------------------------------
 
     const open: PromiseDialog<RESULT>['open'] = params => {
+      onBeforeOpen = params.onBeforeOpen || (() => {})
       onAfterOpen = params.onAfterOpen || (() => {})
       onBeforeClose = params.onBeforeClose || (() => {})
       return new Promise<RESULT>(resolve => {
@@ -103,6 +107,11 @@ const PromiseDialogComp = defineComponent({
     //  Events
     //
     //----------------------------------------------------------------------
+
+    function onBeforeShow() {
+      ctx.emit('before-show')
+      onBeforeOpen()
+    }
 
     function onShow() {
       ctx.emit('show')
@@ -125,6 +134,7 @@ const PromiseDialogComp = defineComponent({
       opened,
       open,
       close,
+      onBeforeShow,
       onShow,
       onBeforeHide,
     }
