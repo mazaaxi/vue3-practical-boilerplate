@@ -67,7 +67,7 @@
         <div class="layout vertical center-justified">
           <div class="title">{{ product.title }}</div>
           <div class="detail">
-            <span>{{ $n(product.exchangedPrice, 'currency') }}</span
+            <span>{{ $n(product.price * exchangeRate, 'currency') }}</span
             >&nbsp;/&nbsp;<span>{{ $t('shop.stock') }}:</span>
             {{ product.stock }}
           </div>
@@ -91,7 +91,7 @@
           <div class="layout vertical center-justified">
             <div class="title">{{ cartItem.title }}</div>
             <div class="detail">
-              <span>{{ $n(cartItem.exchangedPrice, 'currency') }}</span> x {{ cartItem.quantity }}
+              <span>{{ $n(cartItem.price * exchangeRate, 'currency') }}</span> x {{ cartItem.quantity }}
             </div>
           </div>
           <div class="flex-1"></div>
@@ -187,7 +187,6 @@ const ShopPageComp = defineComponent({
     const offProductsChange = services.shop.onProductsChange((newProduct, oldProduct) => {
       const toPageProduct = (product: Product) => ({
         ...product,
-        exchangedPrice: product.price * exchangeRate.value,
         outOfStock: product.stock === 0,
       })
 
@@ -207,7 +206,6 @@ const ShopPageComp = defineComponent({
     const offUserCartItemsChange = services.shop.onUserCartItemsChange((newCartItem, oldCartItem) => {
       const toPageCartItem = (cartItem: CartItem) => ({
         ...cartItem,
-        exchangedPrice: cartItem.price * exchangeRate.value,
       })
 
       if (newCartItem) {
@@ -266,6 +264,7 @@ const ShopPageComp = defineComponent({
     return {
       isSignedIn,
       user,
+      exchangeRate,
       products,
       cartItems,
       cartTotalPrice,

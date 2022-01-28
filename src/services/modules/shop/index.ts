@@ -176,7 +176,7 @@ namespace ShopService {
     const getExchangeRate: RawShopService['getExchangeRate'] = locale => {
       if (locale === 'en' || locale === 'en-US') {
         return 1
-      } else if (locale === 'ja' || locale === 'ja-US') {
+      } else if (locale === 'ja' || locale === 'ja-JP') {
         return 105
       } else {
         return 1
