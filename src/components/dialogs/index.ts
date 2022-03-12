@@ -1,15 +1,8 @@
-<template>
-  <div class="DialogContainer">
-    <MessageDialog ref="messageDialog" />
-    <MessageDialog ref="anchorDialog" />
-  </div>
-</template>
-
-<script lang="ts">
-import { Dialog, DialogNames } from '@/dialogs/base'
-import MessageDialogComp, { MessageDialog } from '@/dialogs/modules/message-dialog.vue'
-import { Ref, defineComponent, ref, watch } from 'vue'
+import { DialogNames, DialogsSet } from '@/components/dialogs/dialogs-set'
+import { Ref, computed, reactive, watch } from 'vue'
 import { useRouter, useRouterUtils } from '@/router'
+import { Dialog } from '@/components/dialogs/base'
+import type { MessageDialog } from '@/components/dialogs/message/message-dialog.vue'
 import { UnwrapNestedRefs } from '@vue/reactivity'
 import debounce from 'lodash/debounce'
 import { isImplemented } from 'js-common-lib'
@@ -20,20 +13,29 @@ import { isImplemented } from 'js-common-lib'
 //
 //==========================================================================
 
-interface DialogContainer extends DialogContainer.Props, DialogContainer.Features {}
+type DialogContainer = UnwrapNestedRefs<RawDialogContainer>
 
-namespace DialogContainer {
-  export interface Props {}
+interface RawDialogContainer extends DialogsSet.RawFeatures {
+  /**
+   * Build a query to open a dialog.
+   *
+   * Example of a dialog query:
+   *   dialogName=signIn&dialogParams=%257B%2522account%2522%253A%2522taro%2522%257D
+   *
+   * @param dialogName Dialog name
+   * @param dialogParams Parameters to be passed to the dialog
+   */
+  buildQuery(dialogName: DialogNames, dialogParams?: any): string
 
-  export type Features = UnwrapNestedRefs<RawFeatures>
+  /**
+   * Get a dialog query given to a URL of a current route.
+   */
+  getQuery(): { dialogName: DialogNames; dialogParams?: Record<string, unknown> } | undefined
 
-  export interface RawFeatures {
-    readonly message: { open: MessageDialog['open'] }
-    readonly anchor: { open: MessageDialog['open'] }
-
-    getQuery(): { dialogName: DialogNames; dialogParams?: Record<string, unknown> } | undefined
-    clearQuery(): void
-  }
+  /**
+   * Remove a dialog query given to a URL of a current route.
+   */
+  clearQuery(): void
 }
 
 //==========================================================================
@@ -42,14 +44,22 @@ namespace DialogContainer {
 //
 //==========================================================================
 
-const DialogContainerComp = defineComponent({
-  name: 'DialogContainer',
+namespace DialogContainer {
+  let instance: DialogContainer
 
-  components: {
-    MessageDialog: MessageDialogComp,
-  },
+  export function setupDialogs(dialogsSet: Ref<DialogsSet | undefined>): DialogContainer {
+    instance = reactive(newRawInstance(dialogsSet))
+    return instance
+  }
 
-  setup: (props: DialogContainer.Props, ctx) => {
+  export function useDialogs(): DialogContainer {
+    if (!instance) {
+      throw new Error(`DialogContainer' has not been setup yet.`)
+    }
+    return instance
+  }
+
+  function newRawInstance(dialogsSet: Ref<DialogsSet | undefined>) {
     //----------------------------------------------------------------------
     //
     //  Variables
@@ -59,33 +69,32 @@ const DialogContainerComp = defineComponent({
     const router = useRouter()
     const { currentRoute } = useRouterUtils()
 
-    const messageDialog = ref() as Ref<MessageDialog>
-    const anchorDialog = ref() as Ref<MessageDialog>
-
-    const dialogs: { [name: string]: Ref<Dialog<any, any>> } = {
-      message: messageDialog,
-      anchor: anchorDialog,
-    }
-
     //----------------------------------------------------------------------
     //
     //  Properties
     //
     //----------------------------------------------------------------------
 
-    const message: DialogContainer['message'] = {
-      open: params => messageDialog.value.open(params),
-    }
+    const message = computed(() => getDialogsSet().message)
 
-    const anchor: DialogContainer['anchor'] = {
-      open: params => openDialog('anchor', params),
-    }
+    const anchor = computed(() => {
+      const open: MessageDialog['open'] = params => openDialog('anchor', params)
+      return { ...getDialogsSet().anchor, open }
+    })
 
     //----------------------------------------------------------------------
     //
     //  Methods
     //
     //----------------------------------------------------------------------
+
+    const buildQuery: DialogContainer['buildQuery'] = (dialogName, dialogParams) => {
+      let result = `dialogName=${dialogName}`
+      if (dialogParams) {
+        result += `&dialogParams=${encodeURIComponent(JSON.stringify(dialogParams))}`
+      }
+      return result
+    }
 
     const getQuery: DialogContainer['getQuery'] = () => {
       const dialogName = currentRoute.query.dialogName as DialogNames | undefined
@@ -141,14 +150,11 @@ const DialogContainerComp = defineComponent({
             }
 
             // if the dialog query can be obtained from the URL, get an instance of a target dialog.
-            const dialog = dialogs[info.dialogName]
-            if (!dialog) {
-              reject(new Error(`There is no dialog named ${info.dialogName}.`))
-              return
-            }
+            const dialog = getDialog(info.dialogName)
+            if (!dialog) return
 
             // open the target dialog
-            dialog.value.open(info.dialogParams).then(result => {
+            dialog.open(info.dialogParams).then(result => {
               // remove the dialog query from the URL when the dialog is closed
               clearQuery()
               // notify that the dialog has been closed
@@ -178,17 +184,30 @@ const DialogContainerComp = defineComponent({
       if (!info) return
 
       // if the dialog query can be obtained from the URL, get an instance of a target dialog.
-      const dialog = dialogs[info.dialogName]
-      if (!dialog) {
-        console.warn(`There is no dialog named ${info.dialogName}.`)
-        return
-      }
+      const dialog = getDialog(info.dialogName)
+      if (!dialog) return
 
       // open the target dialog
-      dialog.value.open(info.dialogParams).then(() => {
+      dialog.open(info.dialogParams).then(() => {
         // remove the dialog query from the URL when the dialog is closed
         clearQuery()
       })
+    }
+
+    function getDialogsSet(): DialogsSet {
+      if (!dialogsSet.value) {
+        throw new Error(`DialogsSet' has not been setup yet.`)
+      }
+      return dialogsSet.value
+    }
+
+    function getDialog(dialogName: DialogNames): Dialog<any, any> | undefined {
+      const dialog = getDialogsSet()[dialogName]
+      if (!dialogName) {
+        console.warn(`There is no dialog named ${dialogName}.`)
+        return
+      }
+      return dialog
     }
 
     //----------------------------------------------------------------------
@@ -208,17 +227,16 @@ const DialogContainerComp = defineComponent({
     //----------------------------------------------------------------------
 
     const result = {
-      messageDialog,
-      anchorDialog,
       message,
       anchor,
+      buildQuery,
       getQuery,
       clearQuery,
     }
 
-    return isImplemented<DialogContainer.RawFeatures, typeof result>(result)
-  },
-})
+    return isImplemented<RawDialogContainer, typeof result>(result)
+  }
+}
 
 //==========================================================================
 //
@@ -226,6 +244,9 @@ const DialogContainerComp = defineComponent({
 //
 //==========================================================================
 
-export default DialogContainerComp
-export { DialogContainer }
-</script>
+const { setupDialogs, useDialogs } = DialogContainer
+export { DialogContainer, setupDialogs, useDialogs }
+export * from '@/components/dialogs/dialogs-set'
+export * from '@/components/dialogs/message'
+export * from '@/components/dialogs/promise'
+export * from '@/components/dialogs/base'

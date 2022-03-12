@@ -153,11 +153,11 @@
     </q-page-container>
   </q-layout>
 
-  <DialogContainer ref="dialogContainer" />
+  <DialogsSet ref="dialogsSet" />
 </template>
 
 <script lang="ts">
-import { DialogContainer, DialogContainerComp, setupDialogs } from '@/dialogs'
+import { DialogsSet, DialogsSetComp, setupDialogs } from '@/components/dialogs'
 import { computed, defineComponent, ref, watch } from 'vue'
 import { showNotification, useScreen } from '@/base'
 import { useI18n, useI18nUtils } from '@/i18n'
@@ -170,7 +170,7 @@ const AppPageComp = defineComponent({
   name: 'AppPage',
 
   components: {
-    DialogContainer: DialogContainerComp,
+    DialogsSet: DialogsSetComp,
   },
 
   setup() {
@@ -188,8 +188,8 @@ const AppPageComp = defineComponent({
     const { loadI18nLocaleMessages } = useI18nUtils()
     const { currentRoute } = useRouterUtils()
 
-    const dialogContainer = ref<DialogContainer>()
-    const dialogs = setupDialogs(dialogContainer)
+    const dialogsSet = ref<DialogsSet>()
+    const dialogs = setupDialogs(dialogsSet)
 
     const leftDrawerOpen = ref(false)
     const isSignedIn = computed(() => services.account.isSignedIn)
@@ -266,7 +266,7 @@ const AppPageComp = defineComponent({
 
     return {
       locale: i18n.locale,
-      dialogContainer,
+      dialogsSet,
       leftDrawerOpen,
       isSignedIn,
       langMenuItemOnclick,

@@ -40,8 +40,9 @@
 </template>
 
 <script lang="ts">
-import { Dialog, PromiseDialog, PromiseDialogComp } from '@/dialogs/base'
+import { PromiseDialog, PromiseDialogComp } from '@/components/dialogs/promise'
 import { PropType, defineComponent, reactive, ref, watch } from 'vue'
+import { Dialog } from '@/components/dialogs/base'
 import merge from 'lodash/merge'
 
 //==========================================================================

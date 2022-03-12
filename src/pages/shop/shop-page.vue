@@ -122,7 +122,7 @@ import { CartItem, Product, useService } from '@/services'
 import { computed, defineComponent, onMounted, onUnmounted, reactive, ref, toRefs } from 'vue'
 import { Loading } from 'quasar'
 import { TestUsers } from '@/services/test-data'
-import { useDialogs } from '@/dialogs'
+import { useDialogs } from '@/components/dialogs'
 import { useI18n } from '@/i18n'
 
 const ShopPageComp = defineComponent({

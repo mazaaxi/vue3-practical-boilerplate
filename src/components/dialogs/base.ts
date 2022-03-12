@@ -4,8 +4,6 @@
 //
 //==========================================================================
 
-type DialogNames = 'message' | 'example'
-
 interface Dialog<PARAMS = void, RESULT = void> {
   open(params: PARAMS): Promise<RESULT>
   close(result: RESULT): void
@@ -17,4 +15,4 @@ interface Dialog<PARAMS = void, RESULT = void> {
 //
 //==========================================================================
 
-export { Dialog, DialogNames }
+export { Dialog }
