@@ -16,6 +16,11 @@
     "lint": "vue-cli-service lint",
     "prepare": "husky install"
   },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,sass,scss}": [
+      "npm run lint"
+    ]
+  },
   "dependencies": {
     "@quasar/extras": "^1.0.0",
     "axios": "^0.21.4",
@@ -57,6 +62,7 @@
     "eslint-plugin-vue": "^7.19.1",
     "husky": "^7.0.4",
     "json-server": "^0.17.0",
+    "lint-staged": "^12.4.1",
     "node-sass": "^6.0.1",
     "prettier": "^2.4.1",
     "sass-loader": "^10.2.0",
