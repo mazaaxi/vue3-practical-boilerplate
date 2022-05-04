@@ -9,20 +9,20 @@ const ReleaseTypos = ['relese', 'relase', 'releas', 'reles']
 const FeatureTypos = ['feture', 'fature', 'featare', 'featur', 'featar']
 
 /**
- * コミットメッセージに参照ID(課題ID or プルリクエストID or ブランチ名)を付与します。
- * @param commitMsgFilePath コミットメッセージ編集用のファイルパスを指定します。
- *   例: '.git/COMMIT_EDITMSG' or '.git/MERGE_MSG'
+ * Add an reference ID (issue ID or pull request ID or branch name) to the commit message.
+ * @param commitMsgFilePath Specifies the file path for editing commit message.
+ *   ex: '.git/COMMIT_EDITMSG' or '.git/MERGE_MSG'
  */
 async function addIssueIdToCommitMsg(commitMsgFilePath) {
   const projectDir = process.cwd()
   commitMsgFilePath = `${projectDir}/${commitMsgFilePath}`
   const git = simpleGit(`${projectDir}`)
 
-  // 現在のブランチ名を取得
+  // Get current branch name
   const status = await git.status()
   const currentBranch = status.current
 
-  // ブランチ名'release/...'のタイポを検出
+  // Detect typos in branch name "release/..."
   const releaseTyposReg = new RegExp(`^\\s*(${ReleaseTypos.join('|')})/`)
   const releaseTyposMatched = releaseTyposReg.exec(currentBranch)
   if (releaseTyposMatched?.length >= 2) {
@@ -30,7 +30,7 @@ async function addIssueIdToCommitMsg(commitMsgFilePath) {
     throw new Error(`Is the branch name '${typo}/...' not a mistake for 'release/...'?`)
   }
 
-  // ブランチ名'feature/...'のタイポを検出
+  // Detect typos in branch name "feature/..."
   const featureTyposReg = new RegExp(`^\\s*(${FeatureTypos.join('|')})/`)
   const featureTyposMatched = featureTyposReg.exec(currentBranch)
   if (featureTyposMatched?.length >= 2) {
@@ -38,7 +38,8 @@ async function addIssueIdToCommitMsg(commitMsgFilePath) {
     throw new Error(`Is the branch name '${typo}/...' not a mistake for 'feature/...'?`)
   }
 
-  // 現在のブランチ名から「ブランチタイプ」と「参照ID」を取得
+  // Get `branchType` and `currentRefsId` (issue ID or pull request ID or branch name) from
+  // the current branch name
   const { branchType, currentRefsId } = (() => {
     let matched = BranchReg1.exec(currentBranch)
     if (matched?.length >= 2) {
@@ -58,21 +59,22 @@ async function addIssueIdToCommitMsg(commitMsgFilePath) {
   })()
   if (!branchType || !currentRefsId) return
 
-  // 引数で指定されたファイルからコミットメッセージを取得
+  // Get a commit message from the file specified in the arguments
   const commitMsg = await fs.readFile(commitMsgFilePath, 'utf8')
-  // コミットメッセージを行ごとの配列に変換
+  // Convert commit message to a line-by-line array
   const msgLines = commitMsg.split(/\r?\n/g)
 
-  // コミットメッセージに、参照IDが記述された行('refs ...'で始まる)が存在するか検索
+  // Searches for the existence of a line (beginning with 'refs ...') with a reference ID
+  // in the commit message.
   const RefsReg = /^\s*refs\s+/
   const existsRefs = msgLines.some(line => RefsReg.test(line))
 
   let newCommitMsg = ''
-  // 参照IDをもつ行がある場合
+  // If there is a line with the reference ID
   if (existsRefs) {
     for (const msgLine of msgLines) {
       if (RefsReg.test(msgLine)) {
-        // 参照IDを配列で取得
+        // Get reference ID as an array
         const refsIds = msgLine.replace(RefsReg, '')
           .split(/\s/)
           .filter(id => Boolean(id))
@@ -82,8 +84,8 @@ async function addIssueIdToCommitMsg(commitMsgFilePath) {
             return result
           }, [])
 
-        // 参照ID配列に、現ブランチから取得した参照IDが含まれていない場合、
-        // その参照IDを、参照ID配列の先頭に追加
+        // If the reference ID array does not contain a reference ID obtained from the current branch,
+        // the ID is added to the top of the reference ID array.
         !refsIds.includes(currentRefsId) && refsIds.unshift(currentRefsId)
 
         const refsLine = `refs ${refsIds.map(id => `[${id}]`).join(' ')}`
@@ -93,7 +95,7 @@ async function addIssueIdToCommitMsg(commitMsgFilePath) {
       }
     }
   }
-  // 参照IDをもつ行がない場合
+  // If there is no line with the reference ID
   else {
     const isEndWithNewLine = /\r?\n$/g.test(commitMsg)
     const _commitMsg = isEndWithNewLine ? commitMsg : `${commitMsg}\n`
@@ -101,8 +103,8 @@ async function addIssueIdToCommitMsg(commitMsgFilePath) {
     newCommitMsg = `${_commitMsg}\n${refsLine}`
   }
 
-  // 上記で生成された新しいコミットメッセージを
-  // コミットメッセージ編集用のファイルに書き込み
+  // The new commit message generated above is written to the temporary file for editing
+  // the commit message.
   await fs.writeFile(commitMsgFilePath, newCommitMsg)
 }
 
