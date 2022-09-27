@@ -7,7 +7,7 @@
 
 <script lang="ts">
 import { ComputedRef, defineComponent, ref } from 'vue'
-import MessageDialogComp, { MessageDialog } from '@/components/dialogs/message/message-dialog.vue'
+import MessageDialog from '@/components/dialogs/message/message-dialog.vue'
 import { UnwrapNestedRefs } from '@vue/reactivity'
 import { isImplemented } from 'js-common-lib'
 
@@ -39,11 +39,11 @@ const DialogNames: DialogNames[] = ['message', 'anchor']
 //
 //==========================================================================
 
-const DialogsSetComp = defineComponent({
+const DialogsSet = defineComponent({
   name: 'DialogsSet',
 
   components: {
-    MessageDialog: MessageDialogComp,
+    MessageDialog,
   },
 
   setup(props: DialogsSet.Props, ctx) {
@@ -65,6 +65,6 @@ const DialogsSetComp = defineComponent({
 //
 //==========================================================================
 
-export default DialogsSetComp
-export { DialogsSet, DialogNames }
+export default DialogsSet
+export { DialogNames }
 </script>

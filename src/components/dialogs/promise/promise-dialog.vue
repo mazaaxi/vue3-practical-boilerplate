@@ -44,7 +44,7 @@ type OpenParams = {
 //
 //==========================================================================
 
-const PromiseDialogComp = defineComponent({
+const PromiseDialog = defineComponent({
   name: 'PromiseDialog',
 
   props: {
@@ -149,6 +149,6 @@ const PromiseDialogComp = defineComponent({
 //
 //==========================================================================
 
-export default PromiseDialogComp
+export default PromiseDialog
 export { PromiseDialog }
 </script>

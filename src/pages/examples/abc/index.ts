@@ -1,2 +1,2 @@
-import AbcPageComp from '@/pages/examples/abc/abc-page.vue'
-export default AbcPageComp
+import AbcPage from '@/pages/examples/abc/abc-page.vue'
+export default AbcPage
