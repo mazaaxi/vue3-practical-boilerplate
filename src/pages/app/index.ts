@@ -1,2 +1,2 @@
-import AppPageComp from '@/pages/app/app-page.vue'
-export default AppPageComp
+import AppPage from '@/pages/app/app-page.vue'
+export default AppPage

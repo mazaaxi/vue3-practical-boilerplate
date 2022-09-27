@@ -40,9 +40,9 @@
 </template>
 
 <script lang="ts">
-import { PromiseDialog, PromiseDialogComp } from '@/components/dialogs/promise'
 import { PropType, defineComponent, reactive, ref, watch } from 'vue'
 import { Dialog } from '@/components/dialogs/base'
+import { PromiseDialog } from '@/components/dialogs/promise'
 import merge from 'lodash/merge'
 
 //==========================================================================
@@ -69,11 +69,11 @@ namespace MessageDialog {
 //
 //==========================================================================
 
-const MessageDialogComp = defineComponent({
+const MessageDialog = defineComponent({
   name: 'MessageDialog',
 
   components: {
-    PromiseDialog: PromiseDialogComp,
+    PromiseDialog,
   },
 
   props: {
@@ -171,6 +171,5 @@ const MessageDialogComp = defineComponent({
 //
 //==========================================================================
 
-export default MessageDialogComp
-export { MessageDialog }
+export default MessageDialog
 </script>

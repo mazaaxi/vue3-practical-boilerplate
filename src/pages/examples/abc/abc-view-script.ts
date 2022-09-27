@@ -1,5 +1,5 @@
-import MessageInputComp, { MessageInput } from '@/pages/examples/abc/message-input.vue'
 import { SetupContext, computed, nextTick, onMounted, reactive, ref, toRefs, watch, watchEffect } from 'vue'
+import MessageInput from '@/pages/examples/abc/message-input.vue'
 import { QInput } from 'quasar'
 import { TestUsers } from '@/services/test-data'
 import { useRouterUtils } from '@/router'
@@ -23,7 +23,7 @@ namespace AbcView {
   export interface Props {}
 
   export const components = {
-    MessageInput: MessageInputComp,
+    MessageInput,
   }
 
   export function setup(props: Props, context: SetupContext) {

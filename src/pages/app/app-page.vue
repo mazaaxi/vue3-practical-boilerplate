@@ -157,7 +157,7 @@
 </template>
 
 <script lang="ts">
-import { DialogsSet, DialogsSetComp, setupDialogs } from '@/components/dialogs'
+import { DialogsSet, setupDialogs } from '@/components/dialogs'
 import { computed, defineComponent, ref, watch } from 'vue'
 import { showNotification, useScreen } from '@/base'
 import { useI18n, useI18nUtils } from '@/i18n'
@@ -166,11 +166,11 @@ import { useRouterUtils } from '@/router'
 import { useService } from '@/services'
 import { useServiceWorker } from '@/service-worker'
 
-const AppPageComp = defineComponent({
+const AppPage = defineComponent({
   name: 'AppPage',
 
   components: {
-    DialogsSet: DialogsSetComp,
+    DialogsSet,
   },
 
   setup() {
@@ -276,5 +276,5 @@ const AppPageComp = defineComponent({
   },
 })
 
-export default AppPageComp
+export default AppPage
 </script>

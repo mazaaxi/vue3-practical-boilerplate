@@ -74,7 +74,7 @@ namespace MessageInput {
 //     `update:title` event with the new value.
 //     ex. ctx.emit('update:title', newTitle)
 
-const MessageInputComp = defineComponent({
+const MessageInput = defineComponent({
   name: 'MessageInput',
 
   components: {},
@@ -123,6 +123,5 @@ const MessageInputComp = defineComponent({
 //
 //==========================================================================
 
-export default MessageInputComp
-export { MessageInput }
+export default MessageInput
 </script>

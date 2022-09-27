@@ -98,7 +98,7 @@ type UserRow = User & { editType?: 'added' | 'modified' }
 
 let isFetchedUsers = false
 
-const MiniatureProjectPageComp = defineComponent({
+const MiniatureProjectPage = defineComponent({
   name: 'MiniatureProjectPage',
 
   components: {},
@@ -290,5 +290,5 @@ const MiniatureProjectPageComp = defineComponent({
   },
 })
 
-export default MiniatureProjectPageComp
+export default MiniatureProjectPage
 </script>

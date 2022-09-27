@@ -86,7 +86,7 @@ import { QInput } from 'quasar'
 import { useRouterUtils } from '@/router'
 import { useScreen } from '@/base'
 
-const RoutingPageComp = defineComponent({
+const RoutingPage = defineComponent({
   name: 'RoutingPage',
 
   components: {},
@@ -242,5 +242,5 @@ const RoutingPageComp = defineComponent({
   },
 })
 
-export default RoutingPageComp
+export default RoutingPage
 </script>

@@ -32,7 +32,7 @@
 import { defineComponent, reactive } from 'vue'
 import { useRouterUtils } from '@/router'
 
-const HomePageComp = defineComponent({
+const HomePage = defineComponent({
   name: 'HomePage',
 
   components: {},
@@ -75,5 +75,5 @@ const HomePageComp = defineComponent({
   },
 })
 
-export default HomePageComp
+export default HomePage
 </script>
