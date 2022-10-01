@@ -9,7 +9,7 @@ const ReleaseTypos = ['relese', 'relase', 'releas', 'reles']
 const FeatureTypos = ['feture', 'fature', 'featare', 'featur', 'featar']
 
 /**
- * Add an reference ID (issue ID or pull request ID or branch name) to the commit message.
+ * Add a reference ID (issue ID or pull request ID or branch name) to the commit message.
  * @param commitMsgFilePath Specifies the file path for editing commit message.
  *   ex: '.git/COMMIT_EDITMSG' or '.git/MERGE_MSG'
  */
@@ -64,23 +64,40 @@ async function addIssueIdToCommitMsg(commitMsgFilePath) {
   // Convert commit message to a line-by-line array
   const msgLines = commitMsg.split(/\r?\n/g)
 
-  // Searches for the existence of a line (beginning with 'refs ...') with a reference ID
+  // Searches for the existence of a line (beginning with 'refs: [...]') with a reference ID
   // in the commit message.
-  const RefsReg = /^\s*refs\s+/
+  const RefsReg = /^\s*refs:\s*\[(.+)\]\s*$/
   const existsRefs = msgLines.some(line => RefsReg.test(line))
 
   let newCommitMsg = ''
   // If there is a line with the reference ID
   if (existsRefs) {
     for (const msgLine of msgLines) {
-      if (RefsReg.test(msgLine)) {
+      const matched = RefsReg.exec(msgLine)
+      if (matched) {
+        const matchedStr = matched[1]
         // Get reference ID as an array
-        const refsIds = msgLine.replace(RefsReg, '')
-          .split(/\s/)
-          .filter(id => Boolean(id))
-          .reduce((result, id) => {
-            const matched = /\[(.+)\]/.exec(id)
-            matched?.length >= 2 ? result.push(matched[1]) : result.push(id)
+        const refsIds = matchedStr
+          .split(',')
+          .filter(idStr => Boolean(idStr.trim()))
+          .reduce((result, idStr) => {
+            const idRegs = [
+              /* eslint-disable no-irregular-whitespace */
+              new RegExp(`^"(${ProjectId}-[^"' 　]+)"$`),
+              new RegExp(`^'(${ProjectId}-[^"' 　]+)'$`),
+              new RegExp(`^(${ProjectId}-[^"' 　]+)$`),
+              /* eslint-enable */
+            ]
+
+            idStr = idStr.trim()
+            const extractedId = idRegs.reduce((result, idReg) => {
+              if (result) return result
+              const id = idReg.exec(idStr)?.[1]
+              result = id ? id : result
+              return result
+            }, '')
+            extractedId && result.push(extractedId)
+
             return result
           }, [])
 
@@ -88,7 +105,7 @@ async function addIssueIdToCommitMsg(commitMsgFilePath) {
         // the ID is added to the top of the reference ID array.
         !refsIds.includes(currentRefsId) && refsIds.unshift(currentRefsId)
 
-        const refsLine = `refs ${refsIds.map(id => `[${id}]`).join(' ')}`
+        const refsLine = `refs: [${refsIds.map(id => `"${id}"`).join(', ')}]`
         newCommitMsg = newCommitMsg ? `${newCommitMsg}\n${refsLine}` : refsLine
       } else {
         newCommitMsg = newCommitMsg ? `${newCommitMsg}\n${msgLine}` : msgLine
@@ -99,7 +116,7 @@ async function addIssueIdToCommitMsg(commitMsgFilePath) {
   else {
     const isEndWithNewLine = /\r?\n$/g.test(commitMsg)
     const _commitMsg = isEndWithNewLine ? commitMsg : `${commitMsg}\n`
-    const refsLine = `refs [${currentRefsId}]`
+    const refsLine = `refs: ["${currentRefsId}"]`
     newCommitMsg = `${_commitMsg}\n${refsLine}`
   }
 
