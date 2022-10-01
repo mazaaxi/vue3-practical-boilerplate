@@ -1,2 +1,2 @@
-import DialogsSet, { DialogNames } from '@/components/dialogs/dialogs-set/dialogs-set.vue'
+import DialogsSet, { DialogNames } from '@/components/dialogs/dialogs-set/DialogsSet.vue'
 export { DialogsSet, DialogNames }

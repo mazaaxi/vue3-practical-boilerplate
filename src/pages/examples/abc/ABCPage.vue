@@ -5,8 +5,8 @@
 
 <script lang="ts">
 import { computed, defineComponent, ref } from 'vue'
-import AbcViewPC from '@/pages/examples/abc/abc-view-pc.vue'
-import AbcViewSP from '@/pages/examples/abc/abc-view-sp.vue'
+import AbcViewPC from '@/pages/examples/abc/ABCViewPC.vue'
+import AbcViewSP from '@/pages/examples/abc/ABCViewSP.vue'
 import { useScreen } from '@/base'
 
 const AbcPage = defineComponent({

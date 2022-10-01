@@ -1,2 +1,2 @@
-import PromiseDialog from '@/components/dialogs/promise/promise-dialog.vue'
+import PromiseDialog from '@/components/dialogs/promise/PromiseDialog.vue'
 export { PromiseDialog }

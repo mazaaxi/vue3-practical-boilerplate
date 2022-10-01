@@ -1,2 +1,2 @@
-import MessageDialog from '@/components/dialogs/message/message-dialog.vue'
+import MessageDialog from '@/components/dialogs/message/MessageDialog.vue'
 export { MessageDialog }

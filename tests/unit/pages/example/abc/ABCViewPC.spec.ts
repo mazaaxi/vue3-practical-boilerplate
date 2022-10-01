@@ -1,4 +1,4 @@
-import AbcViewPC from '@/pages/examples/abc/abc-view-pc.vue'
+import AbcViewPC from '@/pages/examples/abc/ABCViewPC.vue'
 import { AccountLogic } from '@/services/logics/account'
 import { TestUsers } from '@/services/test-data'
 import { mount } from '@vue/test-utils'
@@ -6,7 +6,7 @@ import { nextTick } from 'vue'
 import { provideDependency } from '../../../../helpers'
 import { useRouterUtils } from '@/router'
 
-describe('abc-view-pc.vue', () => {
+describe('ABCViewPC.vue', () => {
   beforeEach(() => {
     provideDependency(({ stores, helpers, services }) => {
       const testUser = TestUsers[0]

@@ -7,7 +7,7 @@
 
 <script lang="ts">
 import { ComputedRef, defineComponent, ref } from 'vue'
-import MessageDialog from '@/components/dialogs/message/message-dialog.vue'
+import MessageDialog from '@/components/dialogs/message/MessageDialog.vue'
 import { UnwrapNestedRefs } from '@vue/reactivity'
 import { isImplemented } from 'js-common-lib'
 

@@ -1,2 +1,2 @@
-import ShopPage from '@/pages/shop/shop-page.vue'
+import ShopPage from '@/pages/shop/ShopPage.vue'
 export default ShopPage

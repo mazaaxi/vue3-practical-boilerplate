@@ -1,5 +1,5 @@
 import { SetupContext, computed, nextTick, onMounted, reactive, ref, toRefs, watch, watchEffect } from 'vue'
-import MessageInput from '@/pages/examples/abc/message-input.vue'
+import MessageInput from '@/pages/examples/abc/MessageInput.vue'
 import { QInput } from 'quasar'
 import { TestUsers } from '@/services/test-data'
 import { useRouterUtils } from '@/router'
