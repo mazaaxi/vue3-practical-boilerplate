@@ -31,8 +31,8 @@ module.exports = {
     'no-inner-declarations': 'off',
     'no-unreachable': 'error',
     'no-var': 'error',
-    quotes: ['error', 'single', { allowTemplateLiterals: true }],
-    semi: ['error', 'never', { beforeStatementContinuationChars: 'never' }],
+    'quotes': ['error', 'single', { allowTemplateLiterals: true }],
+    'semi': ['error', 'never', { beforeStatementContinuationChars: 'never' }],
     'sort-imports': ['error'],
     'space-before-function-paren': [
       'error',

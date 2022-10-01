@@ -13,12 +13,15 @@
     "build": "vue-cli-service build",
     "build:predeploy": "vue-cli-service build --mode predeploy",
     "test:unit": "vue-cli-service test:unit",
-    "lint": "vue-cli-service lint",
+    "lint": "vue-cli-service lint && stylelint ./src/**/*.{vue,scss}",
     "prepare": "husky install"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx,sass,scss}": [
-      "npm run lint"
+    "./src/**/*.{js,jsx,ts,vue,tsx}": [
+      "vue-cli-service lint"
+    ],
+    "./src/**/*.{vue,sass,scss}": [
+      "stylelint"
     ]
   },
   "dependencies": {
@@ -66,9 +69,17 @@
     "json-server": "^0.17.0",
     "lint-staged": "^12.4.1",
     "node-sass": "^6.0.1",
+    "postcss": "^8.4.16",
+    "postcss-html": "^1.5.0",
     "prettier": "^2.4.1",
     "sass-loader": "^10.2.0",
     "simple-git": "^3.7.1",
+    "stylelint": "^14.13.0",
+    "stylelint-config-prettier": "^9.0.3",
+    "stylelint-config-recess-order": "^3.0.0",
+    "stylelint-config-recommended-scss": "^7.0.0",
+    "stylelint-config-recommended-vue": "^1.4.0",
+    "stylelint-prettier": "^2.0.0",
     "testdouble": "^3.16.2",
     "testdouble-jest": "^2.0.0",
     "typescript": "~4.4.4",
