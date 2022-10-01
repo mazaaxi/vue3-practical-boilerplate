@@ -12,20 +12,20 @@
   }
 }
 
-%app-item-title {
-  font-size: v.$app-item-title-font-size;
-  font-weight: v.$app-item-title-font-weight;
-  color: v.$app-item-title-color;
+%item-box-title {
+  font-size: v.$item-box-title-font-size;
+  font-weight: v.$item-box-title-font-weight;
+  color: v.$item-box-title-color;
 }
 
-%app-item-value {
-  font-size: v.$app-item-value-font-size;
-  font-weight: v.$app-item-value-font-weight;
-  color: v.$app-item-value-color;
+%item-box-value {
+  font-size: v.$item-box-value-font-size;
+  font-weight: v.$item-box-value-font-weight;
+  color: v.$item-box-value-color;
 }
 
-%app-link {
-  color: v.$app-link-color;
+%anchor-link {
+  color: v.$anchor-link-color;
   text-decoration: none;
   cursor: pointer;
   &:not([disabled]):hover {

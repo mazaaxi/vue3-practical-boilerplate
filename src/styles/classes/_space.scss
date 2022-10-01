@@ -1,66 +1,66 @@
 @for $num from 0 through 50 {
-  .spacing-mt-#{$num} {
+  .space-mt-#{$num} {
     margin-top: #{$num}px !important;
   }
 
-  .spacing-mr-#{$num} {
+  .space-mr-#{$num} {
     margin-right: #{$num}px !important;
   }
 
-  .spacing-mb-#{$num} {
+  .space-mb-#{$num} {
     margin-bottom: #{$num}px !important;
   }
 
-  .spacing-ml-#{$num} {
+  .space-ml-#{$num} {
     margin-left: #{$num}px !important;
   }
 
-  .spacing-mx-#{$num} {
+  .space-mx-#{$num} {
     margin-right: #{$num}px !important;
     margin-left: #{$num}px !important;
   }
 
-  .spacing-my-#{$num} {
+  .space-my-#{$num} {
     margin-top: #{$num}px !important;
     margin-bottom: #{$num}px !important;
   }
 
-  .spacing-ma-#{$num} {
+  .space-ma-#{$num} {
     margin: #{$num}px #{$num}px !important;
   }
 
-  .spacing-pt-#{$num} {
+  .space-pt-#{$num} {
     padding-top: #{$num}px !important;
   }
 
-  .spacing-pr-#{$num} {
+  .space-pr-#{$num} {
     padding-right: #{$num}px !important;
   }
 
-  .spacing-pb-#{$num} {
+  .space-pb-#{$num} {
     padding-bottom: #{$num}px !important;
   }
 
-  .spacing-pl-#{$num} {
+  .space-pl-#{$num} {
     padding-left: #{$num}px !important;
   }
 
-  .spacing-px-#{$num} {
+  .space-px-#{$num} {
     padding-right: #{$num}px !important;
     padding-left: #{$num}px !important;
   }
 
-  .spacing-py-#{$num} {
+  .space-py-#{$num} {
     padding-top: #{$num}px !important;
     padding-bottom: #{$num}px !important;
   }
 
-  .spacing-pa-#{$num} {
+  .space-pa-#{$num} {
     padding: #{$num}px #{$num}px !important;
   }
 }
 
-.spacing-mx-auto {
+.space-mx-auto {
   margin-right: auto !important;
   margin-left: auto !important;
 }

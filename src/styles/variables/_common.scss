@@ -28,13 +28,13 @@ $app-theme-color: q.$indigo-10;
 $app-page-bg-color: q.$grey-2;
 $app-header-height: 50px;
 
-$app-item-title-color: q.$grey-10 !default;
-$app-item-title-font-size: 13px !default;
-$app-item-title-font-weight: $text-weight-regular !default;
+$item-box-title-color: q.$grey-10 !default;
+$item-box-title-font-size: 13px !default;
+$item-box-title-font-weight: $text-weight-regular !default;
 
-$app-item-value-color: q.$grey-7 !default;
-$app-item-value-font-size: 13px !default;
-$app-item-value-font-weight: $text-weight-regular !default;
+$item-box-value-color: q.$grey-7 !default;
+$item-box-value-font-size: 13px !default;
+$item-box-value-font-weight: $text-weight-regular !default;
 
-$app-link-color: q.$indigo-8 !default;
-$app-link-font-weight: $text-weight-regular !default;
+$anchor-link-color: q.$indigo-8 !default;
+$anchor-link-font-weight: $text-weight-regular !default;

@@ -18,7 +18,7 @@
 
         <div>Quasar v{{ $q.version }}</div>
 
-        <q-btn class="spacing-ml-10" flat round dense color="white" icon="more_vert">
+        <q-btn class="space-ml-10" flat round dense color="white" icon="more_vert">
           <q-menu class="menu">
             <q-list class="list">
               <!-- Sing-in or Sign-out -->

@@ -58,38 +58,29 @@
         <q-input v-model="message.title" class="input" :label="$t('common.title')" dense data-test="titleInput" />
         <q-input v-model="message.body" class="input" :label="$t('common.message')" dense data-test="messageInput" />
       </div>
-      <div class="spacing-mx-10" />
+      <div class="space-mx-10" />
       <MessageInput ref="messageInput" v-model:title="message.title" v-model="message.body" class="message-input flex-1" />
     </div>
 
-    <div class="spacing-my-16">
+    <div class="space-my-16">
       <div class="value">{{ displayMessage }}</div>
       <div class="layout horizontal center end-justified">
-        <q-btn
-          class="spacing-ml-10"
-          flat
-          rounded
-          color="primary"
-          :label="$t('common.send')"
-          @click="sendButtonOnClick"
-          :disabled="!isSignedIn"
-          dense
-        />
+        <q-btn class="space-ml-10" flat rounded color="primary" :label="$t('common.send')" @click="sendButtonOnClick" :disabled="!isSignedIn" dense />
       </div>
     </div>
 
-    <div class="spacing-my-16">
+    <div class="space-my-16">
       <span class="caption">Reversed Message: </span>
       <span class="value" data-test="reversedMessage">{{ reversedMessage }}</span>
     </div>
 
-    <div class="spacing-my-16">
+    <div class="space-my-16">
       <span class="caption">Double Reversed Message: </span>
       <span class="value" data-test="doubleReversedMessage">{{ doubleReversedMessage }}</span>
       <span class="value" data-test="doubleReversedMessage">{{ doubleReversedMessage }}</span>
     </div>
 
-    <div class="spacing-my-16">
+    <div class="space-my-16">
       <span class="caption">Watch Effect Message: </span>
       <span class="value" data-test="watchEffectMessage">{{ watchEffectMessage }}</span>
     </div>

@@ -78,11 +78,11 @@
 }
 
 a {
-  @extend %app-link;
+  @extend %anchor-link;
 }
 
-.app-link {
-  @extend %app-link;
+.anchor-link {
+  @extend %anchor-link;
 }
 
 .q-notification {

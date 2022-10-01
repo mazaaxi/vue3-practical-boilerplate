@@ -75,7 +75,7 @@
     </div>
 
     <div>
-      <div class="layout horizontal center spacing-mt-20">
+      <div class="layout horizontal center space-mt-20">
         <div class="title-text">{{ $t('shop.products') }}</div>
       </div>
       <hr style="width: 100%" />
@@ -93,7 +93,7 @@
       </div>
     </div>
 
-    <div v-show="isSignedIn" class="spacing-mt-20">
+    <div v-show="isSignedIn" class="space-mt-20">
       <div class="layout horizontal center">
         <div class="title-text">{{ $t('shop.whoseCart', { name: user.fullName }) }}</div>
         <div class="flex-1"></div>
@@ -116,7 +116,7 @@
       </template>
     </div>
 
-    <div v-show="isSignedIn" class="spacing-mt-20">
+    <div v-show="isSignedIn" class="space-mt-20">
       <div class="layout horizontal center">
         <div class="title-text">{{ $t('shop.total') }}</div>
         <div class="flex-1"></div>

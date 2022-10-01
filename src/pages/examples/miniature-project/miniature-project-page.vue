@@ -81,7 +81,7 @@
           </q-td>
           <q-td key="save" :props="props">
             <q-btn label="Save" color="primary" flat dense no-caps @click="saveUser(props.row)" :disable="!Boolean(props.row.editType)" />
-            <q-btn class="spacing-mx-10" label="Remove" color="primary" flat dense no-caps @click="removeUser(props.row)" />
+            <q-btn class="space-mx-10" label="Remove" color="primary" flat dense no-caps @click="removeUser(props.row)" />
           </q-td>
         </q-tr>
       </template>

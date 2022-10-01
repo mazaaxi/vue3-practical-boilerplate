@@ -47,12 +47,12 @@
         <q-btn flat color="primary" no-caps @click="backHistoryButtonOnClick">
           <div class="layout horizontal center">
             <q-icon name="arrow_back" />
-            <div class="spacing-ml-10">{{ $t('routing.backHistory') }}</div>
+            <div class="space-ml-10">{{ $t('routing.backHistory') }}</div>
           </div>
         </q-btn>
         <q-btn flat color="primary" no-caps @click="forwardHistoryButtonOnClick">
           <div class="layout horizontal center">
-            <div class="spacing-mr-10">{{ $t('routing.forwardHistory') }}</div>
+            <div class="space-mr-10">{{ $t('routing.forwardHistory') }}</div>
             <q-icon name="arrow_forward" />
           </div>
         </q-btn>
