@@ -1,16 +1,15 @@
-<style lang="sass">
-@import 'src/styles/app.variables'
+<style lang="scss" scoped>
+@import 'src/styles/app.variables';
 
-.MessageInput
-  .message-input-class
-    color: var(--message-input-color)
-</style>
+.MessageInput {
+  &::v-deep(.message-input-class) {
+    color: var(--message-input-color);
+  }
+}
 
-<style lang="sass" scoped>
-@import 'src/styles/app.variables'
-
-.input
-  width: var(--message-input-width)
+.input {
+  width: var(--message-input-width);
+}
 </style>
 
 <template>

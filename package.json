@@ -17,10 +17,10 @@
     "prepare": "husky install"
   },
   "lint-staged": {
-    "./src/**/*.{js,jsx,ts,vue,tsx}": [
+    "./src/**/*.{vue,js,ts,jsx,tsx}": [
       "vue-cli-service lint"
     ],
-    "./src/**/*.{vue,sass,scss}": [
+    "./src/**/*.{vue,scss}": [
       "stylelint"
     ]
   },

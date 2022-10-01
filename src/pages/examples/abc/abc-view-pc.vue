@@ -1,31 +1,39 @@
-<style lang="sass" scoped>
-@import 'src/styles/app.variables'
+<style lang="scss" scoped>
+@import 'src/styles/app.variables';
 
-.AbcViewPC
-  margin-left: auto
-  margin-right: auto
-  margin-top: 48px
-  padding: 32px
-  max-width: 800px
+.AbcViewPC {
+  max-width: 800px;
+  padding: 32px;
+  margin-top: 48px;
+  margin-right: auto;
+  margin-left: auto;
+}
 
-.message-container
-  .input, .message-input
-    width: 100%
+.message-container {
+  .input,
+  .message-input {
+    width: 100%;
+  }
 
-  .message-input
-    --message-input-color: #{$pink}
-    --message-input-width: 100%
+  .message-input {
+    --message-input-color: #{$pink};
+    --message-input-width: 100%;
+  }
+}
 
-.caption
-  @extend %text-subtitle1
-  font-weight: $text-weight-medium
+.caption {
+  @extend %text-subtitle1;
+  font-weight: $text-weight-medium;
+}
 
-.value
-  @extend %text-subtitle1
+.value {
+  @extend %text-subtitle1;
+}
 
-.log-input
-  font-family: 'MS Gothic', 'Osaka-Mono', monospace
-  font-size: 13px
+.log-input {
+  font-family: 'MS Gothic', 'Osaka-Mono', monospace;
+  font-size: 13px;
+}
 </style>
 
 <template>

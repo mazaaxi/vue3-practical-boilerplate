@@ -1,10 +1,13 @@
-<style lang="sass" scoped>
-@import 'src/styles/app.variables'
+<style lang="scss" scoped>
+@import 'src/styles/app.variables';
 
-.menu
-  .list
-    .item
-      white-space: nowrap
+.menu {
+  .list {
+    .item {
+      white-space: nowrap;
+    }
+  }
+}
 </style>
 
 <template>

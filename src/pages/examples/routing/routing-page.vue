@@ -1,37 +1,45 @@
-<style lang="sass">
-@import 'src/styles/app.variables'
+<style lang="scss" scoped>
+@import 'src/styles/app.variables';
 
-.RoutingPage
-  .log-input
-    font-family: 'MS Gothic', 'Osaka-Mono', monospace
-    font-size: 13px
-    width: 100%
-    min-height: 300px
-    @extend %layout-flex-1
+.RoutingPage {
+  body.screen--lg &,
+  body.screen--xl &,
+  body.screen--md & {
+    max-width: 848px;
+    padding: 48px;
+    margin: 0 auto;
+  }
 
-    .q-field__control
-      height: 100%
-</style>
+  body.screen--xs &,
+  body.screen--sm & {
+    padding: 24px;
+  }
 
-<style lang="sass" scoped>
-@import 'src/styles/app.variables'
+  .log-input {
+    width: 100%;
+    min-height: 300px;
+    font-family: 'MS Gothic', 'Osaka-Mono', monospace;
+    font-size: 13px;
+    @extend %layout-flex-1;
 
-.RoutingPage
-  body.screen--lg &, body.screen--xl &, body.screen--md &
-    max-width: 848px
-    margin: 0 auto
-    padding: 48px
-  body.screen--xs &, body.screen--sm &
-    padding: 24px
+    &::v-deep(.q-field__control) {
+      height: 100%;
+    }
+  }
+}
 
-.page-container
-  width: 100%
-  padding: 10px
+.page-container {
+  width: 100%;
+  padding: 10px;
 
-  .page-num-btn
-    color: $primary
-    &.active
-      color: $accent
+  .page-num-btn {
+    color: $primary;
+
+    &.active {
+      color: $accent;
+    }
+  }
+}
 </style>
 
 <template>

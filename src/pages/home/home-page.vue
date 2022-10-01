@@ -1,10 +1,11 @@
-<style lang="sass" scoped>
-@import 'src/styles/app.variables'
+<style lang="scss" scoped>
+@import 'src/styles/app.variables';
 
-.container
-  max-width: 400px
-  width: 100%
-  padding: 0 24px
+.container {
+  width: 100%;
+  max-width: 400px;
+  padding: 0 24px;
+}
 </style>
 
 <template>

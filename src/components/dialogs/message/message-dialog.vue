@@ -1,18 +1,26 @@
-<style lang="sass" scoped>
-@import 'src/styles/app.variables'
+<style lang="scss" scoped>
+@import 'src/styles/app.variables';
 
-.container
-  min-width: 300px
-  body.screen--lg &, body.screen--xl &, body.screen--md &
-    max-width: 70vw
-  body.screen--xs &, body.screen--sm &
-    max-width: 90vw
+.container {
+  min-width: 300px;
+  body.screen--lg &,
+  body.screen--xl &,
+  body.screen--md & {
+    max-width: 70vw;
+  }
+  body.screen--xs &,
+  body.screen--sm & {
+    max-width: 90vw;
+  }
+}
 
-.title
-  @extend %text-h6
+.title {
+  @extend %text-h6;
+}
 
-.message
-  white-space: pre-line
+.message {
+  white-space: pre-line;
+}
 </style>
 
 <template>

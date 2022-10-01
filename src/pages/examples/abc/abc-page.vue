@@ -1,5 +1,5 @@
-<style lang="sass" scoped>
-@import 'src/styles/app.variables'
+<style lang="scss" scoped>
+@import 'src/styles/app.variables';
 </style>
 
 <template>

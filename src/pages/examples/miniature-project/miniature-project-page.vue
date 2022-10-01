@@ -1,39 +1,46 @@
-<style lang="sass">
-@import 'src/styles/app.variables'
+<style lang="scss" scoped>
+@import 'src/styles/app.variables';
 
-.MiniatureProjectPage
-  .log-input
-    font-family: 'MS Gothic', 'Osaka-Mono', monospace
-    font-size: 13px
-    width: 100%
-    min-height: 300px
-    margin-top: 24px
-    @extend %layout-flex-1
+.MiniatureProjectPage {
+  body.screen--lg &,
+  body.screen--xl &,
+  body.screen--md & {
+    max-width: 848px;
+    padding: 48px;
+    margin: 0 auto;
+  }
 
-    .q-field__control
-      height: 100%
-</style>
+  body.screen--xs &,
+  body.screen--sm & {
+    padding: 24px;
+  }
 
-<style lang="sass" scoped>
-@import 'src/styles/app.variables'
+  .log-input {
+    width: 100%;
+    min-height: 300px;
+    margin-top: 24px;
+    font-family: 'MS Gothic', 'Osaka-Mono', monospace;
+    font-size: 13px;
+    @extend %layout-flex-1;
 
-.MiniatureProjectPage
-  body.screen--lg &, body.screen--xl &, body.screen--md &
-    max-width: 848px
-    margin: 0 auto
-    padding: 48px
-  body.screen--xs &, body.screen--sm &
-    padding: 24px
+    &::v-deep(.q-field__control) {
+      height: 100%;
+    }
+  }
+}
 
-.table
-  width: 100%
+.table {
+  width: 100%;
 
-  .title
-    @extend %text-h6
+  .title {
+    @extend %text-h6;
+  }
 
-  .required
-    color: $text-accent
-    font-style: italic
+  .required {
+    font-style: italic;
+    color: $text-accent;
+  }
+}
 </style>
 
 <template>

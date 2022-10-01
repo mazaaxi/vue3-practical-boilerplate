@@ -1,34 +1,46 @@
-<style lang="sass" scoped>
-@import 'src/styles/app.variables'
+<style lang="scss" scoped>
+@import 'src/styles/app.variables';
 
-.AbcViewSP
-  body.screen--md &
-    margin: 24px
-    padding: 16px
-  body.screen--xs &, body.screen--sm &
-    margin: 12px
-    padding: 16px
+.AbcViewSP {
+  body.screen--md & {
+    padding: 16px;
+    margin: 24px;
+  }
 
-.message-container
-  @extend %layout-vertical
+  body.screen--xs &,
+  body.screen--sm & {
+    padding: 16px;
+    margin: 12px;
+  }
+}
 
-  .input, .message-input
-    width: 100%
+.message-container {
+  @extend %layout-vertical;
 
-  .message-input
-    --message-input-color: #{$pink}
-    --message-input-width: 100%
+  .input,
+  .message-input {
+    width: 100%;
+  }
 
-.caption
-  @extend %text-subtitle1
-  font-weight: $text-weight-medium
+  .message-input {
+    --message-input-color: #{$pink};
+    --message-input-width: 100%;
+  }
+}
 
-.value
-  @extend %text-subtitle1
+.caption {
+  @extend %text-subtitle1;
+  font-weight: $text-weight-medium;
+}
 
-.log-input
-  font-family: 'MS Gothic', 'Osaka-Mono', monospace
-  font-size: 13px
+.value {
+  @extend %text-subtitle1;
+}
+
+.log-input {
+  font-family: 'MS Gothic', 'Osaka-Mono', monospace;
+  font-size: 13px;
+}
 </style>
 
 <template>

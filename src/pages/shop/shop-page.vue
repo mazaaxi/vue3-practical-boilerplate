@@ -1,50 +1,68 @@
-<style lang="sass" scoped>
-@import 'src/styles/app.variables'
+<style lang="scss" scoped>
+@import 'src/styles/app.variables';
 
-.ShopPage
-  padding: 24px
-  body.screen--lg &, body.screen--xl &, body.screen--md &
-    max-width: 824px
-    margin: 48px auto
-  body.screen--xs &, body.screen--sm &
-    margin: 0
+.ShopPage {
+  padding: 24px;
 
-.toggle
-  border: 1px solid $primary
+  body.screen--lg &,
+  body.screen--xl &,
+  body.screen--md & {
+    max-width: 824px;
+    margin: 48px auto;
+  }
 
-.title-text
-  @extend %text-h6
+  body.screen--xs &,
+  body.screen--sm & {
+    margin: 0;
+  }
+}
+
+.toggle {
+  border: 1px solid $primary;
+}
+
+.title-text {
+  @extend %text-h6;
+}
 
 .product-item,
-.cart-item
-  padding: 12px
+.cart-item {
+  padding: 12px;
 
-  .title
-    @extend %text-subtitle1
+  .title {
+    @extend %text-subtitle1;
+  }
 
-  .detail
-    @extend %text-body2
-    color: $text-light
+  .detail {
+    @extend %text-body2;
+    color: $text-light;
+  }
+}
 
-.empty-cart
-  padding: 12px
-  @extend %text-subtitle1
+.empty-cart {
+  padding: 12px;
+  @extend %text-subtitle1;
+}
 
-.total-amount
-  padding: 12px
+.total-amount {
+  padding: 12px;
 
-  .title
-    @extend %text-h6
+  .title {
+    @extend %text-h6;
+  }
 
-  .detail
-    @extend %text-h6
-    color: $text-light
+  .detail {
+    @extend %text-h6;
+    color: $text-light;
+  }
+}
 
-.error-text
-  @extend %text-body2
-  color: $text-error
-  text-align: right
-  margin: 0 20px
+.error-text {
+  @extend %text-body2;
+  margin: 0 20px;
+  color: $text-error;
+  text-align: right;
+}
 </style>
 
 <template>
