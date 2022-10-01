@@ -53,7 +53,7 @@
       </q-toolbar>
     </q-header>
 
-    <q-drawer v-model="leftDrawerOpen" show-if-above bordered class="bg-grey-2">
+    <q-drawer v-model="leftDrawerOpen" showIfAbove bordered class="bg-grey-2">
       <q-list>
         <q-item-label header>Application Items</q-item-label>
 
@@ -75,7 +75,7 @@
           </q-item-section>
         </q-item>
 
-        <q-expansion-item :model-value="true" expand-separator icon="code" label="Examples">
+        <q-expansion-item :modelValue="true" expandSeparator icon="code" label="Examples">
           <q-card class="bg-grey-2">
             <q-item clickable tag="a" :to="`/${locale}/examples/abc`">
               <q-item-section>

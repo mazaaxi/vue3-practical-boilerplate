@@ -44,13 +44,13 @@
   <q-page class="RoutingPage layout vertical center">
     <q-card class="page-container">
       <div class="layout horizontal center-justified">
-        <q-btn flat color="primary" no-caps @click="backHistoryButtonOnClick">
+        <q-btn flat color="primary" noCaps @click="backHistoryButtonOnClick">
           <div class="layout horizontal center">
             <q-icon name="arrow_back" />
             <div class="space-ml-10">{{ $t('routing.backHistory') }}</div>
           </div>
         </q-btn>
-        <q-btn flat color="primary" no-caps @click="forwardHistoryButtonOnClick">
+        <q-btn flat color="primary" noCaps @click="forwardHistoryButtonOnClick">
           <div class="layout horizontal center">
             <div class="space-mr-10">{{ $t('routing.forwardHistory') }}</div>
             <q-icon name="arrow_forward" />

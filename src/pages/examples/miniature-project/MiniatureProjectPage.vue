@@ -43,12 +43,12 @@
 
 <template>
   <q-page class="MiniatureProjectPage layout vertical center">
-    <q-table ref="table" class="table" title="Users" :rows="users" :columns="columns" row-key="id" binary-state-sort>
+    <q-table ref="table" class="table" title="Users" :rows="users" :columns="columns" rowKey="id" binaryStateSort>
       <template v-slot:top>
         <div class="layout horizontal center full-width">
           <div class="title">Users</div>
           <div class="flex-1" />
-          <q-btn label="Add User" color="primary" flat dense no-caps @click="addUserRow()" />
+          <q-btn label="Add User" color="primary" flat dense noCaps @click="addUserRow()" />
         </div>
       </template>
 
@@ -80,8 +80,8 @@
             </q-popup-edit>
           </q-td>
           <q-td key="save" :props="props">
-            <q-btn label="Save" color="primary" flat dense no-caps @click="saveUser(props.row)" :disable="!Boolean(props.row.editType)" />
-            <q-btn class="space-mx-10" label="Remove" color="primary" flat dense no-caps @click="removeUser(props.row)" />
+            <q-btn label="Save" color="primary" flat dense noCaps @click="saveUser(props.row)" :disable="!Boolean(props.row.editType)" />
+            <q-btn class="space-mx-10" label="Remove" color="primary" flat dense noCaps @click="removeUser(props.row)" />
           </q-td>
         </q-tr>
       </template>

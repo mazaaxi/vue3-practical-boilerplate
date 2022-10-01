@@ -17,7 +17,7 @@
           class="layout self-center space-mt-20"
           flat
           rounded
-          no-caps
+          noCaps
           color="primary"
           label="Move to ABC page"
           @click="moveToAbcPageButtonOnClick"
