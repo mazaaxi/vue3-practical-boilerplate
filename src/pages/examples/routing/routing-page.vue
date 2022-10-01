@@ -1,6 +1,4 @@
 <style lang="scss" scoped>
-@import 'src/styles/app.variables';
-
 .RoutingPage {
   body.screen--lg &,
   body.screen--xl &,

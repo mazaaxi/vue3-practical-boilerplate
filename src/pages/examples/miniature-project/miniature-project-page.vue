@@ -1,6 +1,4 @@
 <style lang="scss" scoped>
-@import 'src/styles/app.variables';
-
 .MiniatureProjectPage {
   body.screen--lg &,
   body.screen--xl &,

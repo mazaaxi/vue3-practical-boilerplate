@@ -1,6 +1,4 @@
 <style lang="scss" scoped>
-@import 'src/styles/app.variables';
-
 .menu {
   .list {
     .item {

@@ -1,6 +1,4 @@
 <style lang="scss" scoped>
-@import 'src/styles/app.variables';
-
 .container {
   min-width: 300px;
   body.screen--lg &,

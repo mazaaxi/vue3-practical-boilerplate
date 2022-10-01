@@ -1,6 +1,4 @@
 <style lang="scss" scoped>
-@import 'src/styles/app.variables';
-
 .AbcViewPC {
   max-width: 800px;
   padding: 32px;

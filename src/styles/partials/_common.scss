@@ -1,0 +1,38 @@
+@use '~quasar/dist/quasar' as q;
+@use '../variables' as v;
+
+%text- {
+  @each $heading, $value in q.$headings {
+    &#{$heading} {
+      font-size: map-get($value, 'size');
+      font-weight: map-get($value, 'weight');
+      line-height: map-get($value, 'line-height');
+      letter-spacing: map-get($value, 'letter-spacing');
+    }
+  }
+}
+
+%app-item-title {
+  font-size: v.$app-item-title-font-size;
+  font-weight: v.$app-item-title-font-weight;
+  color: v.$app-item-title-color;
+}
+
+%app-item-value {
+  font-size: v.$app-item-value-font-size;
+  font-weight: v.$app-item-value-font-weight;
+  color: v.$app-item-value-color;
+}
+
+%app-link {
+  color: v.$app-link-color;
+  text-decoration: none;
+  cursor: pointer;
+  &:not([disabled]):hover {
+    text-decoration: underline;
+  }
+  &[disabled] {
+    color: v.$text-disabled;
+    cursor: not-allowed !important;
+  }
+}

@@ -6,7 +6,7 @@ module.exports = {
     'stylelint-config-recommended-vue',
     'stylelint-prettier/recommended',
   ],
-  ignoreFiles: ['**/*.js'],
+  ignoreFiles: ['**/*.js', './src/styles/quasar-settings/_index.scss'],
   rules: {
     'prettier/prettier': true,
     'at-rule-no-unknown': null,

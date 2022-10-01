@@ -1,7 +1,3 @@
-<style lang="scss" scoped>
-@import 'src/styles/app.variables';
-</style>
-
 <template>
   <AbcViewPC v-if="deviceType === 'PC'" ref="pcView" />
   <AbcViewSP v-else-if="deviceType === 'SP'" ref="pcView" />

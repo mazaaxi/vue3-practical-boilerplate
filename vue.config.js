@@ -33,6 +33,16 @@ module.exports = {
 
   pages,
 
+  css: {
+    loaderOptions: {
+      scss: {
+        additionalData: `
+          @use '@/styles/app' as *;
+        `,
+      },
+    },
+  },
+
   // Using files with hashes in Firebase Hosting causes problems with Service Worker,
   // which can't cache new resources, or can't find the resource properly when loading the screen, resulting in errors.
   // For this reason, the file name is set to not have a hash.

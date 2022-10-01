@@ -1,6 +1,4 @@
 <style lang="scss" scoped>
-@import 'src/styles/app.variables';
-
 .AbcViewSP {
   body.screen--md & {
     padding: 16px;

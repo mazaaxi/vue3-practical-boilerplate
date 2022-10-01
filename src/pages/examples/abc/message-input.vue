@@ -1,6 +1,4 @@
 <style lang="scss" scoped>
-@import 'src/styles/app.variables';
-
 .MessageInput {
   &::v-deep(.message-input-class) {
     color: var(--message-input-color);

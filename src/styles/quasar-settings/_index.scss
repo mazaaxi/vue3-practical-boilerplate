@@ -1,0 +1,10 @@
+/* stylelint-disable */
+@forward '~quasar/dist/quasar' with (
+  $primary: #1a237e,
+  $secondary: #26a69a,
+  $accent: #ff4081ff,
+  $positive: #21ba45,
+  $negative: #c10015,
+  $info: #31ccec,
+  $warning: #f2c037,
+);
