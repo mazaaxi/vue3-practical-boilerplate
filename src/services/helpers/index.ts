@@ -21,7 +21,7 @@ namespace HelperContainer {
   let instance: HelperContainer
 
   export function setupHelper(helpers?: HelperContainer): HelperContainer {
-    instance = helpers ? helpers : reactive(newRawInstance())
+    instance = helpers ? helpers : reactive(newWrapInstance())
     return instance
   }
 
@@ -29,9 +29,9 @@ namespace HelperContainer {
     return instance
   }
 
-  export function newRawInstance() {
+  export function newWrapInstance() {
     return {
-      account: AccountHelper.newRawInstance(),
+      account: AccountHelper.newWrapInstance(),
     }
   }
 }

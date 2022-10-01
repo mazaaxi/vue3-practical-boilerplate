@@ -9,9 +9,9 @@ import { UnwrapNestedRefs } from '@vue/reactivity'
 //
 //==========================================================================
 
-interface CartStore extends UnwrapNestedRefs<RawCartStore> {}
+interface CartStore extends UnwrapNestedRefs<WrapCartStore> {}
 
-interface RawCartStore {
+interface WrapCartStore {
   readonly all: DeepReadonly<Ref<CartItem[]>>
   getById(cartItemId: string): CartItem | undefined
   sgetById(cartItemId: string): CartItem
@@ -38,7 +38,7 @@ interface SetCartItem extends Partial<Omit<CartItem, 'uid' | 'productId'>> {
 //==========================================================================
 
 namespace CartStore {
-  export function newRawInstance() {
+  export function newWrapInstance() {
     //----------------------------------------------------------------------
     //
     //  Properties
@@ -168,7 +168,7 @@ namespace CartStore {
       clear,
     }
 
-    return isImplemented<RawCartStore, typeof instance>(instance)
+    return isImplemented<WrapCartStore, typeof instance>(instance)
   }
 }
 

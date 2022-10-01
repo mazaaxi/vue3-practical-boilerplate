@@ -1,5 +1,5 @@
 import { ComputedRef, WritableComputedRef, computed, reactive, ref, watch } from 'vue'
-import { RawRoute, Route } from '@/router/core'
+import { Route, WrapRoute } from '@/router/core'
 import { Router, createRouter, createWebHistory } from 'vue-router'
 import { SupportI18nLocales, useI18nUtils } from '@/i18n'
 import { ExamplesRoutes } from '@/router/routes/examples'
@@ -89,14 +89,14 @@ namespace AppRouterContainer {
     const examples = ExamplesRoutes.newInstance(routeInput)
 
     const fallback = reactive(
-      Route.newRawInstance({
+      Route.newWrapInstance({
         routePath: `/:pathMatch(.*)*`,
         redirect: `/${locale.value}/home`,
         isHistoryMoving: routeInput.isHistoryMoving,
       })
     )
 
-    const routeList: UnwrapNestedRefs<RawRoute>[] = [home, shop, examples.abc, examples.miniatureProject, examples.routing, fallback]
+    const routeList: UnwrapNestedRefs<WrapRoute>[] = [home, shop, examples.abc, examples.miniatureProject, examples.routing, fallback]
 
     //----------------------------------------------------------------------
     //

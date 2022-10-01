@@ -180,7 +180,7 @@ function toEntities<T>(rawEntities: T[]): ToEntity<T>[] {
 }
 
 /**
- * Converts a entity to an entity in API format.
+ * Converts an entity to an entity in API format.
  */
 function toRawEntity<T>(entity: T): ToDeepRawDate<T> {
   return toDeepRawDate(entity)

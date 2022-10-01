@@ -50,10 +50,10 @@ interface APIRequestInternalConfig extends APIRequestConfig {
 
 namespace APIClient {
   export function newInstance(apiPrefix?: string): APIClient {
-    return newRawInstance(apiPrefix)
+    return newWrapInstance(apiPrefix)
   }
 
-  export function newRawInstance(apiPrefix?: string) {
+  export function newWrapInstance(apiPrefix?: string) {
     //----------------------------------------------------------------------
     //
     //  Methods

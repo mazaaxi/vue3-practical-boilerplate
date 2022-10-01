@@ -1,4 +1,4 @@
-import { RawRoute, Route, RouteInput } from '@/router/core'
+import { Route, RouteInput, WrapRoute } from '@/router/core'
 import { ComputedRef } from 'vue'
 import { extensionMethod } from '@/base'
 import { isImplemented } from 'js-common-lib'
@@ -28,19 +28,19 @@ interface LocaleRouteInput extends RouteInput {
 //
 //==========================================================================
 
-interface RawLocaleRoute extends RawRoute {
+interface WrapLocaleRoute extends WrapRoute {
   readonly locale: ComputedRef<string>
 }
 
 namespace LocaleRoute {
-  export function newRawInstance(input: LocaleRouteInput) {
+  export function newWrapInstance(input: LocaleRouteInput) {
     //----------------------------------------------------------------------
     //
     //  Variables
     //
     //----------------------------------------------------------------------
 
-    const base = Route.newRawInstance(input)
+    const base = Route.newWrapInstance(input)
 
     const locale = input.locale
 
@@ -88,7 +88,7 @@ namespace LocaleRoute {
       toPath,
     }
 
-    return isImplemented<RawLocaleRoute, typeof result>(result)
+    return isImplemented<WrapLocaleRoute, typeof result>(result)
   }
 }
 
@@ -98,4 +98,4 @@ namespace LocaleRoute {
 //
 //==========================================================================
 
-export { LocaleRouteContainerInput, LocaleRouteInput, LocaleRoute, RawLocaleRoute }
+export { LocaleRouteContainerInput, LocaleRouteInput, LocaleRoute, WrapLocaleRoute }

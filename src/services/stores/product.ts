@@ -9,9 +9,9 @@ import { UnwrapNestedRefs } from '@vue/reactivity'
 //
 //==========================================================================
 
-interface ProductStore extends UnwrapNestedRefs<RawProductStore> {}
+interface ProductStore extends UnwrapNestedRefs<WrapProductStore> {}
 
-interface RawProductStore {
+interface WrapProductStore {
   readonly all: DeepReadonly<Ref<Product[]>>
   getById(productId: string): DeepReadonly<Product> | undefined
   sgetById(productId: string): DeepReadonly<Product>
@@ -35,7 +35,7 @@ interface SetProduct extends Partial<Product> {
 //==========================================================================
 
 namespace ProductStore {
-  export function newRawInstance() {
+  export function newWrapInstance() {
     //----------------------------------------------------------------------
     //
     //  Properties
@@ -147,7 +147,7 @@ namespace ProductStore {
       incrementStock,
     }
 
-    return isImplemented<RawProductStore, typeof instance>(instance)
+    return isImplemented<WrapProductStore, typeof instance>(instance)
   }
 }
 

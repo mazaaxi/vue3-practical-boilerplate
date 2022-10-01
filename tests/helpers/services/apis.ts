@@ -10,7 +10,7 @@ interface TestAPIContainer extends APIContainer {
   putTestData(testData: any): Promise<void>
 }
 
-type RawAPIContainer = ReturnType<typeof APIContainer['newRawInstance']>
+type WrapAPIContainer = ReturnType<typeof APIContainer['newWrapInstance']>
 
 //==========================================================================
 //
@@ -20,11 +20,11 @@ type RawAPIContainer = ReturnType<typeof APIContainer['newRawInstance']>
 
 namespace TestAPIContainer {
   export function newInstance(): TestAPIContainer {
-    const api = APIContainer.newRawInstance()
+    const api = APIContainer.newWrapInstance()
     return mix(api)
   }
 
-  function mix<T extends RawAPIContainer>(api: T): TestAPIContainer & T {
+  function mix<T extends WrapAPIContainer>(api: T): TestAPIContainer & T {
     const putTestData: TestAPIContainer['putTestData'] = async testData => {
       await api.client.put('testData', testData)
     }

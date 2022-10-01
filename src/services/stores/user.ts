@@ -10,9 +10,9 @@ import dayjs from 'dayjs'
 //
 //==========================================================================
 
-interface UserStore extends UnwrapNestedRefs<RawUserStore> {}
+interface UserStore extends UnwrapNestedRefs<WrapUserStore> {}
 
-interface RawUserStore {
+interface WrapUserStore {
   readonly all: DeepReadonly<Ref<User[]>>
   get(id: string): User | undefined
   set(input: UserForSet): User
@@ -35,7 +35,7 @@ type UserForSet = DeepReadonly<
 //==========================================================================
 
 namespace UserStore {
-  export function newRawInstance() {
+  export function newWrapInstance() {
     //----------------------------------------------------------------------
     //
     //  Properties
@@ -121,7 +121,7 @@ namespace UserStore {
       removeAll,
     }
 
-    return isImplemented<RawUserStore, typeof instance>(instance)
+    return isImplemented<WrapUserStore, typeof instance>(instance)
   }
 
   export function createEmptyUser(): User {

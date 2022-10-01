@@ -14,9 +14,9 @@ const cloneDeep = require('rfdc')()
 //
 //==========================================================================
 
-interface ShopService extends UnwrapNestedRefs<RawShopService> {}
+interface ShopLogic extends UnwrapNestedRefs<WrapShopLogic> {}
 
-interface RawShopService {
+interface WrapShopLogic {
   readonly cartTotalPrice: ComputedRef<number>
   fetchProducts(): Promise<void>
   fetchUserCartItems(): Promise<void>
@@ -36,8 +36,8 @@ interface RawShopService {
 //
 //==========================================================================
 
-namespace ShopService {
-  export function newRawInstance() {
+namespace ShopLogic {
+  export function newWrapInstance() {
     //----------------------------------------------------------------------
     //
     //  Variables
@@ -74,7 +74,7 @@ namespace ShopService {
     //
     //----------------------------------------------------------------------
 
-    const fetchProducts: RawShopService['fetchProducts'] = async () => {
+    const fetchProducts: WrapShopLogic['fetchProducts'] = async () => {
       const responseProducts = await apis.getProducts()
       const responseProductDict = arrayToDict(responseProducts, 'id')
 
@@ -98,7 +98,7 @@ namespace ShopService {
       })
     }
 
-    const fetchUserCartItems: RawShopService['fetchUserCartItems'] = async () => {
+    const fetchUserCartItems: WrapShopLogic['fetchUserCartItems'] = async () => {
       helpers.account.validateSignedIn()
 
       const responseCartItems = await apis.getCartItems()
@@ -124,17 +124,17 @@ namespace ShopService {
       })
     }
 
-    const getAllProducts: RawShopService['getAllProducts'] = () => {
+    const getAllProducts: WrapShopLogic['getAllProducts'] = () => {
       return cloneDeep(stores.product.all) as DeepUnreadonly<Product[]>
     }
 
-    const getUserCartItems: RawShopService['getUserCartItems'] = () => {
+    const getUserCartItems: WrapShopLogic['getUserCartItems'] = () => {
       helpers.account.validateSignedIn()
 
       return stores.cart.getListByUID(helpers.account.user.id)
     }
 
-    const incrementCartItem: RawShopService['incrementCartItem'] = async productId => {
+    const incrementCartItem: WrapShopLogic['incrementCartItem'] = async productId => {
       helpers.account.validateSignedIn()
 
       const product = stores.product.sgetById(productId)
@@ -150,7 +150,7 @@ namespace ShopService {
       }
     }
 
-    const decrementCartItem: RawShopService['decrementCartItem'] = async productId => {
+    const decrementCartItem: WrapShopLogic['decrementCartItem'] = async productId => {
       helpers.account.validateSignedIn()
 
       const cartItem = stores.cart.sgetByProductId(productId)
@@ -161,7 +161,7 @@ namespace ShopService {
       }
     }
 
-    const checkout: RawShopService['checkout'] = async () => {
+    const checkout: WrapShopLogic['checkout'] = async () => {
       helpers.account.validateSignedIn()
 
       await apis.checkoutCart()
@@ -173,7 +173,7 @@ namespace ShopService {
       })
     }
 
-    const getExchangeRate: RawShopService['getExchangeRate'] = locale => {
+    const getExchangeRate: WrapShopLogic['getExchangeRate'] = locale => {
       if (locale === 'en' || locale === 'en-US') {
         return 1
       } else if (locale === 'ja' || locale === 'ja-JP') {
@@ -183,11 +183,11 @@ namespace ShopService {
       }
     }
 
-    const onProductsChange: RawShopService['onProductsChange'] = cb => {
+    const onProductsChange: WrapShopLogic['onProductsChange'] = cb => {
       return emitter.on('productsChange', cb)
     }
 
-    const onUserCartItemsChange: RawShopService['onUserCartItemsChange'] = cb => {
+    const onUserCartItemsChange: WrapShopLogic['onUserCartItemsChange'] = cb => {
       return emitter.on('userCartItemsChange', cb)
     }
 
@@ -300,7 +300,7 @@ namespace ShopService {
       onUserCartItemsChange,
     }
 
-    return isImplemented<RawShopService, typeof instance>(instance)
+    return isImplemented<WrapShopLogic, typeof instance>(instance)
   }
 }
 
@@ -310,4 +310,4 @@ namespace ShopService {
 //
 //==========================================================================
 
-export { ShopService }
+export { ShopLogic }

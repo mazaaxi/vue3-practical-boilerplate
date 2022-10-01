@@ -1,5 +1,5 @@
 import { ComputedRef, reactive } from 'vue'
-import { LocaleRoute, LocaleRouteContainerInput, LocaleRouteInput, RawLocaleRoute } from '@/router/base'
+import { LocaleRoute, LocaleRouteContainerInput, LocaleRouteInput, WrapLocaleRoute } from '@/router/base'
 import { isImplemented, removeEndSlash } from 'js-common-lib'
 import { UnwrapNestedRefs } from '@vue/reactivity'
 import { useRouter } from '@/router'
@@ -10,9 +10,9 @@ import { useRouter } from '@/router'
 //
 //==========================================================================
 
-interface ShopRoute extends UnwrapNestedRefs<RawShopRoute> {}
+interface ShopRoute extends UnwrapNestedRefs<WrapShopRoute> {}
 
-interface RawShopRoute extends RawLocaleRoute {
+interface WrapShopRoute extends WrapLocaleRoute {
   readonly locale: ComputedRef<string>
   move(): Promise<boolean>
   toMovePath(): string
@@ -21,7 +21,7 @@ interface RawShopRoute extends RawLocaleRoute {
 namespace ShopRoute {
   export function newInstance(input: LocaleRouteContainerInput): ShopRoute {
     return reactive(
-      newRawInstance({
+      newWrapInstance({
         routePath: `/:locale/shop`,
         component: () => import(/* webpackChunkName: "pages/shop" */ '@/pages/shop'),
         ...input,
@@ -29,14 +29,14 @@ namespace ShopRoute {
     )
   }
 
-  function newRawInstance(input: LocaleRouteInput) {
+  function newWrapInstance(input: LocaleRouteInput) {
     //----------------------------------------------------------------------
     //
     //  Variables
     //
     //----------------------------------------------------------------------
 
-    const base = LocaleRoute.newRawInstance(input)
+    const base = LocaleRoute.newWrapInstance(input)
 
     //----------------------------------------------------------------------
     //
@@ -44,7 +44,7 @@ namespace ShopRoute {
     //
     //----------------------------------------------------------------------
 
-    const move: RawShopRoute['move'] = async () => {
+    const move: WrapShopRoute['move'] = async () => {
       const router = useRouter()
 
       // generate a move path
@@ -61,7 +61,7 @@ namespace ShopRoute {
       return true
     }
 
-    const toMovePath: RawShopRoute['toMovePath'] = () => {
+    const toMovePath: WrapShopRoute['toMovePath'] = () => {
       return base.toPath({
         routePath: base.routePath.value,
         params: { locale: base.locale.value },
@@ -81,7 +81,7 @@ namespace ShopRoute {
       toMovePath,
     }
 
-    return isImplemented<RawShopRoute, typeof result>(result)
+    return isImplemented<WrapShopRoute, typeof result>(result)
   }
 }
 

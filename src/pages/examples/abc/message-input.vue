@@ -36,9 +36,9 @@ namespace MessageInput {
     readonly modelValue: string
   }
 
-  export type Features = UnwrapNestedRefs<RawFeatures>
+  export type Features = UnwrapNestedRefs<WrapFeatures>
 
-  export interface RawFeatures {
+  export interface WrapFeatures {
     readonly displayMessage: ComputedRef<string>
   }
 }
@@ -110,7 +110,7 @@ const MessageInput = defineComponent({
       displayMessage,
     }
 
-    return isImplemented<MessageInput.RawFeatures, typeof result>(result)
+    return isImplemented<MessageInput.WrapFeatures, typeof result>(result)
   },
 })
 

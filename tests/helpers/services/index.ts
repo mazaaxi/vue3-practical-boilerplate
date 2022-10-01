@@ -8,9 +8,9 @@ import { reactive } from 'vue'
 //
 //==========================================================================
 
-interface TestServiceContainer extends UnwrapNestedRefs<ReturnType<typeof ServiceContainer['newRawInstance']>> {}
+interface TestServiceContainer extends UnwrapNestedRefs<ReturnType<typeof ServiceContainer['newWrapInstance']>> {}
 
-type TestShopService = TestServiceContainer['shop']
+type TestShopLogic = TestServiceContainer['shop']
 
 //==========================================================================
 //
@@ -20,7 +20,7 @@ type TestShopService = TestServiceContainer['shop']
 
 namespace TestServiceContainer {
   export function newInstance(): TestServiceContainer {
-    return reactive(ServiceContainer.newRawInstance())
+    return reactive(ServiceContainer.newWrapInstance())
   }
 }
 
@@ -30,7 +30,7 @@ namespace TestServiceContainer {
 //
 //==========================================================================
 
-export { TestServiceContainer, TestShopService }
+export { TestServiceContainer, TestShopLogic }
 export * from './apis'
 export * from './stores'
 export * from './helpers'

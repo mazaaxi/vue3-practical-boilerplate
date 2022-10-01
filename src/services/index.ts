@@ -1,5 +1,5 @@
-import { AccountService } from '@/services/modules/account'
-import { ShopService } from '@/services/modules/shop'
+import { AccountLogic } from '@/services/logics/account'
+import { ShopLogic } from '@/services/logics/shop'
 import { reactive } from 'vue'
 import { setupAPI } from '@/services/apis'
 import { setupHelper } from '@/services/helpers'
@@ -12,8 +12,8 @@ import { setupStore } from '@/services/stores'
 //==========================================================================
 
 interface ServiceContainer {
-  readonly account: AccountService
-  readonly shop: ShopService
+  readonly account: AccountLogic
+  readonly shop: ShopLogic
 }
 
 //==========================================================================
@@ -30,7 +30,7 @@ namespace ServiceContainer {
     setupStore()
     setupHelper()
 
-    instance = services ? services : reactive(newRawInstance())
+    instance = services ? services : reactive(newWrapInstance())
     return instance
   }
 
@@ -38,10 +38,10 @@ namespace ServiceContainer {
     return instance
   }
 
-  export function newRawInstance() {
+  export function newWrapInstance() {
     return {
-      account: AccountService.newRawInstance(),
-      shop: ShopService.newRawInstance(),
+      account: AccountLogic.newWrapInstance(),
+      shop: ShopLogic.newWrapInstance(),
     }
   }
 }

@@ -25,7 +25,7 @@ namespace StoreContainer {
   let instance: StoreContainer
 
   export function setupStore(stores?: StoreContainer): StoreContainer {
-    instance = stores ? stores : reactive(newRawInstance())
+    instance = stores ? stores : reactive(newWrapInstance())
     return instance
   }
 
@@ -33,11 +33,11 @@ namespace StoreContainer {
     return instance
   }
 
-  export function newRawInstance() {
+  export function newWrapInstance() {
     return {
-      user: UserStore.newRawInstance(),
-      product: ProductStore.newRawInstance(),
-      cart: CartStore.newRawInstance(),
+      user: UserStore.newWrapInstance(),
+      product: ProductStore.newWrapInstance(),
+      cart: CartStore.newWrapInstance(),
     }
   }
 }

@@ -15,10 +15,10 @@ interface Config {
 }
 
 interface EnvConfig {
-  executeMode: ExecuteMode
+  executionMode: ExecutionMode
 }
 
-type ExecuteMode = 'remote' | 'local' | 'test'
+type ExecutionMode = 'remote' | 'local' | 'test'
 
 interface APIConfig {
   protocol: string
@@ -59,7 +59,7 @@ namespace Config {
 
     const state = reactive({
       env: <EnvConfig>{
-        executeMode: process.env.NODE_ENV === 'production' ? 'remote' : process.env.NODE_ENV === 'test' ? 'test' : 'local',
+        executionMode: process.env.NODE_ENV === 'production' ? 'remote' : process.env.NODE_ENV === 'test' ? 'test' : 'local',
       },
 
       api: getAPIConfig({

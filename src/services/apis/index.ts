@@ -46,7 +46,7 @@ namespace APIContainer {
   let instance: APIContainer
 
   export function setupAPI(apis?: APIContainer): APIContainer {
-    instance = apis ? apis : newRawInstance()
+    instance = apis ? apis : newWrapInstance()
     return instance
   }
 
@@ -54,7 +54,7 @@ namespace APIContainer {
     return instance
   }
 
-  export function newRawInstance() {
+  export function newWrapInstance() {
     //----------------------------------------------------------------------
     //
     //  Variables

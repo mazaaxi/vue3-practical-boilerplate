@@ -8,7 +8,7 @@ import { reactive } from 'vue'
 //
 //==========================================================================
 
-interface TestHelperContainer extends UnwrapNestedRefs<ReturnType<typeof HelperContainer['newRawInstance']>> {}
+interface TestHelperContainer extends UnwrapNestedRefs<ReturnType<typeof HelperContainer['newWrapInstance']>> {}
 
 //==========================================================================
 //
@@ -18,7 +18,7 @@ interface TestHelperContainer extends UnwrapNestedRefs<ReturnType<typeof HelperC
 
 namespace TestHelperContainer {
   export function newInstance(): TestHelperContainer {
-    return reactive(HelperContainer.newRawInstance())
+    return reactive(HelperContainer.newWrapInstance())
   }
 }
 

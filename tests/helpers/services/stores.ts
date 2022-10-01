@@ -10,7 +10,7 @@ import { reactive } from 'vue'
 //
 //==========================================================================
 
-interface TestStoreContainer extends UnwrapNestedRefs<ReturnType<typeof StoreContainer['newRawInstance']>> {}
+interface TestStoreContainer extends UnwrapNestedRefs<ReturnType<typeof StoreContainer['newWrapInstance']>> {}
 
 //==========================================================================
 //
@@ -20,7 +20,7 @@ interface TestStoreContainer extends UnwrapNestedRefs<ReturnType<typeof StoreCon
 
 namespace TestStoreContainer {
   export function newInstance(): TestStoreContainer {
-    return reactive(StoreContainer.newRawInstance())
+    return reactive(StoreContainer.newWrapInstance())
   }
 }
 

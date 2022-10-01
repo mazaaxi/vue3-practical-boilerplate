@@ -11,9 +11,9 @@ import { useStore } from '@/services/stores'
 //
 //==========================================================================
 
-interface AccountHelper extends UnwrapNestedRefs<RawAccountHelper> {}
+interface AccountHelper extends UnwrapNestedRefs<WrapAccountHelper> {}
 
-interface RawAccountHelper {
+interface WrapAccountHelper {
   readonly user: DeepReadonly<Ref<User>>
   readonly isSignedIn: Ref<boolean>
   signIn(user: User): void
@@ -28,7 +28,7 @@ interface RawAccountHelper {
 //==========================================================================
 
 namespace AccountHelper {
-  export function newRawInstance() {
+  export function newWrapInstance() {
     const stores = useStore()
 
     const user = ref<User>(UserStore.createEmptyUser())
@@ -63,7 +63,7 @@ namespace AccountHelper {
       validateSignedIn,
     }
 
-    return isImplemented<RawAccountHelper, typeof result>(result)
+    return isImplemented<WrapAccountHelper, typeof result>(result)
   }
 }
 

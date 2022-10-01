@@ -13,9 +13,9 @@ import { isImplemented } from 'js-common-lib'
 //
 //==========================================================================
 
-type DialogContainer = UnwrapNestedRefs<RawDialogContainer>
+type DialogContainer = UnwrapNestedRefs<WrapDialogContainer>
 
-interface RawDialogContainer extends DialogsSet.RawFeatures {
+interface WrapDialogContainer extends DialogsSet.WrapFeatures {
   /**
    * Build a query to open a dialog.
    *
@@ -48,7 +48,7 @@ namespace DialogContainer {
   let instance: DialogContainer
 
   export function setupDialogs(dialogsSet: Ref<DialogsSet | undefined>): DialogContainer {
-    instance = reactive(newRawInstance(dialogsSet))
+    instance = reactive(newWrapInstance(dialogsSet))
     return instance
   }
 
@@ -59,7 +59,7 @@ namespace DialogContainer {
     return instance
   }
 
-  function newRawInstance(dialogsSet: Ref<DialogsSet | undefined>) {
+  function newWrapInstance(dialogsSet: Ref<DialogsSet | undefined>) {
     //----------------------------------------------------------------------
     //
     //  Variables
@@ -234,7 +234,7 @@ namespace DialogContainer {
       clearQuery,
     }
 
-    return isImplemented<RawDialogContainer, typeof result>(result)
+    return isImplemented<WrapDialogContainer, typeof result>(result)
   }
 }
 

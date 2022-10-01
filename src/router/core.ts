@@ -60,7 +60,7 @@ interface Route {
   readonly hasHistoryMoved: boolean
 }
 
-interface RawRoute
+interface WrapRoute
   extends Omit<
     Route,
     'basePath' | 'path' | 'fullPath' | 'hash' | 'query' | 'params' | 'status' | 'isCurrent' | 'isHistoryMoving' | 'hasHistoryMoved'
@@ -113,7 +113,7 @@ interface RouteInput {
 //==========================================================================
 
 namespace Route {
-  export function newRawInstance(input: RouteInput) {
+  export function newWrapInstance(input: RouteInput) {
     //----------------------------------------------------------------------
     //
     //  Variables
@@ -149,15 +149,15 @@ namespace Route {
     //
     //----------------------------------------------------------------------
 
-    const toRouteConfig = extensionMethod<RawRoute['toRouteConfig']>(() => {
+    const toRouteConfig = extensionMethod<WrapRoute['toRouteConfig']>(() => {
       return { path: baseRoutePath.value, component: component.value, redirect: redirect.value }
     })
 
-    const updateByFlow = extensionMethod<RawRoute['updateByFlow']>(async (to, from) => {
+    const updateByFlow = extensionMethod<WrapRoute['updateByFlow']>(async (to, from) => {
       await update(to)
     })
 
-    const update = extensionMethod<RawRoute['update']>(async route => {
+    const update = extensionMethod<WrapRoute['update']>(async route => {
       // set the flag indicating whether a history move has been performed
       // Note: if it is currently in the process of history move, it means
       // "history move has been performed"
@@ -185,7 +185,7 @@ namespace Route {
       params.value = route.params
     })
 
-    const refresh = extensionMethod<RawRoute['refresh']>(async router => {
+    const refresh = extensionMethod<WrapRoute['refresh']>(async router => {
       // if there is no change in the path, do nothing and exit
       const currentPath = removeEndSlash(router.currentRoute.value.fullPath)
       const nextPath = toPath({
@@ -284,7 +284,7 @@ namespace Route {
       clear,
     }
 
-    return isImplemented<RawRoute, typeof result>(result)
+    return isImplemented<WrapRoute, typeof result>(result)
   }
 }
 
@@ -294,4 +294,4 @@ namespace Route {
 //
 //==========================================================================
 
-export { RawRoute, Route, RouteInput }
+export { WrapRoute, Route, RouteInput }

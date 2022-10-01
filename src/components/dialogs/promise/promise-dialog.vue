@@ -23,9 +23,9 @@ namespace PromiseDialog {
     readonly persistent?: boolean
   }
 
-  export type Features<RESULT = void> = UnwrapNestedRefs<RawFeatures<RESULT>>
+  export type Features<RESULT = void> = UnwrapNestedRefs<WrapFeatures<RESULT>>
 
-  export interface RawFeatures<RESULT = void> {
+  export interface WrapFeatures<RESULT = void> {
     readonly opened: Ref<boolean>
     open(params: OpenParams): Promise<RESULT>
     close(result: RESULT): void
@@ -139,7 +139,7 @@ const PromiseDialog = defineComponent({
       onBeforeHide,
     }
 
-    return isImplemented<PromiseDialog.RawFeatures<RESULT>, typeof result>(result)
+    return isImplemented<PromiseDialog.WrapFeatures<RESULT>, typeof result>(result)
   },
 })
 
@@ -150,5 +150,4 @@ const PromiseDialog = defineComponent({
 //==========================================================================
 
 export default PromiseDialog
-export { PromiseDialog }
 </script>

@@ -1,5 +1,5 @@
 import AbcViewPC from '@/pages/examples/abc/abc-view-pc.vue'
-import { AccountService } from '@/services/modules/account'
+import { AccountLogic } from '@/services/logics/account'
 import { TestUsers } from '@/services/test-data'
 import { mount } from '@vue/test-utils'
 import { nextTick } from 'vue'
@@ -10,7 +10,7 @@ describe('abc-view-pc.vue', () => {
   beforeEach(() => {
     provideDependency(({ stores, helpers, services }) => {
       const testUser = TestUsers[0]
-      td.replace<AccountService, 'signIn'>(services.account, 'signIn', async (uid: string) => {
+      td.replace<AccountLogic, 'signIn'>(services.account, 'signIn', async (uid: string) => {
         stores.user.add(testUser)
         helpers.account.signIn(testUser)
       })

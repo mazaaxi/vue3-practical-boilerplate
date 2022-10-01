@@ -1,9 +1,9 @@
 import { ComputedRef, Ref, reactive, ref } from 'vue'
 import { DeepReadonly, isImplemented, pickProps, removeEndSlash } from 'js-common-lib'
-import { LocaleRoute, LocaleRouteContainerInput, LocaleRouteInput, RawLocaleRoute } from '@/router/base'
+import { LocaleRoute, LocaleRouteContainerInput, LocaleRouteInput, WrapLocaleRoute } from '@/router/base'
 import { LocationQueryValue } from 'vue-router'
-import { RawRoute } from '@/router/core'
 import { UnwrapNestedRefs } from '@vue/reactivity'
+import { WrapRoute } from '@/router/core'
 import { pathToRegexp } from 'path-to-regexp'
 import url from 'url'
 import { useRouter } from '@/router'
@@ -20,17 +20,17 @@ interface ExamplesRoutes {
 
 namespace ExamplesRoutes {
   export function newInstance(input: LocaleRouteContainerInput) {
-    const miniatureProject = MiniatureProjectRoute.newRawInstance({
+    const miniatureProject = MiniatureProjectRoute.newWrapInstance({
       routePath: `/:locale/examples/miniature-project`,
       component: () => import(/* webpackChunkName: "pages/examples/miniature-project" */ '@/pages/examples/miniature-project'),
       ...input,
     })
-    const abc = AbcRoute.newRawInstance({
+    const abc = AbcRoute.newWrapInstance({
       routePath: `/:locale/examples/abc`,
       component: () => import(/* webpackChunkName: "pages/examples/abc" */ '@/pages/examples/abc'),
       ...input,
     })
-    const routing = RoutingRoute.newRawInstance({
+    const routing = RoutingRoute.newWrapInstance({
       routePath: `/:locale/examples/routing`,
       component: () => import(/* webpackChunkName: "pages/home" */ '@/pages/examples/routing'),
       ...input,
@@ -50,9 +50,9 @@ namespace ExamplesRoutes {
 //  AbcRoute
 //==========================================================================
 
-interface AbcRoute extends UnwrapNestedRefs<RawAbcRoute> {}
+interface AbcRoute extends UnwrapNestedRefs<WrapAbcRoute> {}
 
-interface RawAbcRoute extends RawLocaleRoute {
+interface WrapAbcRoute extends WrapLocaleRoute {
   readonly message: DeepReadonly<AbcRouteMessage>
   move(message?: AbcRouteMessage): Promise<boolean>
   toMovePath(message?: AbcRouteMessage): string
@@ -64,14 +64,14 @@ interface AbcRouteMessage {
 }
 
 namespace AbcRoute {
-  export function newRawInstance(input: LocaleRouteInput) {
+  export function newWrapInstance(input: LocaleRouteInput) {
     //----------------------------------------------------------------------
     //
     //  Variables
     //
     //----------------------------------------------------------------------
 
-    const base = LocaleRoute.newRawInstance(input)
+    const base = LocaleRoute.newWrapInstance(input)
 
     const message = reactive<AbcRouteMessage>({
       title: undefined,
@@ -99,7 +99,7 @@ namespace AbcRoute {
       }
     }
 
-    const move: RawAbcRoute['move'] = async message => {
+    const move: WrapAbcRoute['move'] = async message => {
       const router = useRouter()
 
       // generate a move path with the specified information
@@ -117,7 +117,7 @@ namespace AbcRoute {
       return true
     }
 
-    const toMovePath: RawAbcRoute['toMovePath'] = message => {
+    const toMovePath: WrapAbcRoute['toMovePath'] = message => {
       const query: { [key: string]: string } = {}
       if (message?.title) {
         query.title = message.title
@@ -152,9 +152,9 @@ namespace AbcRoute {
 //  RouteingExampleRoute
 //==========================================================================
 
-interface RoutingRoute extends UnwrapNestedRefs<RawRoutingRoute> {}
+interface RoutingRoute extends UnwrapNestedRefs<WrapRoutingRoute> {}
 
-interface RawRoutingRoute extends RawLocaleRoute {
+interface WrapRoutingRoute extends WrapLocaleRoute {
   readonly page: Ref<number>
   move(page: number): Promise<boolean>
   toMovePath(page: number): string
@@ -163,14 +163,14 @@ interface RawRoutingRoute extends RawLocaleRoute {
 }
 
 namespace RoutingRoute {
-  export function newRawInstance(input: LocaleRouteInput) {
+  export function newWrapInstance(input: LocaleRouteInput) {
     //----------------------------------------------------------------------
     //
     //  Variables
     //
     //----------------------------------------------------------------------
 
-    const base = LocaleRoute.newRawInstance(input)
+    const base = LocaleRoute.newWrapInstance(input)
 
     const page = ref<number>(NaN)
 
@@ -276,7 +276,7 @@ namespace RoutingRoute {
       replacePage,
     }
 
-    return isImplemented<RawRoutingRoute, typeof result>(result)
+    return isImplemented<WrapRoutingRoute, typeof result>(result)
   }
 }
 
@@ -284,21 +284,21 @@ namespace RoutingRoute {
 //  MiniatureProjectRoute
 //==========================================================================
 
-interface MiniatureProjectRoute extends UnwrapNestedRefs<RawMiniatureProjectRoute> {}
+interface MiniatureProjectRoute extends UnwrapNestedRefs<WrapMiniatureProjectRoute> {}
 
-interface RawMiniatureProjectRoute extends RawRoute {
+interface WrapMiniatureProjectRoute extends WrapRoute {
   locale: ComputedRef<string>
 }
 
 namespace MiniatureProjectRoute {
-  export function newRawInstance(input: LocaleRouteInput) {
+  export function newWrapInstance(input: LocaleRouteInput) {
     //----------------------------------------------------------------------
     //
     //  Variables
     //
     //----------------------------------------------------------------------
 
-    const base = LocaleRoute.newRawInstance(input)
+    const base = LocaleRoute.newWrapInstance(input)
 
     //----------------------------------------------------------------------
     //

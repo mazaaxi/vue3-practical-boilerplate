@@ -49,11 +49,11 @@ namespace APIContainer {
   let instance: APIContainer
 
   export function useAPI(): APIContainer {
-    instance ??= newRawInstance()
+    instance ??= newWrapInstance()
     return instance
   }
 
-  export function newRawInstance() {
+  export function newWrapInstance() {
     const getAllUsers: APIContainer['getAllUsers'] = async () => {
       await sleep(500)
       return cloneDeep(users)
@@ -118,13 +118,13 @@ namespace StoreContainer {
   let instance: StoreContainer
 
   export function useStore(): StoreContainer {
-    instance ??= reactive(newRawInstance())
+    instance ??= reactive(newWrapInstance())
     return instance
   }
 
-  export function newRawInstance() {
+  export function newWrapInstance() {
     return {
-      user: UserStore.newRawInstance(),
+      user: UserStore.newWrapInstance(),
     }
   }
 }
@@ -135,9 +135,9 @@ const { useStore } = StoreContainer
 //  UserStore
 //--------------------------------------------------------------------------
 
-interface UserStore extends UnwrapNestedRefs<RawUserStore> {}
+interface UserStore extends UnwrapNestedRefs<WrapUserStore> {}
 
-interface RawUserStore {
+interface WrapUserStore {
   readonly all: DeepReadonly<Ref<User[]>>
   readonly averageAge: ComputedRef<number>
   get(id: string): User | undefined
@@ -147,7 +147,7 @@ interface RawUserStore {
 }
 
 namespace UserStore {
-  export function newRawInstance() {
+  export function newWrapInstance() {
     const all = ref<User[]>([])
 
     const averageAge = computed(() => {
@@ -156,12 +156,12 @@ namespace UserStore {
       return Math.round(totalAge / all.value.length)
     })
 
-    const get: RawUserStore['get'] = id => {
+    const get: WrapUserStore['get'] = id => {
       const user = all.value.find(user => user.id === id)
       return cloneDeep(user)
     }
 
-    const add: RawUserStore['add'] = user => {
+    const add: WrapUserStore['add'] = user => {
       if (get(user.id)) {
         throw new Error(`A user with the same id '${user.id}' already exists.`)
       }
@@ -172,7 +172,7 @@ namespace UserStore {
       return cloneDeep(newUser)
     }
 
-    const set: RawUserStore['set'] = user => {
+    const set: WrapUserStore['set'] = user => {
       const target = all.value.find(item => item.id === user.id)
       if (!target) {
         throw new Error(`The user with the specified id '${user.id}' does not exist.`)
@@ -183,7 +183,7 @@ namespace UserStore {
       return cloneDeep(target)
     }
 
-    const remove: RawUserStore['remove'] = id => {
+    const remove: WrapUserStore['remove'] = id => {
       const index = all.value.findIndex(user => user.id === id)
       if (index < 0) {
         throw new Error(`The user with the specified id '${id}' does not exist.`)
@@ -203,7 +203,7 @@ namespace UserStore {
       remove,
     }
 
-    return isImplemented<RawUserStore, typeof result>(result)
+    return isImplemented<WrapUserStore, typeof result>(result)
   }
 }
 
@@ -225,13 +225,13 @@ namespace ServiceContainer {
   let instance: ServiceContainer
 
   export function useService(): ServiceContainer {
-    instance ??= reactive(newRawInstance())
+    instance ??= reactive(newWrapInstance())
     return instance
   }
 
-  export function newRawInstance() {
+  export function newWrapInstance() {
     return {
-      admin: AdminService.newRawInstance(),
+      admin: AdminService.newWrapInstance(),
     }
   }
 }
@@ -242,9 +242,9 @@ const { useService } = ServiceContainer
 //  AdminService
 //--------------------------------------------------------------------------
 
-interface AdminService extends UnwrapNestedRefs<RawAdminService> {}
+interface AdminService extends UnwrapNestedRefs<WrapAdminService> {}
 
-interface RawAdminService {
+interface WrapAdminService {
   averageUserAge: ComputedRef<number>
   fetchUsers(): Promise<void>
   addUser(user: User): Promise<User>
@@ -255,14 +255,14 @@ interface RawAdminService {
 }
 
 namespace AdminService {
-  export function newRawInstance() {
+  export function newWrapInstance() {
     const apis = useAPI()
     const stores = useStore()
     const emitter = createNanoEvents<{
       userChange: (newUser?: User, oldUser?: User) => void
     }>()
 
-    const fetchUsers: RawAdminService['fetchUsers'] = async () => {
+    const fetchUsers: WrapAdminService['fetchUsers'] = async () => {
       const response = await apis.getAllUsers()
       response.forEach(responseUser => {
         const exists = stores.user.get(responseUser.id)
@@ -276,14 +276,14 @@ namespace AdminService {
       })
     }
 
-    const addUser: RawAdminService['addUser'] = async user => {
+    const addUser: WrapAdminService['addUser'] = async user => {
       const response = await apis.addUser(user)
       const added = stores.user.add(response)
       emitter.emit('userChange', added, undefined)
       return added
     }
 
-    const setUser: RawAdminService['setUser'] = async user => {
+    const setUser: WrapAdminService['setUser'] = async user => {
       const oldUser = stores.user.get(user.id)
       const response = await apis.setUser(user)
       const updated = stores.user.set(response)
@@ -291,18 +291,18 @@ namespace AdminService {
       return updated
     }
 
-    const removeUser: RawAdminService['removeUser'] = async id => {
+    const removeUser: WrapAdminService['removeUser'] = async id => {
       const response = await apis.removeUser(id)
       const removed = stores.user.remove(response.id)
       emitter.emit('userChange', undefined, removed)
       return removed
     }
 
-    const getAllUsers: RawAdminService['getAllUsers'] = () => {
+    const getAllUsers: WrapAdminService['getAllUsers'] = () => {
       return cloneDeep(stores.user.all) as DeepUnreadonly<User[]>
     }
 
-    const onUsersChange: RawAdminService['onUsersChange'] = cb => {
+    const onUsersChange: WrapAdminService['onUsersChange'] = cb => {
       return emitter.on('userChange', cb)
     }
 
@@ -316,7 +316,7 @@ namespace AdminService {
       onUsersChange,
     }
 
-    return isImplemented<RawAdminService, typeof result>(result)
+    return isImplemented<WrapAdminService, typeof result>(result)
   }
 }
 

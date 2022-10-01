@@ -97,7 +97,7 @@ function sortIdFunc(a: { id: string }, b: { id: string }): number {
 //
 //==========================================================================
 
-describe('ShopService', () => {
+describe('ShopLogic', () => {
   beforeEach(async () => {
     provideDependency(({ helpers }) => {
       let signInUser: User = UserStore.createEmptyUser()

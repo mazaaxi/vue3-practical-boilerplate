@@ -12,9 +12,9 @@ import { useStore } from '@/services/stores'
 //
 //==========================================================================
 
-interface AccountService extends UnwrapNestedRefs<RawAccountService> {}
+interface AccountLogic extends UnwrapNestedRefs<WrapAccountLogic> {}
 
-interface RawAccountService {
+interface WrapAccountLogic {
   readonly user: DeepReadonly<User>
   readonly isSignedIn: ComputedRef<boolean>
   signIn(uid: string): Promise<void>
@@ -28,8 +28,8 @@ interface RawAccountService {
 //
 //==========================================================================
 
-namespace AccountService {
-  export function newRawInstance() {
+namespace AccountLogic {
+  export function newWrapInstance() {
     //----------------------------------------------------------------------
     //
     //  Variables
@@ -45,7 +45,7 @@ namespace AccountService {
     //
     //----------------------------------------------------------------------
 
-    const signIn: AccountService['signIn'] = async uid => {
+    const signIn: AccountLogic['signIn'] = async uid => {
       const user = TestUsers.find(user => user.id === uid)
       if (!user) {
         throw new Error(`The specified user does not exist: '${uid}'`)
@@ -62,7 +62,7 @@ namespace AccountService {
       localStorage.setItem('idToken', JSON.stringify({ uid: user.id }))
     }
 
-    const signOut: AccountService['signOut'] = async () => {
+    const signOut: AccountLogic['signOut'] = async () => {
       helpers.account.signOut()
     }
 
@@ -82,7 +82,7 @@ namespace AccountService {
       validateSignedIn,
     }
 
-    return isImplemented<RawAccountService, typeof instance>(instance)
+    return isImplemented<WrapAccountLogic, typeof instance>(instance)
   }
 }
 
@@ -92,4 +92,4 @@ namespace AccountService {
 //
 //==========================================================================
 
-export { AccountService }
+export { AccountLogic }

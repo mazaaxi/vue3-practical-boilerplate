@@ -22,9 +22,9 @@ type DialogsSet = DialogsSet.Props & DialogsSet.Features
 namespace DialogsSet {
   export interface Props {}
 
-  export type Features = UnwrapNestedRefs<RawFeatures>
+  export type Features = UnwrapNestedRefs<WrapFeatures>
 
-  export interface RawFeatures {
+  export interface WrapFeatures {
     readonly message: ComputedRef<MessageDialog>
     readonly anchor: ComputedRef<MessageDialog>
   }
@@ -55,7 +55,7 @@ const DialogsSet = defineComponent({
       anchor,
     }
 
-    return isImplemented<DialogsSet.RawFeatures, typeof result>(result)
+    return isImplemented<DialogsSet.WrapFeatures, typeof result>(result)
   },
 })
 
