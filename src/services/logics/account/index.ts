@@ -1,9 +1,10 @@
-import { ComputedRef, computed } from 'vue'
 import { DeepReadonly, isImplemented } from 'js-common-lib'
+import { Ref, reactive, ref } from 'vue'
 import { TestUsers } from '@/services/test-data'
 import { UnwrapNestedRefs } from '@vue/reactivity'
 import { User } from '@/services/base'
-import { useHelper } from '@/services/helpers'
+import { UserStore } from '@/services/stores/user'
+import { extensionMethod } from '@/base'
 import { useStore } from '@/services/stores'
 
 //==========================================================================
@@ -15,11 +16,17 @@ import { useStore } from '@/services/stores'
 interface AccountLogic extends UnwrapNestedRefs<WrapAccountLogic> {}
 
 interface WrapAccountLogic {
-  readonly user: DeepReadonly<User>
-  readonly isSignedIn: ComputedRef<boolean>
+  readonly user: DeepReadonly<Ref<User>>
+  readonly isSignedIn: Ref<boolean>
   signIn(uid: string): Promise<void>
   signOut(): Promise<void>
   validateSignedIn(): void
+}
+
+interface InternalAccountLogic {
+  readonly user: AccountLogic['user']
+  readonly isSignedIn: AccountLogic['isSignedIn']
+  validateSignedIn: AccountLogic['validateSignedIn']
 }
 
 //==========================================================================
@@ -29,6 +36,17 @@ interface WrapAccountLogic {
 //==========================================================================
 
 namespace AccountLogic {
+  let instance: AccountLogic
+
+  export function setupInstance<T extends AccountLogic>(logic?: T): T {
+    instance = logic ?? reactive(newWrapInstance())
+    return instance as T
+  }
+
+  export function useInternalInstance(): InternalAccountLogic {
+    return instance
+  }
+
   export function newWrapInstance() {
     //----------------------------------------------------------------------
     //
@@ -37,7 +55,10 @@ namespace AccountLogic {
     //----------------------------------------------------------------------
 
     const stores = useStore()
-    const helpers = useHelper()
+
+    const user = ref<User>(UserStore.createEmptyUser())
+
+    const isSignedIn = ref(false)
 
     //----------------------------------------------------------------------
     //
@@ -45,28 +66,34 @@ namespace AccountLogic {
     //
     //----------------------------------------------------------------------
 
-    const signIn: AccountLogic['signIn'] = async uid => {
-      const user = TestUsers.find(user => user.id === uid)
-      if (!user) {
+    const signIn = extensionMethod<WrapAccountLogic['signIn']>(async uid => {
+      const signedInUser = TestUsers.find(user => user.id === uid)
+      if (!signedInUser) {
         throw new Error(`The specified user does not exist: '${uid}'`)
       }
 
-      const exists = stores.user.get(user.id)
-      exists ? stores.user.set(user) : stores.user.add(user)
-      helpers.account.signIn(user)
+      const exists = Boolean(stores.user.get(signedInUser.id))
+      exists ? stores.user.set(signedInUser) : stores.user.add(signedInUser)
+      User.populate(user.value, signedInUser)
+      isSignedIn.value = true
 
       // TODO
       //  The id token stored in the local storage here will be used in the API request.
-      //  However, the implementation here is pseudo, and the authentication process
-      //  should be implemented based on the specifications of the application.
-      localStorage.setItem('idToken', JSON.stringify({ uid: user.id }))
+      //  However, the implementation here is pseudo, and a authentication process
+      //  should be implemented based on the specifications of an application.
+      localStorage.setItem('idToken', JSON.stringify({ uid: user.value.id }))
+    })
+
+    const signOut: WrapAccountLogic['signOut'] = async () => {
+      User.populate(user.value, UserStore.createEmptyUser())
+      isSignedIn.value = false
     }
 
-    const signOut: AccountLogic['signOut'] = async () => {
-      helpers.account.signOut()
+    const validateSignedIn: WrapAccountLogic['validateSignedIn'] = () => {
+      if (!isSignedIn.value) {
+        throw new Error(`There is no signed-in user.`)
+      }
     }
-
-    const validateSignedIn = helpers.account.validateSignedIn
 
     //----------------------------------------------------------------------
     //
@@ -75,8 +102,8 @@ namespace AccountLogic {
     //----------------------------------------------------------------------
 
     const instance = {
-      user: helpers.account.user,
-      isSignedIn: computed(() => helpers.account.isSignedIn),
+      user,
+      isSignedIn,
       signIn,
       signOut,
       validateSignedIn,

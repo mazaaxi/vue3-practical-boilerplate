@@ -93,7 +93,7 @@
 
 <script lang="ts">
 import { Loading, QInput, QTable } from 'quasar'
-import { User, useService } from '@/pages/examples/miniature-project/services'
+import { User, setupService, useService } from '@/pages/examples/miniature-project/services'
 import { defineComponent, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import debounce from 'lodash/debounce'
 import { generateId } from '@/services'
@@ -135,6 +135,9 @@ const MiniatureProjectPage = defineComponent({
     //  Variables
     //
     //----------------------------------------------------------------------
+
+    // Should originally be executed at application startup
+    setupService()
 
     const services = useService()
 

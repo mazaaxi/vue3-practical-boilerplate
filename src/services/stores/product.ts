@@ -1,5 +1,5 @@
 import { DeepReadonly, isImplemented } from 'js-common-lib'
-import { Ref, ref } from 'vue'
+import { Ref, reactive, ref } from 'vue'
 import { Product } from '@/services/base'
 import { UnwrapNestedRefs } from '@vue/reactivity'
 
@@ -35,6 +35,13 @@ interface SetProduct extends Partial<Product> {
 //==========================================================================
 
 namespace ProductStore {
+  let instance: ProductStore
+
+  export function setupInstance(store?: ProductStore): ProductStore {
+    instance = store ?? reactive(newWrapInstance())
+    return instance
+  }
+
   export function newWrapInstance() {
     //----------------------------------------------------------------------
     //

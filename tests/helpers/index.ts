@@ -1,6 +1,5 @@
 import { TestAPIContainer, TestHelperContainer, TestServiceContainer, TestStoreContainer } from './services'
 import { DefineComponent } from 'vue'
-// import { setupDialogs } from '@/dialogs'
 import { setupAPI } from '@/services/apis'
 import { setupHelper } from '@/services/helpers'
 import { setupService } from '@/services'
@@ -20,7 +19,7 @@ interface ProvidedDependency {
   services: TestServiceContainer
 }
 
-type SetupFunc = (provided: ProvidedDependency) => void
+type SetupFunc = (provided: ProvidedDependency) => void | Promise<void>
 
 //==========================================================================
 //

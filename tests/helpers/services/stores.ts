@@ -1,7 +1,9 @@
 import { CartItem, Product, User } from '@/services'
+import { CartStore } from '@/services/stores/cart'
 import { DeepReadonly } from 'js-common-lib'
-import { StoreContainer } from '@/services/stores'
+import { ProductStore } from '@/services/stores/product'
 import { UnwrapNestedRefs } from '@vue/reactivity'
+import { UserStore } from '@/services/stores/user'
 import { reactive } from 'vue'
 
 //==========================================================================
@@ -10,7 +12,7 @@ import { reactive } from 'vue'
 //
 //==========================================================================
 
-interface TestStoreContainer extends UnwrapNestedRefs<ReturnType<typeof StoreContainer['newWrapInstance']>> {}
+interface TestStoreContainer extends UnwrapNestedRefs<ReturnType<typeof TestStoreContainer['newInstance']>> {}
 
 //==========================================================================
 //
@@ -19,8 +21,12 @@ interface TestStoreContainer extends UnwrapNestedRefs<ReturnType<typeof StoreCon
 //==========================================================================
 
 namespace TestStoreContainer {
-  export function newInstance(): TestStoreContainer {
-    return reactive(StoreContainer.newWrapInstance())
+  export function newInstance() {
+    return {
+      user: UserStore.setupInstance(reactive(UserStore.newWrapInstance())),
+      product: ProductStore.setupInstance(reactive(ProductStore.newWrapInstance())),
+      cart: CartStore.setupInstance(reactive(CartStore.newWrapInstance())),
+    }
   }
 }
 

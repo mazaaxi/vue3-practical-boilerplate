@@ -1,5 +1,5 @@
 import { DeepPartial, DeepReadonly, isImplemented } from 'js-common-lib'
-import { Ref, ref } from 'vue'
+import { Ref, reactive, ref } from 'vue'
 import { UnwrapNestedRefs } from '@vue/reactivity'
 import { User } from '@/services/base'
 import dayjs from 'dayjs'
@@ -35,6 +35,13 @@ type UserForSet = DeepReadonly<
 //==========================================================================
 
 namespace UserStore {
+  let instance: UserStore
+
+  export function setupInstance(store?: UserStore): UserStore {
+    instance = store ?? reactive(newWrapInstance())
+    return instance
+  }
+
   export function newWrapInstance() {
     //----------------------------------------------------------------------
     //

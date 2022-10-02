@@ -1,7 +1,6 @@
 import { CartStore } from '@/services/stores/cart'
 import { ProductStore } from '@/services/stores/product'
 import { UserStore } from '@/services/stores/user'
-import { reactive } from 'vue'
 
 //==========================================================================
 //
@@ -25,20 +24,16 @@ namespace StoreContainer {
   let instance: StoreContainer
 
   export function setupStore(stores?: StoreContainer): StoreContainer {
-    instance = stores ? stores : reactive(newWrapInstance())
+    instance = stores ?? {
+      user: UserStore.setupInstance(),
+      product: ProductStore.setupInstance(),
+      cart: CartStore.setupInstance(),
+    }
     return instance
   }
 
   export function useStore(): StoreContainer {
     return instance
-  }
-
-  export function newWrapInstance() {
-    return {
-      user: UserStore.newWrapInstance(),
-      product: ProductStore.newWrapInstance(),
-      cart: CartStore.newWrapInstance(),
-    }
   }
 }
 

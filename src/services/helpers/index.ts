@@ -1,4 +1,3 @@
-import { AccountHelper } from '@/services/helpers/account'
 import { reactive } from 'vue'
 
 //==========================================================================
@@ -7,9 +6,7 @@ import { reactive } from 'vue'
 //
 //==========================================================================
 
-interface HelperContainer {
-  readonly account: AccountHelper
-}
+interface HelperContainer {}
 
 //==========================================================================
 //
@@ -21,18 +18,12 @@ namespace HelperContainer {
   let instance: HelperContainer
 
   export function setupHelper(helpers?: HelperContainer): HelperContainer {
-    instance = helpers ? helpers : reactive(newWrapInstance())
+    instance = helpers ?? reactive({})
     return instance
   }
 
   export function useHelper(): HelperContainer {
     return instance
-  }
-
-  export function newWrapInstance() {
-    return {
-      account: AccountHelper.newWrapInstance(),
-    }
   }
 }
 
@@ -43,4 +34,4 @@ namespace HelperContainer {
 //==========================================================================
 
 const { setupHelper, useHelper } = HelperContainer
-export { AccountHelper, HelperContainer, setupHelper, useHelper }
+export { HelperContainer, setupHelper, useHelper }

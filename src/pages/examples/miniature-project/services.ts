@@ -48,12 +48,16 @@ namespace APIContainer {
 
   let instance: APIContainer
 
-  export function useAPI(): APIContainer {
-    instance ??= newWrapInstance()
+  export function setupAPI(): APIContainer {
+    instance = newInstance()
     return instance
   }
 
-  export function newWrapInstance() {
+  export function useAPI(): APIContainer {
+    return instance
+  }
+
+  export function newInstance() {
     const getAllUsers: APIContainer['getAllUsers'] = async () => {
       await sleep(500)
       return cloneDeep(users)
@@ -98,7 +102,7 @@ namespace APIContainer {
   }
 }
 
-const { useAPI } = APIContainer
+const { setupAPI, useAPI } = APIContainer
 
 //==========================================================================
 //
@@ -117,19 +121,19 @@ interface StoreContainer {
 namespace StoreContainer {
   let instance: StoreContainer
 
-  export function useStore(): StoreContainer {
-    instance ??= reactive(newWrapInstance())
+  export function setupStore(): StoreContainer {
+    instance = {
+      user: UserStore.setupInstance(),
+    }
     return instance
   }
 
-  export function newWrapInstance() {
-    return {
-      user: UserStore.newWrapInstance(),
-    }
+  export function useStore(): StoreContainer {
+    return instance
   }
 }
 
-const { useStore } = StoreContainer
+const { setupStore, useStore } = StoreContainer
 
 //--------------------------------------------------------------------------
 //  UserStore
@@ -147,6 +151,13 @@ interface WrapUserStore {
 }
 
 namespace UserStore {
+  let instance: UserStore
+
+  export function setupInstance(): UserStore {
+    instance = reactive(newWrapInstance())
+    return instance
+  }
+
   export function newWrapInstance() {
     const all = ref<User[]>([])
 
@@ -218,33 +229,36 @@ namespace UserStore {
 //--------------------------------------------------------------------------
 
 interface ServiceContainer {
-  readonly admin: AdminService
+  readonly admin: AdminLogic
 }
 
 namespace ServiceContainer {
   let instance: ServiceContainer
 
-  export function useService(): ServiceContainer {
-    instance ??= reactive(newWrapInstance())
+  export function setupService(): ServiceContainer {
+    setupAPI()
+    setupStore()
+
+    instance = {
+      admin: AdminLogic.setupInstance(),
+    }
     return instance
   }
 
-  export function newWrapInstance() {
-    return {
-      admin: AdminService.newWrapInstance(),
-    }
+  export function useService(): ServiceContainer {
+    return instance
   }
 }
 
-const { useService } = ServiceContainer
+const { setupService, useService } = ServiceContainer
 
 //--------------------------------------------------------------------------
-//  AdminService
+//  AdminLogic
 //--------------------------------------------------------------------------
 
-interface AdminService extends UnwrapNestedRefs<WrapAdminService> {}
+interface AdminLogic extends UnwrapNestedRefs<WrapAdminLogic> {}
 
-interface WrapAdminService {
+interface WrapAdminLogic {
   averageUserAge: ComputedRef<number>
   fetchUsers(): Promise<void>
   addUser(user: User): Promise<User>
@@ -254,56 +268,63 @@ interface WrapAdminService {
   onUsersChange(cb: (newUser?: User, oldUser?: User) => void): Unsubscribe
 }
 
-namespace AdminService {
+namespace AdminLogic {
+  let instance: AdminLogic
+
+  export function setupInstance() {
+    instance = reactive(newWrapInstance())
+    return instance
+  }
+
   export function newWrapInstance() {
     const apis = useAPI()
     const stores = useStore()
     const emitter = createNanoEvents<{
-      userChange: (newUser?: User, oldUser?: User) => void
+      usersChange: (newUser?: User, oldUser?: User) => void
     }>()
 
-    const fetchUsers: WrapAdminService['fetchUsers'] = async () => {
+    const fetchUsers: WrapAdminLogic['fetchUsers'] = async () => {
       const response = await apis.getAllUsers()
       response.forEach(responseUser => {
         const exists = stores.user.get(responseUser.id)
         if (exists) {
           const updated = stores.user.set(responseUser)
-          emitter.emit('userChange', updated, exists)
+          emitter.emit('usersChange', updated, exists)
         } else {
           const added = stores.user.add(responseUser)
-          emitter.emit('userChange', added, undefined)
+          emitter.emit('usersChange', added, undefined)
         }
       })
     }
 
-    const addUser: WrapAdminService['addUser'] = async user => {
+    const addUser: WrapAdminLogic['addUser'] = async user => {
       const response = await apis.addUser(user)
       const added = stores.user.add(response)
-      emitter.emit('userChange', added, undefined)
+      emitter.emit('usersChange', added, undefined)
       return added
     }
 
-    const setUser: WrapAdminService['setUser'] = async user => {
+    const setUser: WrapAdminLogic['setUser'] = async user => {
       const oldUser = stores.user.get(user.id)
       const response = await apis.setUser(user)
       const updated = stores.user.set(response)
-      emitter.emit('userChange', updated, oldUser)
+      emitter.emit('usersChange', updated, oldUser)
       return updated
     }
 
-    const removeUser: WrapAdminService['removeUser'] = async id => {
+    const removeUser: WrapAdminLogic['removeUser'] = async id => {
       const response = await apis.removeUser(id)
       const removed = stores.user.remove(response.id)
-      emitter.emit('userChange', undefined, removed)
+      emitter.emit('usersChange', undefined, removed)
       return removed
     }
 
-    const getAllUsers: WrapAdminService['getAllUsers'] = () => {
+    const getAllUsers: WrapAdminLogic['getAllUsers'] = () => {
       return cloneDeep(stores.user.all) as DeepUnreadonly<User[]>
     }
 
-    const onUsersChange: WrapAdminService['onUsersChange'] = cb => {
-      return emitter.on('userChange', cb)
+    const onUsersChange: WrapAdminLogic['onUsersChange'] = cb => {
+      return emitter.on('usersChange', cb)
     }
 
     const result = {
@@ -316,7 +337,7 @@ namespace AdminService {
       onUsersChange,
     }
 
-    return isImplemented<WrapAdminService, typeof result>(result)
+    return isImplemented<WrapAdminLogic, typeof result>(result)
   }
 }
 
@@ -326,4 +347,4 @@ namespace AdminService {
 //
 //==========================================================================
 
-export { User, useService }
+export { User, setupService, useService }

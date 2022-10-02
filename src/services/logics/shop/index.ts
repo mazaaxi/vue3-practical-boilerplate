@@ -1,10 +1,10 @@
 import { CartItem, Product } from '@/services/base'
 import { CartItemAddInput, CartItemUpdateInput, useAPI } from '@/services/apis'
-import { ComputedRef, computed, watch } from 'vue'
+import { ComputedRef, computed, reactive, watch } from 'vue'
 import { DeepUnreadonly, arrayToDict, isImplemented } from 'js-common-lib'
 import { Unsubscribe, createNanoEvents } from 'nanoevents'
+import { AccountLogic } from '@/services/logics/account'
 import { UnwrapNestedRefs } from '@vue/reactivity'
-import { useHelper } from '@/services/helpers'
 import { useStore } from '@/services/stores'
 const cloneDeep = require('rfdc')()
 
@@ -37,6 +37,13 @@ interface WrapShopLogic {
 //==========================================================================
 
 namespace ShopLogic {
+  let instance: ShopLogic
+
+  export function setupInstance<T extends ShopLogic>(logic?: T): T {
+    instance = logic ?? reactive(newWrapInstance())
+    return instance as T
+  }
+
   export function newWrapInstance() {
     //----------------------------------------------------------------------
     //
@@ -45,8 +52,8 @@ namespace ShopLogic {
     //----------------------------------------------------------------------
 
     const apis = useAPI()
-    const helpers = useHelper()
     const stores = useStore()
+    const accountLogic = AccountLogic.useInternalInstance()
 
     const emitter = createNanoEvents<{
       productsChange: (newProduct?: Product, oldProduct?: Product) => void
@@ -60,9 +67,9 @@ namespace ShopLogic {
     //----------------------------------------------------------------------
 
     const cartTotalPrice = computed(() => {
-      if (!helpers.account.isSignedIn) return 0
+      if (!accountLogic.isSignedIn) return 0
 
-      const cartItems = stores.cart.getListByUID(helpers.account.user.id)
+      const cartItems = stores.cart.getListByUID(accountLogic.user.id)
       return cartItems.reduce((result, item) => {
         return result + item.price * item.quantity
       }, 0)
@@ -99,7 +106,7 @@ namespace ShopLogic {
     }
 
     const fetchUserCartItems: WrapShopLogic['fetchUserCartItems'] = async () => {
-      helpers.account.validateSignedIn()
+      accountLogic.validateSignedIn()
 
       const responseCartItems = await apis.getCartItems()
       const responseCartItemDict = arrayToDict(responseCartItems, 'id')
@@ -129,13 +136,13 @@ namespace ShopLogic {
     }
 
     const getUserCartItems: WrapShopLogic['getUserCartItems'] = () => {
-      helpers.account.validateSignedIn()
+      accountLogic.validateSignedIn()
 
-      return stores.cart.getListByUID(helpers.account.user.id)
+      return stores.cart.getListByUID(accountLogic.user.id)
     }
 
     const incrementCartItem: WrapShopLogic['incrementCartItem'] = async productId => {
-      helpers.account.validateSignedIn()
+      accountLogic.validateSignedIn()
 
       const product = stores.product.sgetById(productId)
       if (product.stock <= 0) {
@@ -151,7 +158,7 @@ namespace ShopLogic {
     }
 
     const decrementCartItem: WrapShopLogic['decrementCartItem'] = async productId => {
-      helpers.account.validateSignedIn()
+      accountLogic.validateSignedIn()
 
       const cartItem = stores.cart.sgetByProductId(productId)
       if (cartItem.quantity > 1) {
@@ -162,12 +169,12 @@ namespace ShopLogic {
     }
 
     const checkout: WrapShopLogic['checkout'] = async () => {
-      helpers.account.validateSignedIn()
+      accountLogic.validateSignedIn()
 
       await apis.checkoutCart()
 
       // empty the cart
-      const removedCartItems = stores.cart.removeByUID(helpers.account.user.id)
+      const removedCartItems = stores.cart.removeByUID(accountLogic.user.id)
       removedCartItems.forEach(removedCartItem => {
         emitter.emit('userCartItemsChange', undefined, removedCartItem)
       })
@@ -200,7 +207,7 @@ namespace ShopLogic {
     async function addCartItem(productId: string): Promise<CartItem> {
       const product = stores.product.sgetById(productId)!
       const input: CartItemAddInput = {
-        uid: helpers.account.user.id,
+        uid: accountLogic.user.id,
         productId,
         title: product.title,
         price: product.price,
@@ -222,7 +229,7 @@ namespace ShopLogic {
       const cartItem = stores.cart.sgetByProductId(productId)
       const input: CartItemUpdateInput = {
         id: cartItem.id,
-        uid: helpers.account.user.id,
+        uid: accountLogic.user.id,
         quantity: cartItem.quantity + quantity,
       }
       const apiResponse = (await apis.updateCartItems([input]))[0]
@@ -262,8 +269,8 @@ namespace ShopLogic {
     //
     //----------------------------------------------------------------------
 
-    watch(
-      () => helpers.account.user.id,
+    const userIdWatchStopHandle = watch(
+      () => accountLogic.user.id,
       async (newValue, oldValue) => {
         // sign-in is complete
         if (newValue) {
@@ -298,6 +305,7 @@ namespace ShopLogic {
       getExchangeRate,
       onProductsChange,
       onUserCartItemsChange,
+      userIdWatchStopHandle,
     }
 
     return isImplemented<WrapShopLogic, typeof instance>(instance)

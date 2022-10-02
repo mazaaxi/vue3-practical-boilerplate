@@ -1,5 +1,5 @@
-import { ComputedRef, Ref, computed, ref } from 'vue'
 import { DeepReadonly, isImplemented } from 'js-common-lib'
+import { Ref, reactive, ref } from 'vue'
 import { CartItem } from '@/services/base'
 import { UnwrapNestedRefs } from '@vue/reactivity'
 
@@ -38,6 +38,13 @@ interface SetCartItem extends Partial<Omit<CartItem, 'uid' | 'productId'>> {
 //==========================================================================
 
 namespace CartStore {
+  let instance: CartStore
+
+  export function setupInstance(store?: CartStore): CartStore {
+    instance = store ?? reactive(newWrapInstance())
+    return instance
+  }
+
   export function newWrapInstance() {
     //----------------------------------------------------------------------
     //

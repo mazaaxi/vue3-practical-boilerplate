@@ -1,6 +1,5 @@
 import { AccountLogic } from '@/services/logics/account'
 import { ShopLogic } from '@/services/logics/shop'
-import { reactive } from 'vue'
 import { setupAPI } from '@/services/apis'
 import { setupHelper } from '@/services/helpers'
 import { setupStore } from '@/services/stores'
@@ -30,19 +29,15 @@ namespace ServiceContainer {
     setupStore()
     setupHelper()
 
-    instance = services ? services : reactive(newWrapInstance())
+    instance = services ?? {
+      account: AccountLogic.setupInstance(),
+      shop: ShopLogic.setupInstance(),
+    }
     return instance
   }
 
   export function useService(): ServiceContainer {
     return instance
-  }
-
-  export function newWrapInstance() {
-    return {
-      account: AccountLogic.newWrapInstance(),
-      shop: ShopLogic.newWrapInstance(),
-    }
   }
 }
 
