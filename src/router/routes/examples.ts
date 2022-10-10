@@ -1,48 +1,35 @@
-import { ComputedRef, Ref, reactive, ref } from 'vue'
+import { BaseRoute, BaseRouteInput, WrapBaseRoute } from '@/router/base'
 import { DeepReadonly, isImplemented, pickProps, removeEndSlash } from 'js-common-lib'
-import { LocaleRoute, LocaleRouteContainerInput, LocaleRouteInput, WrapLocaleRoute } from '@/router/base'
+import { Ref, reactive, ref } from 'vue'
 import { LocationQueryValue } from 'vue-router'
 import { UnwrapNestedRefs } from '@vue/reactivity'
-import { WrapRoute } from '@/router/core'
+import { extensionMethod } from '@/base'
 import { pathToRegexp } from 'path-to-regexp'
 import url from 'url'
-import { useRouter } from '@/router'
 
 //==========================================================================
+//
 //  ExamplesRoutes
+//
 //==========================================================================
 
-interface ExamplesRoutes {
-  readonly miniatureProject: MiniatureProjectRoute
-  readonly abc: AbcRoute
-  readonly routing: RoutingRoute
+type ExamplesRoutes = UnwrapNestedRefs<WrapExamplesRoutes>
+
+interface WrapExamplesRoutes {
+  readonly abc: WrapAbcRoute
+  readonly miniatureProject: WrapMiniatureProjectRoute
+  readonly routing: WrapRoutingRoute
 }
 
 namespace ExamplesRoutes {
-  export function newInstance(input: LocaleRouteContainerInput) {
-    const miniatureProject = MiniatureProjectRoute.newWrapInstance({
-      routePath: `/:locale/examples/miniature-project`,
-      component: () => import(/* webpackChunkName: "pages/examples/miniature-project" */ '@/pages/examples/miniature-project'),
-      ...input,
-    })
-    const abc = AbcRoute.newWrapInstance({
-      routePath: `/:locale/examples/abc`,
-      component: () => import(/* webpackChunkName: "pages/examples/abc" */ '@/pages/examples/abc'),
-      ...input,
-    })
-    const routing = RoutingRoute.newWrapInstance({
-      routePath: `/:locale/examples/routing`,
-      component: () => import(/* webpackChunkName: "pages/home" */ '@/pages/examples/routing'),
-      ...input,
-    })
+  export function newWrapInstance(input: BaseRouteInput) {
+    const result = {
+      abc: AbcRoute.newWrapInstance(input),
+      miniatureProject: MiniatureProjectRoute.newWrapInstance(input),
+      routing: RoutingRoute.newWrapInstance(input),
+    }
 
-    const result = reactive({
-      miniatureProject,
-      abc,
-      routing,
-    })
-
-    return isImplemented<ExamplesRoutes, typeof result>(result)
+    return isImplemented<WrapExamplesRoutes, typeof result>(result)
   }
 }
 
@@ -50,12 +37,10 @@ namespace ExamplesRoutes {
 //  AbcRoute
 //==========================================================================
 
-interface AbcRoute extends UnwrapNestedRefs<WrapAbcRoute> {}
+type AbcRoute = UnwrapNestedRefs<WrapAbcRoute>
 
-interface WrapAbcRoute extends WrapLocaleRoute {
+interface WrapAbcRoute extends WrapBaseRoute<AbcRouteMessage | void> {
   readonly message: DeepReadonly<AbcRouteMessage>
-  move(message?: AbcRouteMessage): Promise<boolean>
-  toMovePath(message?: AbcRouteMessage): string
 }
 
 interface AbcRouteMessage {
@@ -64,14 +49,18 @@ interface AbcRouteMessage {
 }
 
 namespace AbcRoute {
-  export function newWrapInstance(input: LocaleRouteInput) {
+  export function newWrapInstance(input: BaseRouteInput) {
     //----------------------------------------------------------------------
     //
     //  Variables
     //
     //----------------------------------------------------------------------
 
-    const base = LocaleRoute.newWrapInstance(input)
+    const base = BaseRoute.newWrapInstance({
+      routePath: `/:locale/examples/abc`,
+      component: () => import(/* webpackChunkName: "pages/examples/abc" */ '@/pages/examples/abc'),
+      ...input,
+    })
 
     const message = reactive<AbcRouteMessage>({
       title: undefined,
@@ -81,6 +70,32 @@ namespace AbcRoute {
     //----------------------------------------------------------------------
     //
     //  Methods
+    //
+    //----------------------------------------------------------------------
+
+    const move = (base.move.body = extensionMethod<WrapAbcRoute['move']>(async message => {
+      Object.assign(message, pickProps(message || {}, ['title', 'body']))
+      await base.router.value.push(toMovePath(message))
+    }))
+
+    const toMovePath = (base.toMovePath.body = extensionMethod<WrapAbcRoute['toMovePath']>(message => {
+      const query: { [key: string]: string } = {}
+      if (message?.title) {
+        query.title = message.title
+      }
+      if (message?.body) {
+        query.body = message.body
+      }
+
+      return base.toPath({
+        routePath: base.routePath.value,
+        query,
+      })
+    }))
+
+    //----------------------------------------------------------------------
+    //
+    //  Internal methods
     //
     //----------------------------------------------------------------------
 
@@ -99,39 +114,42 @@ namespace AbcRoute {
       }
     }
 
-    const move: WrapAbcRoute['move'] = async message => {
-      const router = useRouter()
+    //----------------------------------------------------------------------
+    //
+    //  Result
+    //
+    //----------------------------------------------------------------------
 
-      // generate a move path with the specified information
-      const nextPath = toMovePath(message)
-
-      // if a path of the current route is the same as the move path, exit without doing anything
-      const currentPath = removeEndSlash(router.currentRoute.value.fullPath)
-      if (currentPath === nextPath) return false
-
-      // set the message object
-      Object.assign(message, pickProps(message || {}, ['title', 'body']))
-
-      // set new move path as route
-      await router.push(nextPath)
-      return true
+    return {
+      ...base,
+      move,
+      toMovePath,
+      message,
     }
+  }
+}
 
-    const toMovePath: WrapAbcRoute['toMovePath'] = message => {
-      const query: { [key: string]: string } = {}
-      if (message?.title) {
-        query.title = message.title
-      }
-      if (message?.body) {
-        query.body = message.body
-      }
+//==========================================================================
+//  MiniatureProjectRoute
+//==========================================================================
 
-      return base.toPath({
-        routePath: base.routePath.value,
-        params: { locale: base.locale.value },
-        query,
-      })
-    }
+type MiniatureProjectRoute = UnwrapNestedRefs<WrapMiniatureProjectRoute>
+
+interface WrapMiniatureProjectRoute extends WrapBaseRoute {}
+
+namespace MiniatureProjectRoute {
+  export function newWrapInstance(input: BaseRouteInput) {
+    //----------------------------------------------------------------------
+    //
+    //  Variables
+    //
+    //----------------------------------------------------------------------
+
+    const base = BaseRoute.newWrapInstance({
+      routePath: `/:locale/examples/miniature-project`,
+      component: () => import(/* webpackChunkName: "pages/examples/miniature-project" */ '@/pages/examples/miniature-project'),
+      ...input,
+    })
 
     //----------------------------------------------------------------------
     //
@@ -141,9 +159,6 @@ namespace AbcRoute {
 
     return {
       ...base,
-      message,
-      move,
-      toMovePath,
     }
   }
 }
@@ -152,25 +167,27 @@ namespace AbcRoute {
 //  RouteingExampleRoute
 //==========================================================================
 
-interface RoutingRoute extends UnwrapNestedRefs<WrapRoutingRoute> {}
+type RoutingRoute = UnwrapNestedRefs<WrapRoutingRoute>
 
-interface WrapRoutingRoute extends WrapLocaleRoute {
+interface WrapRoutingRoute extends WrapBaseRoute<number> {
   readonly page: Ref<number>
-  move(page: number): Promise<boolean>
-  toMovePath(page: number): string
   parse(path_or_fullPath: string): { page: number } | undefined
   replacePage(page: number): Promise<void>
 }
 
 namespace RoutingRoute {
-  export function newWrapInstance(input: LocaleRouteInput) {
+  export function newWrapInstance(input: BaseRouteInput) {
     //----------------------------------------------------------------------
     //
     //  Variables
     //
     //----------------------------------------------------------------------
 
-    const base = LocaleRoute.newWrapInstance(input)
+    const base = BaseRoute.newWrapInstance({
+      routePath: `/:locale/examples/routing`,
+      component: () => import(/* webpackChunkName: "pages/home" */ '@/pages/examples/routing'),
+      ...input,
+    })
 
     const page = ref<number>(NaN)
 
@@ -180,28 +197,17 @@ namespace RoutingRoute {
     //
     //----------------------------------------------------------------------
 
-    const move: RoutingRoute['move'] = async newPage => {
-      const router = useRouter()
-
-      // generate a move path
-      const nextPath = toMovePath(newPage)
-
-      // if a path of the current route is the same as the move path, exit without doing anything
-      const currentPath = removeEndSlash(router.currentRoute.value.fullPath)
-      if (currentPath === nextPath) return false
-
+    const move = (base.move.body = extensionMethod<WrapRoutingRoute['move']>(async newPage => {
       // set new move path as route
-      await router.push(nextPath)
-      return true
-    }
+      await base.router.value.push(toMovePath(newPage))
+    }))
 
-    const toMovePath: RoutingRoute['toMovePath'] = page => {
+    const toMovePath = (base.toMovePath.body = extensionMethod<WrapRoutingRoute['toMovePath']>(page => {
       return base.toPath({
         routePath: base.routePath.value,
-        params: { locale: base.locale.value },
         query: { page: page.toString() },
       })
-    }
+    }))
 
     const parse: RoutingRoute['parse'] = path_or_fullPath => {
       const parsedURL = url.parse(path_or_fullPath, true)
@@ -217,13 +223,11 @@ namespace RoutingRoute {
     }
 
     const replacePage: RoutingRoute['replacePage'] = async page => {
-      const router = useRouter()
-
       const nextPath = toMovePath(page)
-      const currentPath = removeEndSlash(router.currentRoute.value.fullPath)
+      const currentPath = removeEndSlash(base.router.value.currentRoute.value.fullPath)
       if (currentPath === nextPath) return
 
-      await router.replace(nextPath)
+      await base.router.value.replace(toMovePath(page))
     }
 
     //----------------------------------------------------------------------
@@ -242,11 +246,6 @@ namespace RoutingRoute {
       }
     }
 
-    function isNumberString(pageString: string | string[] | LocationQueryValue | LocationQueryValue[] | undefined): pageString is string {
-      if (!pageString || Array.isArray(pageString)) return false
-      return !isNaN(parseInt(pageString))
-    }
-
     function toPage(pageString: string | string[] | LocationQueryValue | LocationQueryValue[] | undefined): number {
       // if no page is specified in the query, the page number should be "1"
       // Note: even if there is no page specification, the URL will be considered normal
@@ -259,6 +258,11 @@ namespace RoutingRoute {
       // if an invalid string other than a number is specified in the page string, the page number will
       // be parsed to "NaN".
       return parseInt(pageString)
+    }
+
+    function isNumberString(pageString: string | string[] | LocationQueryValue | LocationQueryValue[] | undefined): pageString is string {
+      if (!pageString || Array.isArray(pageString)) return false
+      return !isNaN(parseInt(pageString))
     }
 
     //----------------------------------------------------------------------
@@ -277,38 +281,6 @@ namespace RoutingRoute {
     }
 
     return isImplemented<WrapRoutingRoute, typeof result>(result)
-  }
-}
-
-//==========================================================================
-//  MiniatureProjectRoute
-//==========================================================================
-
-interface MiniatureProjectRoute extends UnwrapNestedRefs<WrapMiniatureProjectRoute> {}
-
-interface WrapMiniatureProjectRoute extends WrapRoute {
-  locale: ComputedRef<string>
-}
-
-namespace MiniatureProjectRoute {
-  export function newWrapInstance(input: LocaleRouteInput) {
-    //----------------------------------------------------------------------
-    //
-    //  Variables
-    //
-    //----------------------------------------------------------------------
-
-    const base = LocaleRoute.newWrapInstance(input)
-
-    //----------------------------------------------------------------------
-    //
-    //  Result
-    //
-    //----------------------------------------------------------------------
-
-    return {
-      ...base,
-    }
   }
 }
 

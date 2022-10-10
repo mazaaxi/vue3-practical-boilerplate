@@ -1,11 +1,11 @@
 import { DialogNames, DialogsSet } from '@/components/dialogs/dialogs-set'
 import { Ref, computed, reactive, watch } from 'vue'
-import { useRouter, useRouterUtils } from '@/router'
 import { Dialog } from '@/components/dialogs/base'
 import type MessageDialog from '@/components/dialogs/message/MessageDialog.vue'
 import { UnwrapNestedRefs } from '@vue/reactivity'
 import debounce from 'lodash/debounce'
 import { isImplemented } from 'js-common-lib'
+import { useRouter } from '@/router'
 
 //==========================================================================
 //
@@ -67,7 +67,6 @@ namespace DialogContainer {
     //----------------------------------------------------------------------
 
     const router = useRouter()
-    const { currentRoute } = useRouterUtils()
 
     //----------------------------------------------------------------------
     //
@@ -97,11 +96,11 @@ namespace DialogContainer {
     }
 
     const getQuery: DialogContainer['getQuery'] = () => {
-      const dialogName = currentRoute.query.dialogName as DialogNames | undefined
+      const dialogName = router.currentRoute.query.dialogName as DialogNames | undefined
       if (!dialogName) return
 
       let dialogParams: Record<string, unknown> | undefined
-      const paramStr = currentRoute.query.dialogParams as string
+      const paramStr = router.currentRoute.query.dialogParams as string
       if (paramStr) {
         dialogParams = JSON.parse(decodeURIComponent(paramStr))
       }
@@ -109,11 +108,11 @@ namespace DialogContainer {
     }
 
     const clearQuery: DialogContainer['clearQuery'] = debounce(() => {
-      const query = { ...currentRoute.query }
+      const query = { ...router.currentRoute.query }
       delete query.dialogName
       delete query.dialogParams
       router.push({
-        path: currentRoute.path,
+        path: router.currentRoute.path,
         query,
       })
     })
@@ -135,13 +134,16 @@ namespace DialogContainer {
      */
     function openDialog(dialogName: string, dialogParams?: any): Promise<any> {
       return new Promise((resolve, reject) => {
-        // monitor a transition to a dialog
-        const stopWatch = watch(
-          () => currentRoute.fullPath,
-          (newValue, oldValue) => {
-            // end monitoring
-            stopWatch()
-
+        // start transition to a dialog specified by the argument
+        router
+          .push({
+            path: router.currentRoute.path,
+            query: Object.assign({}, router.currentRoute.query, {
+              dialogName,
+              dialogParams: dialogParams ? encodeURIComponent(JSON.stringify(dialogParams)) : undefined,
+            }),
+          })
+          .then(() => {
             // get a dialog query from an URL
             const info = getQuery()
             if (!info) {
@@ -160,17 +162,7 @@ namespace DialogContainer {
               // notify that the dialog has been closed
               resolve(result)
             })
-          }
-        )
-
-        // start transition to a dialog specified by the argument
-        router.push({
-          path: currentRoute.path,
-          query: Object.assign({}, currentRoute.query, {
-            dialogName,
-            dialogParams: dialogParams ? encodeURIComponent(JSON.stringify(dialogParams)) : undefined,
-          }),
-        })
+          })
       })
     }
 

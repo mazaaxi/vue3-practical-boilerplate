@@ -2,7 +2,7 @@ import { SetupContext, computed, nextTick, onMounted, reactive, ref, toRefs, wat
 import MessageInput from '@/pages/examples/abc/MessageInput.vue'
 import { QInput } from 'quasar'
 import { TestUsers } from '@/services/test-data'
-import { useRouterUtils } from '@/router'
+import { useRouter } from '@/router'
 import { useService } from '@/services'
 
 //==========================================================================
@@ -46,8 +46,8 @@ namespace AbcView {
     //----------------------------------------------------------------------
 
     const services = useService()
-    const { routes } = useRouterUtils()
-    const route = routes.examples.abc
+    const router = useRouter()
+    const route = router.routes.examples.abc
 
     const isSignedIn = computed(() => services.account.isSignedIn)
 

@@ -2,14 +2,14 @@ import AbcViewPC from '@/pages/examples/abc/ABCViewPC.vue'
 import { mount } from '@vue/test-utils'
 import { nextTick } from 'vue'
 import { provideDependency } from '../../../../helpers'
-import { useRouterUtils } from '@/router'
+import { useRouter } from '@/router'
 
 describe('ABCViewPC.vue', () => {
   beforeEach(() => {
     provideDependency()
 
-    // Disable router as it gets in the way during testing
-    const { routes } = useRouterUtils()
+    // disable router as it gets in the way during testing
+    const { routes } = useRouter()
     td.replace<typeof routes['examples']['abc']>(routes.examples.abc, 'message', {})
   })
 

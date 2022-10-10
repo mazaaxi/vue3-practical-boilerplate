@@ -16,6 +16,6 @@ async function init() {
   setupServiceWorker()
   setupService()
 
-  createApp(AppPage).use(Quasar, quasarUserOptions).use(i18n).use(router).mount('#app')
+  createApp(AppPage).use(Quasar, quasarUserOptions).use(i18n).use(router).use(router.routes).mount('#app')
 }
 init()

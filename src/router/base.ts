@@ -13,12 +13,7 @@ const PathParamKeys = {
   Locale: 'locale',
 } as const
 
-interface LocaleRouteContainerInput {
-  locale: ComputedRef<string>
-  isHistoryMoving: ComputedRef<boolean>
-}
-
-interface LocaleRouteInput extends RouteInput {
+interface BaseRouteInput extends RouteInput {
   locale: ComputedRef<string>
 }
 
@@ -28,12 +23,12 @@ interface LocaleRouteInput extends RouteInput {
 //
 //==========================================================================
 
-interface WrapLocaleRoute extends WrapRoute {
+interface WrapBaseRoute<MOVE_PARAMS extends any | void = void> extends WrapRoute<MOVE_PARAMS> {
   readonly locale: ComputedRef<string>
 }
 
-namespace LocaleRoute {
-  export function newWrapInstance(input: LocaleRouteInput) {
+namespace BaseRoute {
+  export function newWrapInstance(input: BaseRouteInput) {
     //----------------------------------------------------------------------
     //
     //  Variables
@@ -88,7 +83,7 @@ namespace LocaleRoute {
       toPath,
     }
 
-    return isImplemented<WrapLocaleRoute, typeof result>(result)
+    return isImplemented<WrapBaseRoute, typeof result>(result)
   }
 }
 
@@ -98,4 +93,4 @@ namespace LocaleRoute {
 //
 //==========================================================================
 
-export { LocaleRouteContainerInput, LocaleRouteInput, LocaleRoute, WrapLocaleRoute }
+export { BaseRouteInput, BaseRoute, WrapBaseRoute }

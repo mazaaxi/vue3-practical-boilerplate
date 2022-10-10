@@ -29,7 +29,7 @@
 
 <script lang="ts">
 import { defineComponent, reactive } from 'vue'
-import { useRouterUtils } from '@/router'
+import { useRouter } from '@/router'
 
 const HomePage = defineComponent({
   name: 'HomePage',
@@ -43,8 +43,8 @@ const HomePage = defineComponent({
     //
     //----------------------------------------------------------------------
 
-    const { routes } = useRouterUtils()
-    const route = routes.home
+    const router = useRouter()
+    const route = router.routes.home
 
     const message = reactive({
       title: 'Quasar',
@@ -58,7 +58,7 @@ const HomePage = defineComponent({
     //----------------------------------------------------------------------
 
     async function moveToAbcPageButtonOnClick() {
-      routes.examples.abc.move(message)
+      router.routes.examples.abc.move(message)
     }
 
     //----------------------------------------------------------------------

@@ -1,4 +1,4 @@
-import { AppRouterContainer, setupRouter } from '@/router'
+import { AppRouter, setupRouter } from '@/router'
 import { clearProvidedDependency } from './helpers'
 import { config } from '@vue/test-utils'
 import { setupConfig } from '@/config'
@@ -23,7 +23,7 @@ beforeEach(async () => {
   setupConfig()
 
   const i18n = setupI18n()
-  const router = setupRouter(i18n, td.object<AppRouterContainer>())
+  const router = setupRouter(i18n, td.object<AppRouter>())
 
   config.global.plugins = [i18n, router]
 })

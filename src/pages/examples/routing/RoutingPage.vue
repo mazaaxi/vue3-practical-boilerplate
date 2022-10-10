@@ -89,7 +89,7 @@
 import { RouteLocationNormalized, onBeforeRouteLeave, onBeforeRouteUpdate } from 'vue-router'
 import { computed, defineComponent, nextTick, onMounted, ref } from 'vue'
 import { QInput } from 'quasar'
-import { useRouterUtils } from '@/router'
+import { useRouter } from '@/router'
 import { useScreen } from '@/base'
 
 const RoutingPage = defineComponent({
@@ -118,8 +118,8 @@ const RoutingPage = defineComponent({
     //
     //----------------------------------------------------------------------
 
-    const { routes } = useRouterUtils()
-    const route = routes.examples.routing
+    const router = useRouter()
+    const route = router.routes.examples.routing
     const screen = useScreen()
 
     const logInput = ref<QInput>()

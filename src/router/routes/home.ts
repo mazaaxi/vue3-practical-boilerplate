@@ -1,37 +1,28 @@
-import { LocaleRoute, LocaleRouteContainerInput, LocaleRouteInput, WrapLocaleRoute } from '@/router/base'
+import { BaseRoute, BaseRouteInput, WrapBaseRoute } from '@/router/base'
 import { UnwrapNestedRefs } from '@vue/reactivity'
 import { isImplemented } from 'js-common-lib'
-import { reactive } from 'vue'
 
 //==========================================================================
-//
 //  HomeRoute
-//
 //==========================================================================
 
-interface HomeRoute extends UnwrapNestedRefs<WrapHomeRoute> {}
+type HomeRoute = UnwrapNestedRefs<WrapHomeRoute>
 
-interface WrapHomeRoute extends WrapLocaleRoute {}
+interface WrapHomeRoute extends WrapBaseRoute {}
 
 namespace HomeRoute {
-  export function newInstance(input: LocaleRouteContainerInput): HomeRoute {
-    return reactive(
-      newWrapInstance({
-        routePath: `/:locale/home`,
-        component: () => import(/* webpackChunkName: "pages/home" */ '@/pages/home'),
-        ...input,
-      })
-    )
-  }
-
-  function newWrapInstance(input: LocaleRouteInput) {
+  export function newWrapInstance(input: BaseRouteInput) {
     //----------------------------------------------------------------------
     //
     //  Variables
     //
     //----------------------------------------------------------------------
 
-    const base = LocaleRoute.newWrapInstance(input)
+    const base = BaseRoute.newWrapInstance({
+      routePath: `/:locale/home`,
+      component: () => import(/* webpackChunkName: "pages/home" */ '@/pages/home'),
+      ...input,
+    })
 
     //----------------------------------------------------------------------
     //

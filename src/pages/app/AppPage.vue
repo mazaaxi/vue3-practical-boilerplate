@@ -57,7 +57,7 @@
       <q-list>
         <q-item-label header>Application Items</q-item-label>
 
-        <q-item clickable tag="a" :to="`/${locale}/home`">
+        <q-item clickable tag="a" :to="$routes.home.toMovePath()">
           <q-item-section avatar>
             <q-icon name="home" />
           </q-item-section>
@@ -66,7 +66,7 @@
           </q-item-section>
         </q-item>
 
-        <q-item clickable tag="a" :to="`/${locale}/shop`">
+        <q-item clickable tag="a" :to="$routes.shop.toMovePath()">
           <q-item-section avatar>
             <q-icon name="fas fa-shopping-bag" />
           </q-item-section>
@@ -77,17 +77,17 @@
 
         <q-expansion-item :modelValue="true" expandSeparator icon="code" label="Examples">
           <q-card class="bg-grey-2">
-            <q-item clickable tag="a" :to="`/${locale}/examples/abc`">
+            <q-item clickable tag="a" :to="$routes.examples.abc.toMovePath()">
               <q-item-section>
                 <q-item-label>ABC</q-item-label>
               </q-item-section>
             </q-item>
-            <q-item clickable tag="a" :to="`/${locale}/examples/routing`">
+            <q-item clickable tag="a" :to="$routes.examples.routing.toMovePath(1)">
               <q-item-section>
                 <q-item-label>Routing</q-item-label>
               </q-item-section>
             </q-item>
-            <q-item clickable tag="a" :to="`/${locale}/examples/miniature-project`">
+            <q-item clickable tag="a" :to="$routes.examples.miniatureProject.toMovePath()">
               <q-item-section>
                 <q-item-label>Miniature Project</q-item-label>
               </q-item-section>
@@ -163,7 +163,7 @@ import { computed, defineComponent, ref, watch } from 'vue'
 import { showNotification, useScreen } from '@/base'
 import { useI18n, useI18nUtils } from '@/i18n'
 import { TestUsers } from '@/services/test-data'
-import { useRouterUtils } from '@/router'
+import { useRouter } from '@/router'
 import { useService } from '@/services'
 import { useServiceWorker } from '@/service-worker'
 
@@ -187,7 +187,7 @@ const AppPage = defineComponent({
 
     const i18n = useI18n()
     const { loadI18nLocaleMessages } = useI18nUtils()
-    const { currentRoute } = useRouterUtils()
+    const router = useRouter()
 
     const dialogsSet = ref<DialogsSet>()
     const dialogs = setupDialogs(dialogsSet)
@@ -204,11 +204,26 @@ const AppPage = defineComponent({
     let closeUpdatingNotification: Function | undefined
 
     watch(
-      () => currentRoute.fullPath,
+      () => router.currentRoute.fullPath,
       async (newValue, oldValue) => {
-        // console.log(`currentRoute:`, { to: newValue, from: oldValue })
+        console.log(`currentRoute:`, JSON.stringify({ to: newValue, from: oldValue }, null, 2))
       }
     )
+
+    // watch(
+    //   () => router.currentRoute,
+    //   async (newValue, oldValue) => {
+    //     console.log(`currentRoute:`, { newValue, oldValue })
+    //   }
+    // )
+
+    // watch(
+    //   () => router.currentRoute.isHistoryMoving,
+    //   async (newValue, oldValue) => {
+    //     const detail = JSON.stringify({ fullPath: router.currentRoute.fullPath, isHistoryMoving: router.currentRoute.isHistoryMoving }, null, 2)
+    //     console.log(`currentRoute:`, detail)
+    //   }
+    // )
 
     serviceWorker.onStateChange(info => {
       if (info.state === 'updating') {
