@@ -138,6 +138,7 @@ const cloneDeep = require('rfdc')()
 
 type UserRow = User & { editType?: 'added' | 'modified' }
 
+let isSetupServices = false
 let isFetchedUsers = false
 
 const MiniatureProjectPage = defineComponent({
@@ -174,7 +175,10 @@ const MiniatureProjectPage = defineComponent({
     //----------------------------------------------------------------------
 
     // Should originally be executed at application startup
-    setupService()
+    if (!isSetupServices) {
+      setupService()
+      isSetupServices = true
+    }
 
     const services = useService()
 
