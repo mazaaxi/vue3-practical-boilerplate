@@ -250,8 +250,7 @@ namespace Product {
       return list.map(item => clone(item)) as DeepUnreadonly<T>
     } else {
       const item = source as DeepReadonly<Product>
-      const result: DeepReadonly<Product> = populate({}, item)
-      return result as DeepUnreadonly<T>
+      return populate({}, item) as DeepUnreadonly<T>
     }
   }
 }
@@ -281,8 +280,7 @@ namespace CartItem {
       return list.map(item => clone(item)) as DeepUnreadonly<T>
     } else {
       const item = source as DeepUnreadonly<CartItem>
-      const result: DeepUnreadonly<CartItem> = populate({}, item)
-      return result as DeepUnreadonly<T>
+      return populate({}, item) as DeepUnreadonly<T>
     }
   }
 }
