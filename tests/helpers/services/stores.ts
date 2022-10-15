@@ -12,7 +12,8 @@ import { reactive } from 'vue'
 //
 //==========================================================================
 
-interface TestStoreContainer extends UnwrapNestedRefs<ReturnType<typeof TestStoreContainer['newInstance']>> {}
+interface TestStoreContainer
+  extends UnwrapNestedRefs<ReturnType<typeof TestStoreContainer['newInstance']>> {}
 
 //==========================================================================
 //
@@ -56,7 +57,10 @@ function toBeCopyUser<T extends DeepReadonly<User>>(stores: TestStoreContainer, 
  * @param stores
  * @param actual
  */
-function toBeCopyProduct<T extends DeepReadonly<Product>>(stores: TestStoreContainer, actual: T | T[]): void {
+function toBeCopyProduct<T extends DeepReadonly<Product>>(
+  stores: TestStoreContainer,
+  actual: T | T[]
+): void {
   const items = Array.isArray(actual) ? (actual as T[]) : [actual as T]
   for (const item of items) {
     const stateItem = stores.cart.all.find(stateItem => stateItem.id === item.id)
@@ -73,7 +77,10 @@ function toBeCopyProduct<T extends DeepReadonly<Product>>(stores: TestStoreConta
  * @param stores
  * @param actual
  */
-function toBeCopyCartItem<T extends DeepReadonly<CartItem>>(stores: TestStoreContainer, actual: T | T[]): void {
+function toBeCopyCartItem<T extends DeepReadonly<CartItem>>(
+  stores: TestStoreContainer,
+  actual: T | T[]
+): void {
   const items = Array.isArray(actual) ? (actual as T[]) : [actual as T]
   for (const item of items) {
     const stateItem = stores.cart.all.find(stateItem => stateItem.id === item.id)

@@ -12,8 +12,22 @@
 
 <template>
   <div class="MessageInput">
-    <q-input v-model="inputTitle" class="input" inputClass="message-input-class" :label="$t('common.title')" dense data-test="titleInput" />
-    <q-input v-model="inputMessage" class="input" inputClass="message-input-class" :label="$t('common.message')" dense data-test="bodyInput" />
+    <q-input
+      v-model="inputTitle"
+      class="input"
+      inputClass="message-input-class"
+      :label="$t('common.title')"
+      dense
+      data-test="titleInput"
+    />
+    <q-input
+      v-model="inputMessage"
+      class="input"
+      inputClass="message-input-class"
+      :label="$t('common.message')"
+      dense
+      data-test="bodyInput"
+    />
   </div>
 </template>
 

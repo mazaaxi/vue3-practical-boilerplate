@@ -370,7 +370,11 @@ describe('ShopLogic', () => {
       const quantity = 1
 
       const oldProduct3 = Products()[2]
-      const newProduct3: Product = { ...oldProduct3, stock: oldProduct3.stock - quantity, updatedAt: dayjs() }
+      const newProduct3: Product = {
+        ...oldProduct3,
+        stock: oldProduct3.stock - quantity,
+        updatedAt: dayjs(),
+      }
       const expectedStoreProduct = newProduct3
 
       const newCartItem3: CartItem = {
@@ -413,8 +417,16 @@ describe('ShopLogic', () => {
 
       // event validation settings
       const events: Promise<void>[] = []
-      events.push(validateOnItemsChange(services, 'onProductsChange', [{ newItem: newProduct3, oldItem: oldProduct3 }]))
-      events.push(validateOnItemsChange(services, 'onUserCartItemsChange', [{ newItem: newCartItem3, oldItem: undefined }]))
+      events.push(
+        validateOnItemsChange(services, 'onProductsChange', [
+          { newItem: newProduct3, oldItem: oldProduct3 },
+        ])
+      )
+      events.push(
+        validateOnItemsChange(services, 'onUserCartItemsChange', [
+          { newItem: newCartItem3, oldItem: undefined },
+        ])
+      )
 
       // run the test target
       await services.shop.incrementCartItem(response.product.id)
@@ -431,7 +443,11 @@ describe('ShopLogic', () => {
       const quantity = 1
 
       const oldProduct1 = Products()[0]
-      const newProduct1: Product = { ...oldProduct1, stock: oldProduct1.stock - quantity, updatedAt: dayjs() }
+      const newProduct1: Product = {
+        ...oldProduct1,
+        stock: oldProduct1.stock - quantity,
+        updatedAt: dayjs(),
+      }
       const expectedStoreProduct = newProduct1
       const expectedEventProduct = { newProduct: newProduct1, oldProduct: oldProduct1 }
 
@@ -456,7 +472,10 @@ describe('ShopLogic', () => {
       stores.product.setAll(Products())
       stores.cart.add(oldCartItem1)
       // mock settings
-      const updateCartItems = td.replace<TestAPIContainer, 'updateCartItems'>(apis, 'updateCartItems')
+      const updateCartItems = td.replace<TestAPIContainer, 'updateCartItems'>(
+        apis,
+        'updateCartItems'
+      )
       td.when(
         updateCartItems([
           {
@@ -471,8 +490,16 @@ describe('ShopLogic', () => {
 
       // event validation settings
       const events: Promise<void>[] = []
-      events.push(validateOnItemsChange(services, 'onProductsChange', [{ newItem: newProduct1, oldItem: oldProduct1 }]))
-      events.push(validateOnItemsChange(services, 'onUserCartItemsChange', [{ newItem: newCartItem1, oldItem: oldCartItem1 }]))
+      events.push(
+        validateOnItemsChange(services, 'onProductsChange', [
+          { newItem: newProduct1, oldItem: oldProduct1 },
+        ])
+      )
+      events.push(
+        validateOnItemsChange(services, 'onUserCartItemsChange', [
+          { newItem: newCartItem1, oldItem: oldCartItem1 },
+        ])
+      )
 
       // run the test target
       await services.shop.incrementCartItem(response.product.id)
@@ -574,7 +601,11 @@ describe('ShopLogic', () => {
       const quantity = 1
 
       const oldProduct1 = Products()[0]
-      const newProduct1: Product = { ...oldProduct1, stock: oldProduct1.stock + quantity, updatedAt: dayjs() }
+      const newProduct1: Product = {
+        ...oldProduct1,
+        stock: oldProduct1.stock + quantity,
+        updatedAt: dayjs(),
+      }
       const expectedStoreProduct = newProduct1
 
       const oldCartItem1 = CartItems()[0]
@@ -597,7 +628,10 @@ describe('ShopLogic', () => {
       stores.product.setAll(Products())
       stores.cart.add(oldCartItem1)
       // mock settings
-      const updateCartItems = td.replace<TestAPIContainer, 'updateCartItems'>(apis, 'updateCartItems')
+      const updateCartItems = td.replace<TestAPIContainer, 'updateCartItems'>(
+        apis,
+        'updateCartItems'
+      )
       td.when(
         updateCartItems([
           {
@@ -612,8 +646,16 @@ describe('ShopLogic', () => {
 
       // event validation settings
       const events: Promise<void>[] = []
-      events.push(validateOnItemsChange(services, 'onProductsChange', [{ newItem: newProduct1, oldItem: oldProduct1 }]))
-      events.push(validateOnItemsChange(services, 'onUserCartItemsChange', [{ newItem: newCartItem1, oldItem: oldCartItem1 }]))
+      events.push(
+        validateOnItemsChange(services, 'onProductsChange', [
+          { newItem: newProduct1, oldItem: oldProduct1 },
+        ])
+      )
+      events.push(
+        validateOnItemsChange(services, 'onUserCartItemsChange', [
+          { newItem: newCartItem1, oldItem: oldCartItem1 },
+        ])
+      )
 
       // run the test target
       await services.shop.decrementCartItem(response.product.id)
@@ -630,7 +672,11 @@ describe('ShopLogic', () => {
       const quantity = 1
 
       const oldProduct1 = Products()[0]
-      const newProduct1: Product = { ...oldProduct1, stock: oldProduct1.stock + quantity, updatedAt: dayjs() }
+      const newProduct1: Product = {
+        ...oldProduct1,
+        stock: oldProduct1.stock + quantity,
+        updatedAt: dayjs(),
+      }
       const expectedStoreProduct = newProduct1
 
       const oldCartItem1: CartItem = { ...CartItems()[0], quantity }
@@ -649,15 +695,26 @@ describe('ShopLogic', () => {
       stores.product.setAll(Products())
       stores.cart.add(oldCartItem1)
       // mock settings
-      const removeCartItems = td.replace<TestAPIContainer, 'removeCartItems'>(apis, 'removeCartItems')
+      const removeCartItems = td.replace<TestAPIContainer, 'removeCartItems'>(
+        apis,
+        'removeCartItems'
+      )
       td.when(removeCartItems([oldCartItem1.id])).thenResolve([response])
       // sign-in user settings
       await services.account.signIn(TaroYamada.id)
 
       // event validation settings
       const events: Promise<void>[] = []
-      events.push(validateOnItemsChange(services, 'onProductsChange', [{ newItem: newProduct1, oldItem: oldProduct1 }]))
-      events.push(validateOnItemsChange(services, 'onUserCartItemsChange', [{ newItem: undefined, oldItem: oldCartItem1 }]))
+      events.push(
+        validateOnItemsChange(services, 'onProductsChange', [
+          { newItem: newProduct1, oldItem: oldProduct1 },
+        ])
+      )
+      events.push(
+        validateOnItemsChange(services, 'onUserCartItemsChange', [
+          { newItem: undefined, oldItem: oldCartItem1 },
+        ])
+      )
 
       // run the test target
       await services.shop.decrementCartItem(response.product.id)
@@ -710,7 +767,10 @@ describe('ShopLogic', () => {
       stores.product.setAll(Products())
       stores.cart.setAll(cartItems)
       // mock settings
-      const removeCartItems = td.replace<TestAPIContainer, 'removeCartItems'>(apis, 'removeCartItems')
+      const removeCartItems = td.replace<TestAPIContainer, 'removeCartItems'>(
+        apis,
+        'removeCartItems'
+      )
       td.when(removeCartItems(td.matchers.anything())).thenReject(expected)
       // sign-in user settings
       await services.account.signIn(TaroYamada.id)

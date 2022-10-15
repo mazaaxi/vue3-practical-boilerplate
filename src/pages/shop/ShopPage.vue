@@ -71,7 +71,14 @@
         <div>{{ $t('abc.signedInTime', { time: $d(new Date(), 'dateSec') }) }}</div>
       </div>
       <div class="flex-1" />
-      <q-btn flat rounded color="primary" :label="isSignedIn ? $t('common.signOut') : $t('common.signIn')" @click="signInOrOutButtonOnClick" dense />
+      <q-btn
+        flat
+        rounded
+        color="primary"
+        :label="isSignedIn ? $t('common.signOut') : $t('common.signIn')"
+        @click="signInOrOutButtonOnClick"
+        dense
+      />
     </div>
 
     <div>
@@ -79,7 +86,11 @@
         <div class="title-text">{{ $t('shop.products') }}</div>
       </div>
       <hr style="width: 100%" />
-      <div v-for="product in products" :key="product.id" class="layout horizontal center product-item">
+      <div
+        v-for="product in products"
+        :key="product.id"
+        class="layout horizontal center product-item"
+      >
         <div class="layout vertical center-justified">
           <div class="title">{{ product.title }}</div>
           <div class="detail">
@@ -89,7 +100,15 @@
           </div>
         </div>
         <div class="flex-1"></div>
-        <q-btn v-show="isSignedIn" :disable="product.outOfStock" round color="primary" size="xs" icon="add" @click="addButtonOnClick(product)" />
+        <q-btn
+          v-show="isSignedIn"
+          :disable="product.outOfStock"
+          round
+          color="primary"
+          size="xs"
+          icon="add"
+          @click="addButtonOnClick(product)"
+        />
       </div>
     </div>
 
@@ -103,15 +122,26 @@
         <div class="empty-cart">{{ $t('shop.cartIsEmpty') }}</div>
       </template>
       <template v-else>
-        <div v-for="cartItem in cartItems" :key="cartItem.id" class="layout horizontal center cart-item">
+        <div
+          v-for="cartItem in cartItems"
+          :key="cartItem.id"
+          class="layout horizontal center cart-item"
+        >
           <div class="layout vertical center-justified">
             <div class="title">{{ cartItem.title }}</div>
             <div class="detail">
-              <span>{{ $n(cartItem.price * exchangeRate, 'currency') }}</span> x {{ cartItem.quantity }}
+              <span>{{ $n(cartItem.price * exchangeRate, 'currency') }}</span> x
+              {{ cartItem.quantity }}
             </div>
           </div>
           <div class="flex-1"></div>
-          <q-btn round color="primary" size="xs" icon="remove" @click="removeButtonOnClick(cartItem)" />
+          <q-btn
+            round
+            color="primary"
+            size="xs"
+            icon="remove"
+            @click="removeButtonOnClick(cartItem)"
+          />
         </div>
       </template>
     </div>
@@ -127,7 +157,12 @@
           <div class="detail">{{ $n(cartTotalPrice, 'currency') }}</div>
         </div>
         <div class="flex-1"></div>
-        <q-btn :disable="cartIsEmpty" :label="$t('shop.checkout')" color="primary" @click="checkoutButtonOnClick" />
+        <q-btn
+          :disable="cartIsEmpty"
+          :label="$t('shop.checkout')"
+          color="primary"
+          @click="checkoutButtonOnClick"
+        />
       </div>
     </div>
   </div>
@@ -219,23 +254,27 @@ const ShopPage = defineComponent({
       }
     })
 
-    const offUserCartItemsChange = services.shop.onUserCartItemsChange((newCartItem, oldCartItem) => {
-      const toPageCartItem = (cartItem: CartItem) => ({
-        ...cartItem,
-      })
+    const offUserCartItemsChange = services.shop.onUserCartItemsChange(
+      (newCartItem, oldCartItem) => {
+        const toPageCartItem = (cartItem: CartItem) => ({
+          ...cartItem,
+        })
 
-      if (newCartItem) {
-        const targetCartItem = cartItems.value.find(cartItem => cartItem.id === newCartItem.id)
-        if (!targetCartItem) {
-          cartItems.value.push(toPageCartItem(newCartItem))
-        } else {
-          Object.assign(targetCartItem, toPageCartItem(newCartItem))
+        if (newCartItem) {
+          const targetCartItem = cartItems.value.find(cartItem => cartItem.id === newCartItem.id)
+          if (!targetCartItem) {
+            cartItems.value.push(toPageCartItem(newCartItem))
+          } else {
+            Object.assign(targetCartItem, toPageCartItem(newCartItem))
+          }
+        } else if (oldCartItem) {
+          const targetCartItemIndex = cartItems.value.findIndex(
+            cartItem => cartItem.id === oldCartItem.id
+          )
+          targetCartItemIndex >= 0 && cartItems.value.splice(targetCartItemIndex, 1)
         }
-      } else if (oldCartItem) {
-        const targetCartItemIndex = cartItems.value.findIndex(cartItem => cartItem.id === oldCartItem.id)
-        targetCartItemIndex >= 0 && cartItems.value.splice(targetCartItemIndex, 1)
       }
-    })
+    )
 
     async function signInOrOutButtonOnClick() {
       if (isSignedIn.value) {

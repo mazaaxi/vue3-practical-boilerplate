@@ -81,7 +81,14 @@
       </q-btn>
     </div>
 
-    <q-input ref="logInput" v-model="logMessage" class="log-input" type="textarea" filled readonly />
+    <q-input
+      ref="logInput"
+      v-model="logMessage"
+      class="log-input"
+      type="textarea"
+      filled
+      readonly
+    />
   </q-page>
 </template>
 
@@ -138,7 +145,12 @@ const RoutingPage = defineComponent({
     //
     //----------------------------------------------------------------------
 
-    function writLogRouteEvent(to: RouteLocationNormalized, from: RouteLocationNormalized, event: string, blocked: boolean): void {
+    function writLogRouteEvent(
+      to: RouteLocationNormalized,
+      from: RouteLocationNormalized,
+      event: string,
+      blocked: boolean
+    ): void {
       const blockedTitle = blocked ? ' blocked' : ''
       const historyTitle = route.isHistoryMoving ? ' history move' : ' page move'
       const fromPath = `from : ${from.fullPath}`

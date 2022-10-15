@@ -22,7 +22,8 @@ export default {
     updated: 'The application has been updated.',
     anchorDialog: {
       name: 'Anchor Dialog',
-      message: 'This dialog is an anchor dialog.\nReloading the browser will display this dialog again.',
+      message:
+        'This dialog is an anchor dialog.\nReloading the browser will display this dialog again.',
     },
   },
   abc: {

@@ -63,7 +63,16 @@ function showNotification(
   type: 'info' | 'warning' | 'error',
   message: string,
   options?: {
-    position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' | 'top' | 'bottom' | 'left' | 'right' | 'center'
+    position?:
+      | 'top-left'
+      | 'top-right'
+      | 'bottom-left'
+      | 'bottom-right'
+      | 'top'
+      | 'bottom'
+      | 'left'
+      | 'right'
+      | 'center'
     timeout?: number
     actions?: any[] | 'none'
     html?: boolean

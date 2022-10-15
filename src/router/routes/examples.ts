@@ -78,20 +78,22 @@ namespace AbcRoute {
       await base.router.value.push(toMovePath(message))
     }))
 
-    const toMovePath = (base.toMovePath.body = extensionMethod<WrapAbcRoute['toMovePath']>(message => {
-      const query: { [key: string]: string } = {}
-      if (message?.title) {
-        query.title = message.title
-      }
-      if (message?.body) {
-        query.body = message.body
-      }
+    const toMovePath = (base.toMovePath.body = extensionMethod<WrapAbcRoute['toMovePath']>(
+      message => {
+        const query: { [key: string]: string } = {}
+        if (message?.title) {
+          query.title = message.title
+        }
+        if (message?.body) {
+          query.body = message.body
+        }
 
-      return base.toPath({
-        routePath: base.routePath.value,
-        query,
-      })
-    }))
+        return base.toPath({
+          routePath: base.routePath.value,
+          query,
+        })
+      }
+    ))
 
     //----------------------------------------------------------------------
     //
@@ -147,7 +149,10 @@ namespace MiniatureProjectRoute {
 
     const base = BaseRoute.newWrapInstance({
       routePath: `/:locale/examples/miniature-project`,
-      component: () => import(/* webpackChunkName: "pages/examples/miniature-project" */ '@/pages/examples/miniature-project'),
+      component: () =>
+        import(
+          /* webpackChunkName: "pages/examples/miniature-project" */ '@/pages/examples/miniature-project'
+        ),
       ...input,
     })
 
@@ -202,12 +207,14 @@ namespace RoutingRoute {
       await base.router.value.push(toMovePath(newPage))
     }))
 
-    const toMovePath = (base.toMovePath.body = extensionMethod<WrapRoutingRoute['toMovePath']>(page => {
-      return base.toPath({
-        routePath: base.routePath.value,
-        query: { page: page.toString() },
-      })
-    }))
+    const toMovePath = (base.toMovePath.body = extensionMethod<WrapRoutingRoute['toMovePath']>(
+      page => {
+        return base.toPath({
+          routePath: base.routePath.value,
+          query: { page: page.toString() },
+        })
+      }
+    ))
 
     const parse: RoutingRoute['parse'] = path_or_fullPath => {
       const parsedURL = url.parse(path_or_fullPath, true)
@@ -246,7 +253,9 @@ namespace RoutingRoute {
       }
     }
 
-    function toPage(pageString: string | string[] | LocationQueryValue | LocationQueryValue[] | undefined): number {
+    function toPage(
+      pageString: string | string[] | LocationQueryValue | LocationQueryValue[] | undefined
+    ): number {
       // if no page is specified in the query, the page number should be "1"
       // Note: even if there is no page specification, the URL will be considered normal
       if (pageString === undefined) return 1
@@ -254,13 +263,15 @@ namespace RoutingRoute {
       // Note: determine that the URL is abnormal
       if (typeof pageString !== 'string') return NaN
 
-      // if a number is specified in the page string, it will be successfully parsed into a page number.
-      // if an invalid string other than a number is specified in the page string, the page number will
-      // be parsed to "NaN".
+      // if a number is specified in the page string, it will be successfully parsed into a page
+      // number. if an invalid string other than a number is specified in the page string, the
+      // page number will be parsed to "NaN".
       return parseInt(pageString)
     }
 
-    function isNumberString(pageString: string | string[] | LocationQueryValue | LocationQueryValue[] | undefined): pageString is string {
+    function isNumberString(
+      pageString: string | string[] | LocationQueryValue | LocationQueryValue[] | undefined
+    ): pageString is string {
       if (!pageString || Array.isArray(pageString)) return false
       return !isNaN(parseInt(pageString))
     }

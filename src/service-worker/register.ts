@@ -9,10 +9,20 @@ import { UAParser } from 'ua-parser-js'
 //
 //==========================================================================
 
-type ServiceWorkerChangeState = 'ready' | 'installing' | 'updating' | 'installed' | 'updated' | 'offline' | 'error'
+type ServiceWorkerChangeState =
+  | 'ready'
+  | 'installing'
+  | 'updating'
+  | 'installed'
+  | 'updated'
+  | 'offline'
+  | 'error'
 
 type HookFunc = (state: ServiceWorkerChangeState) => void
-type HookRegistrationFunc = (state: ServiceWorkerChangeState, registration: ServiceWorkerRegistration) => void
+type HookRegistrationFunc = (
+  state: ServiceWorkerChangeState,
+  registration: ServiceWorkerRegistration
+) => void
 type HookErrorFunc = (state: 'error', error: Error) => void
 
 interface Hooks {
@@ -77,7 +87,10 @@ function register(serviceWorkerURL: string, hooks: Hooks = {}): void {
   //
   //----------------------------------------------------------------------
 
-  function emit(state: ServiceWorkerChangeState, registration_or_error?: ServiceWorkerRegistration | Error): void {
+  function emit(
+    state: ServiceWorkerChangeState,
+    registration_or_error?: ServiceWorkerRegistration | Error
+  ): void {
     switch (state) {
       case 'ready':
       case 'installing':
@@ -101,7 +114,10 @@ function register(serviceWorkerURL: string, hooks: Hooks = {}): void {
     }
   }
 
-  async function registerServiceWorker(serviceWorkerURL: string, registrationOptions: RegistrationOptions) {
+  async function registerServiceWorker(
+    serviceWorkerURL: string,
+    registrationOptions: RegistrationOptions
+  ) {
     let registration!: ServiceWorkerRegistration
     try {
       registration = await navigator.serviceWorker.register(serviceWorkerURL, registrationOptions)

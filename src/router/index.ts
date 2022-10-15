@@ -41,7 +41,9 @@ namespace AppRouter {
 
   export function useRouter(): AppRouter {
     if (!instance) {
-      throw new Error(`Router is not initialized. Run \`setupRouter()\` before using \`userRouter()\`.`)
+      throw new Error(
+        `Router is not initialized. Run \`setupRouter()\` before using \`userRouter()\`.`
+      )
     }
     return instance
   }

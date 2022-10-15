@@ -43,7 +43,15 @@
 
 <template>
   <q-page class="MiniatureProjectPage layout vertical center">
-    <q-table ref="table" class="table" title="Users" :rows="users" :columns="columns" rowKey="id" binaryStateSort>
+    <q-table
+      ref="table"
+      class="table"
+      title="Users"
+      :rows="users"
+      :columns="columns"
+      rowKey="id"
+      binaryStateSort
+    >
       <template v-slot:top>
         <div class="layout horizontal center full-width">
           <div class="title">Users</div>
@@ -76,18 +84,47 @@
             <span v-else class="required">Required Input</span>
 
             <q-popup-edit v-model="props.row.age">
-              <q-input v-model.number="props.row.age" type="number" hint="Input Age" dense autofocus />
+              <q-input
+                v-model.number="props.row.age"
+                type="number"
+                hint="Input Age"
+                dense
+                autofocus
+              />
             </q-popup-edit>
           </q-td>
           <q-td key="save" :props="props">
-            <q-btn label="Save" color="primary" flat dense noCaps @click="saveUser(props.row)" :disable="!Boolean(props.row.editType)" />
-            <q-btn class="space-mx-10" label="Remove" color="primary" flat dense noCaps @click="removeUser(props.row)" />
+            <q-btn
+              label="Save"
+              color="primary"
+              flat
+              dense
+              noCaps
+              @click="saveUser(props.row)"
+              :disable="!Boolean(props.row.editType)"
+            />
+            <q-btn
+              class="space-mx-10"
+              label="Remove"
+              color="primary"
+              flat
+              dense
+              noCaps
+              @click="removeUser(props.row)"
+            />
           </q-td>
         </q-tr>
       </template>
     </q-table>
 
-    <q-input ref="logInput" v-model="logMessage" class="log-input" type="textarea" filled readonly />
+    <q-input
+      ref="logInput"
+      v-model="logMessage"
+      class="log-input"
+      type="textarea"
+      filled
+      readonly
+    />
   </q-page>
 </template>
 

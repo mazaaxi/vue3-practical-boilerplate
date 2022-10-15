@@ -67,7 +67,12 @@ interface RouterInput<ROUTES> {
    *   Returns true if you want to perform subsequent processing of `beforeRouteUpdate`,
    *   false otherwise.
    */
-  beforeRouteUpdate?: (self: WrapRouter<ROUTES>, to: VueRoute, from: VueRoute, next: NavigationGuardNext) => Promise<boolean>
+  beforeRouteUpdate?: (
+    self: WrapRouter<ROUTES>,
+    to: VueRoute,
+    from: VueRoute,
+    next: NavigationGuardNext
+  ) => Promise<boolean>
 }
 
 //--------------------------------------------------
@@ -159,7 +164,12 @@ interface RawRoute<MOVE_PARAMS extends any | void = void> extends WrapRoute<MOVE
   /**
    * Generates a path based on the specified parameters.
    */
-  toPath(input: { routePath: string; params?: RouteParams; query?: LocationQuery; hash?: string }): string
+  toPath(input: {
+    routePath: string
+    params?: RouteParams
+    query?: LocationQuery
+    hash?: string
+  }): string
   /**
    * Clears the state of itself route.
    */
@@ -234,7 +244,16 @@ namespace Router {
       if (!newCurrentRoute) return
 
       currentRoute.value = reactive({
-        ...pickProps(newCurrentRoute, ['basePath', 'path', 'fullPath', 'hash', 'query', 'params', 'isCurrent', 'hasHistoryMoved']),
+        ...pickProps(newCurrentRoute, [
+          'basePath',
+          'path',
+          'fullPath',
+          'hash',
+          'query',
+          'params',
+          'isCurrent',
+          'hasHistoryMoved',
+        ]),
         isHistoryMoving,
       })
     }
@@ -467,7 +486,12 @@ namespace Route {
     }
 
     function getFullPath(route: VueRoute): string {
-      return toPath({ routePath: routePath.value, params: route.params, query: route.query, hash: route.hash })
+      return toPath({
+        routePath: routePath.value,
+        params: route.params,
+        query: route.query,
+        hash: route.hash,
+      })
     }
 
     function getIsCurrent(route: VueRoute): boolean {

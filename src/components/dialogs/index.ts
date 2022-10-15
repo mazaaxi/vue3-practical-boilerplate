@@ -140,7 +140,9 @@ namespace DialogContainer {
             path: router.currentRoute.path,
             query: Object.assign({}, router.currentRoute.query, {
               dialogName,
-              dialogParams: dialogParams ? encodeURIComponent(JSON.stringify(dialogParams)) : undefined,
+              dialogParams: dialogParams
+                ? encodeURIComponent(JSON.stringify(dialogParams))
+                : undefined,
             }),
           })
           .then(() => {

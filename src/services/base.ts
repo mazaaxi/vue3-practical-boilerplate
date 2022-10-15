@@ -194,12 +194,18 @@ function toRawEntities<T>(entities: T[]): ToDeepRawDate<T>[] {
 }
 
 function generateId(): string {
-  const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', 20)
+  const nanoid = customAlphabet(
+    '1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
+    20
+  )
   return nanoid()
 }
 
 namespace User {
-  export function populate<TO extends DeepPartial<User>, FM extends DeepPartial<DeepReadonly<User>>>(to: TO, from: FM): DeepUnreadonly<FM & TO> {
+  export function populate<
+    TO extends DeepPartial<User>,
+    FM extends DeepPartial<DeepReadonly<User>>
+  >(to: TO, from: FM): DeepUnreadonly<FM & TO> {
     if (typeof from.id === 'string') to.id = from.id
     if (typeof from.email === 'string') to.email = from.email
     if (typeof from.first === 'string') to.first = from.first
@@ -222,10 +228,10 @@ namespace User {
 }
 
 namespace Product {
-  export function populate<TO extends DeepPartial<Product>, FM extends DeepPartial<DeepReadonly<Product>>>(
-    to: TO,
-    from: FM
-  ): DeepUnreadonly<FM & TO> {
+  export function populate<
+    TO extends DeepPartial<Product>,
+    FM extends DeepPartial<DeepReadonly<Product>>
+  >(to: TO, from: FM): DeepUnreadonly<FM & TO> {
     if (typeof from.id === 'string') to.id = from.id
     if (typeof from.title === 'string') to.title = from.title
     if (typeof from.price === 'number') to.price = from.price
@@ -235,7 +241,9 @@ namespace Product {
     return to as DeepUnreadonly<FM & TO>
   }
 
-  export function clone<T extends DeepReadonly<Product> | DeepReadonly<Product[]> | undefined | null>(source: T): DeepUnreadonly<T> {
+  export function clone<
+    T extends DeepReadonly<Product> | DeepReadonly<Product[]> | undefined | null
+  >(source: T): DeepUnreadonly<T> {
     if (!source) return source as DeepUnreadonly<T>
     if (Array.isArray(source)) {
       const list = source as DeepReadonly<Product>[]
@@ -249,10 +257,10 @@ namespace Product {
 }
 
 namespace CartItem {
-  export function populate<TO extends DeepPartial<CartItem>, FM extends DeepPartial<DeepReadonly<CartItem>>>(
-    to: TO,
-    from: FM
-  ): DeepUnreadonly<FM & TO> {
+  export function populate<
+    TO extends DeepPartial<CartItem>,
+    FM extends DeepPartial<DeepReadonly<CartItem>>
+  >(to: TO, from: FM): DeepUnreadonly<FM & TO> {
     if (typeof from.id === 'string') to.id = from.id
     if (typeof from.uid === 'string') to.uid = from.uid
     if (typeof from.productId === 'string') to.productId = from.productId
@@ -264,7 +272,9 @@ namespace CartItem {
     return to as DeepUnreadonly<FM & TO>
   }
 
-  export function clone<T extends DeepReadonly<CartItem> | DeepReadonly<CartItem[]> | undefined | null>(source: T): DeepUnreadonly<T> {
+  export function clone<
+    T extends DeepReadonly<CartItem> | DeepReadonly<CartItem[]> | undefined | null
+  >(source: T): DeepUnreadonly<T> {
     if (!source) return source as DeepUnreadonly<T>
     if (Array.isArray(source)) {
       const list = source as DeepReadonly<CartItem>[]

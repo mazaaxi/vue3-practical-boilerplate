@@ -12,7 +12,14 @@
   <q-layout view="lHh Lpr lFf">
     <q-header elevated class="glossy">
       <q-toolbar>
-        <q-btn flat dense round @click="leftDrawerOpen = !leftDrawerOpen" aria-label="Menu" icon="menu" />
+        <q-btn
+          flat
+          dense
+          round
+          @click="leftDrawerOpen = !leftDrawerOpen"
+          aria-label="Menu"
+          icon="menu"
+        />
 
         <q-toolbar-title>Vue3 App</q-toolbar-title>
 
@@ -23,7 +30,9 @@
             <q-list class="list">
               <!-- Sing-in or Sign-out -->
               <q-item class="item" v-close-popup clickable>
-                <q-item-section @click="signInMenuItemOnClick">{{ isSignedIn ? $t('common.signOut') : $t('common.signIn') }}</q-item-section>
+                <q-item-section @click="signInMenuItemOnClick">{{
+                  isSignedIn ? $t('common.signOut') : $t('common.signIn')
+                }}</q-item-section>
               </q-item>
               <!-- Languages -->
               <q-item clickable>
@@ -34,10 +43,14 @@
                 <q-menu anchor="top end" self="top start">
                   <q-list>
                     <q-item class="item" v-close-popup clickable>
-                      <q-item-section @click="langMenuItemOnclick('en')">{{ $t('langs.en') }}</q-item-section>
+                      <q-item-section @click="langMenuItemOnclick('en')">{{
+                        $t('langs.en')
+                      }}</q-item-section>
                     </q-item>
                     <q-item class="item" v-close-popup clickable>
-                      <q-item-section @click="langMenuItemOnclick('ja')">{{ $t('langs.ja') }}</q-item-section>
+                      <q-item-section @click="langMenuItemOnclick('ja')">{{
+                        $t('langs.ja')
+                      }}</q-item-section>
                     </q-item>
                   </q-list>
                 </q-menu>
@@ -45,7 +58,9 @@
               <q-separator />
               <!-- Anchor Dialog -->
               <q-item class="item" v-close-popup clickable>
-                <q-item-section @click="anchorDialogItemOnClick">{{ $t('app.anchorDialog.name') }}</q-item-section>
+                <q-item-section @click="anchorDialogItemOnClick">{{
+                  $t('app.anchorDialog.name')
+                }}</q-item-section>
               </q-item>
             </q-list>
           </q-menu>
@@ -220,7 +235,14 @@ const AppPage = defineComponent({
     // watch(
     //   () => router.currentRoute.isHistoryMoving,
     //   async (newValue, oldValue) => {
-    //     const detail = JSON.stringify({ fullPath: router.currentRoute.fullPath, isHistoryMoving: router.currentRoute.isHistoryMoving }, null, 2)
+    //     const detail = JSON.stringify(
+    //       {
+    //         fullPath: router.currentRoute.fullPath,
+    //         isHistoryMoving: router.currentRoute.isHistoryMoving,
+    //       },
+    //       null,
+    //       2
+    //     )
     //     console.log(`currentRoute:`, detail)
     //   }
     // )

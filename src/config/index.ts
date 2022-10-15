@@ -59,7 +59,12 @@ namespace Config {
 
     const state = reactive({
       env: <EnvConfig>{
-        executionMode: process.env.NODE_ENV === 'production' ? 'remote' : process.env.NODE_ENV === 'test' ? 'test' : 'local',
+        executionMode:
+          process.env.NODE_ENV === 'production'
+            ? 'remote'
+            : process.env.NODE_ENV === 'test'
+            ? 'test'
+            : 'local',
       },
 
       api: getAPIConfig({

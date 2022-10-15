@@ -13,7 +13,8 @@ import useStore = StoreContainer.useStore
 //
 //==========================================================================
 
-interface TestServiceContainer extends UnwrapNestedRefs<ReturnType<typeof TestServiceContainer['newInstance']>> {}
+interface TestServiceContainer
+  extends UnwrapNestedRefs<ReturnType<typeof TestServiceContainer['newInstance']>> {}
 
 //==========================================================================
 //

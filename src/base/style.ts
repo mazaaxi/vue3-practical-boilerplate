@@ -84,10 +84,18 @@ function getElementBorderBox(elementOrStyle: Element | CSSStyleDeclaration): Ele
     style = elementOrStyle as CSSStyleDeclaration
   }
 
-  result.left = toFloat(style.getPropertyValue('border-left-width')) + toFloat(style.getPropertyValue('padding-left'))
-  result.right = toFloat(style.getPropertyValue('border-right-width')) + toFloat(style.getPropertyValue('padding-right'))
-  result.top = toFloat(style.getPropertyValue('border-top-width')) + toFloat(style.getPropertyValue('padding-top'))
-  result.bottom = toFloat(style.getPropertyValue('border-bottom-width')) + toFloat(style.getPropertyValue('padding-bottom'))
+  result.left =
+    toFloat(style.getPropertyValue('border-left-width')) +
+    toFloat(style.getPropertyValue('padding-left'))
+  result.right =
+    toFloat(style.getPropertyValue('border-right-width')) +
+    toFloat(style.getPropertyValue('padding-right'))
+  result.top =
+    toFloat(style.getPropertyValue('border-top-width')) +
+    toFloat(style.getPropertyValue('padding-top'))
+  result.bottom =
+    toFloat(style.getPropertyValue('border-bottom-width')) +
+    toFloat(style.getPropertyValue('padding-bottom'))
   result.h = result.left + result.right
   result.v = result.top + result.bottom
 

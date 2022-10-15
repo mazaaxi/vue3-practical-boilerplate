@@ -65,7 +65,9 @@ namespace I18nContainer {
 
       if (!i18n.global.availableLocales.includes(locale)) {
         // load locale messages with dynamic import
-        const messages = await import(/* webpackChunkName: "locale-[request]" */ `@/i18n/locales/${locale}.js`)
+        const messages = await import(
+          /* webpackChunkName: "locale-[request]" */ `@/i18n/locales/${locale}.js`
+        )
         // set locale and locale message
         i18n.global.setLocaleMessage(locale, messages.default)
       }

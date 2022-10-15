@@ -37,7 +37,14 @@
       <!-- Button area -->
       <q-card-actions class="layout horizontal center end-justified">
         <!-- Cancel button -->
-        <q-btn v-show="params.type === 'confirm'" flat rounded color="primary" :label="$t('common.cancel')" @click="close(false)" />
+        <q-btn
+          v-show="params.type === 'confirm'"
+          flat
+          rounded
+          color="primary"
+          :label="$t('common.cancel')"
+          @click="close(false)"
+        />
         <!-- OK button -->
         <q-btn flat rounded color="primary" :label="$t('common.ok')" @click="close(true)" />
       </q-card-actions>

@@ -38,7 +38,9 @@
   <q-card class="AbcViewPC">
     <div class="layout horizontal center">
       <div v-show="isSignedIn">
-        <div data-test="signedInEmail">{{ $t('abc.signedInUser', { name: user.fullName, email: user.email }) }}</div>
+        <div data-test="signedInEmail">
+          {{ $t('abc.signedInUser', { name: user.fullName, email: user.email }) }}
+        </div>
         <div>{{ $t('abc.signedInTime', { time: $d(new Date(), 'dateSec') }) }}</div>
       </div>
       <div class="flex-1" />
@@ -55,17 +57,43 @@
 
     <div class="message-container layout horizontal">
       <div class="layout vertical flex-1">
-        <q-input v-model="message.title" class="input" :label="$t('common.title')" dense data-test="titleInput" />
-        <q-input v-model="message.body" class="input" :label="$t('common.message')" dense data-test="messageInput" />
+        <q-input
+          v-model="message.title"
+          class="input"
+          :label="$t('common.title')"
+          dense
+          data-test="titleInput"
+        />
+        <q-input
+          v-model="message.body"
+          class="input"
+          :label="$t('common.message')"
+          dense
+          data-test="messageInput"
+        />
       </div>
       <div class="space-mx-10" />
-      <MessageInput ref="messageInput" v-model:title="message.title" v-model="message.body" class="message-input flex-1" />
+      <MessageInput
+        ref="messageInput"
+        v-model:title="message.title"
+        v-model="message.body"
+        class="message-input flex-1"
+      />
     </div>
 
     <div class="space-my-16">
       <div class="value">{{ displayMessage }}</div>
       <div class="layout horizontal center end-justified">
-        <q-btn class="space-ml-10" flat rounded color="primary" :label="$t('common.send')" @click="sendButtonOnClick" :disabled="!isSignedIn" dense />
+        <q-btn
+          class="space-ml-10"
+          flat
+          rounded
+          color="primary"
+          :label="$t('common.send')"
+          @click="sendButtonOnClick"
+          :disabled="!isSignedIn"
+          dense
+        />
       </div>
     </div>
 
@@ -85,7 +113,14 @@
       <span class="value" data-test="watchEffectMessage">{{ watchEffectMessage }}</span>
     </div>
 
-    <q-input ref="logInput" v-model="sentMessagesLog" class="log-input" type="textarea" filled readonly />
+    <q-input
+      ref="logInput"
+      v-model="sentMessagesLog"
+      class="log-input"
+      type="textarea"
+      filled
+      readonly
+    />
   </q-card>
 </template>
 

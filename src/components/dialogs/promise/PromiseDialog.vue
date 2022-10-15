@@ -1,5 +1,12 @@
 <template>
-  <q-dialog ref="dialog" v-model="opened" :persistent="persistent" @before-show="onBeforeShow" @show="onShow" @before-hide="onBeforeHide">
+  <q-dialog
+    ref="dialog"
+    v-model="opened"
+    :persistent="persistent"
+    @before-show="onBeforeShow"
+    @show="onShow"
+    @before-hide="onBeforeHide"
+  >
     <slot></slot>
   </q-dialog>
 </template>
@@ -16,7 +23,9 @@ import { isImplemented } from 'js-common-lib'
 //
 //==========================================================================
 
-interface PromiseDialog<RESULT = void> extends PromiseDialog.Props, PromiseDialog.Features<RESULT> {}
+interface PromiseDialog<RESULT = void>
+  extends PromiseDialog.Props,
+    PromiseDialog.Features<RESULT> {}
 
 namespace PromiseDialog {
   export interface Props {
@@ -57,7 +66,10 @@ const PromiseDialog = defineComponent({
     'before-hide': null,
   },
 
-  setup<RESULT = void>(props: PromiseDialog.Props, ctx: SetupContext<{ 'before-show': null; show: null; 'before-hide': null }>) {
+  setup<RESULT = void>(
+    props: PromiseDialog.Props,
+    ctx: SetupContext<{ 'before-show': null; show: null; 'before-hide': null }>
+  ) {
     //----------------------------------------------------------------------
     //
     //  Variables

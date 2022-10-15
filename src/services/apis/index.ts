@@ -92,12 +92,16 @@ namespace APIContainer {
     }
 
     const addCartItems: APIContainer['addCartItems'] = async items => {
-      const response = await client.post<ToRawEntity<CartItemEditResponse>[]>('cartItems', items, { shouldAuth: true })
+      const response = await client.post<ToRawEntity<CartItemEditResponse>[]>('cartItems', items, {
+        shouldAuth: true,
+      })
       return toEntities(response.data)
     }
 
     const updateCartItems: APIContainer['updateCartItems'] = async items => {
-      const response = await client.put<ToRawEntity<CartItemEditResponse>[]>('cartItems', items, { shouldAuth: true })
+      const response = await client.put<ToRawEntity<CartItemEditResponse>[]>('cartItems', items, {
+        shouldAuth: true,
+      })
       return toEntities(response.data)
     }
 
@@ -110,7 +114,9 @@ namespace APIContainer {
     }
 
     const checkoutCart: APIContainer['checkoutCart'] = async () => {
-      const response = await client.put<boolean>('cartItems/checkout', undefined, { shouldAuth: true })
+      const response = await client.put<boolean>('cartItems/checkout', undefined, {
+        shouldAuth: true,
+      })
       return response.data
     }
 
@@ -142,4 +148,11 @@ namespace APIContainer {
 //==========================================================================
 
 const { setupAPI, useAPI } = APIContainer
-export { APIContainer, CartItemAddInput, CartItemEditResponse, CartItemUpdateInput, setupAPI, useAPI }
+export {
+  APIContainer,
+  CartItemAddInput,
+  CartItemEditResponse,
+  CartItemUpdateInput,
+  setupAPI,
+  useAPI,
+}

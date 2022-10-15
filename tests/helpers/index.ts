@@ -1,4 +1,9 @@
-import { TestAPIContainer, TestHelperContainer, TestServiceContainer, TestStoreContainer } from './services'
+import {
+  TestAPIContainer,
+  TestHelperContainer,
+  TestServiceContainer,
+  TestStoreContainer,
+} from './services'
 import { DefineComponent } from 'vue'
 import { setupAPI } from '@/services/apis'
 import { setupHelper } from '@/services/helpers'
@@ -41,7 +46,10 @@ let provided: ProvidedDependency | undefined
  *   The object specified here is also passed as an argument to the `setup()` function,
  *   so you can set mock settings on this object if necessary.
  */
-function provideDependency(setup?: SetupFunc, dependency?: Partial<ProvidedDependency>): ProvidedDependency {
+function provideDependency(
+  setup?: SetupFunc,
+  dependency?: Partial<ProvidedDependency>
+): ProvidedDependency {
   const wrapper = shallowMount<ProvidedDependency & DefineComponent>({
     template: '<div></div>',
     setup() {
@@ -53,7 +61,10 @@ function provideDependency(setup?: SetupFunc, dependency?: Partial<ProvidedDepen
   return { apis, stores, helpers, services }
 }
 
-function provideDependencyImpl(setup?: SetupFunc, dependency?: Partial<ProvidedDependency>): ProvidedDependency {
+function provideDependencyImpl(
+  setup?: SetupFunc,
+  dependency?: Partial<ProvidedDependency>
+): ProvidedDependency {
   // launching a dialog during testing will cause an error, so mock it.
   // setupDialogs(td.object())
 
