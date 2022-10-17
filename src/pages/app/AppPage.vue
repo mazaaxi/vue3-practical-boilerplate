@@ -169,11 +169,11 @@
     </q-page-container>
   </q-layout>
 
-  <DialogsSet ref="dialogsSet" />
+  <DialogContainer ref="dialogContainer" />
 </template>
 
 <script lang="ts">
-import { DialogsSet, setupDialogs } from '@/components/dialogs'
+import { DialogContainer, setupDialogs } from '@/dialogs'
 import { computed, defineComponent, ref, watch } from 'vue'
 import { showNotification, useScreen } from '@/base'
 import { useI18n, useI18nUtils } from '@/i18n'
@@ -186,7 +186,7 @@ const AppPage = defineComponent({
   name: 'AppPage',
 
   components: {
-    DialogsSet,
+    DialogContainer,
   },
 
   setup() {
@@ -204,8 +204,8 @@ const AppPage = defineComponent({
     const { loadI18nLocaleMessages } = useI18nUtils()
     const router = useRouter()
 
-    const dialogsSet = ref<DialogsSet>()
-    const dialogs = setupDialogs(dialogsSet)
+    const dialogContainer = ref<DialogContainer>()
+    const dialogs = setupDialogs(dialogContainer)
 
     const leftDrawerOpen = ref(false)
     const isSignedIn = computed(() => services.account.isSignedIn)
@@ -294,6 +294,13 @@ const AppPage = defineComponent({
         title: i18n.t('app.anchorDialog.name'),
         message: i18n.t('app.anchorDialog.message'),
       })
+
+      // const dialogResult = await dialogs.message.open({
+      //   type: 'confirm',
+      //   title: 'タイトル',
+      //   message: 'こんにちは',
+      // })
+      // console.log({ dialogResult })
     }
 
     //----------------------------------------------------------------------
@@ -304,7 +311,7 @@ const AppPage = defineComponent({
 
     return {
       locale: i18n.locale,
-      dialogsSet,
+      dialogContainer,
       leftDrawerOpen,
       isSignedIn,
       langMenuItemOnclick,

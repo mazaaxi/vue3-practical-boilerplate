@@ -1,13 +1,14 @@
 <template>
-  <div class="DialogsSet">
+  <div class="DialogContainer">
     <MessageDialog ref="message" />
-    <MessageDialog ref="anchor" />
+    <AnchorDialog ref="anchor" />
   </div>
 </template>
 
 <script lang="ts">
 import { ComputedRef, defineComponent, ref } from 'vue'
-import MessageDialog from '@/components/dialogs/message/MessageDialog.vue'
+import { AnchorDialog } from '@/dialogs/anchor'
+import { MessageDialog } from '@/dialogs/message'
 import { UnwrapNestedRefs } from '@vue/reactivity'
 import { isImplemented } from 'js-common-lib'
 
@@ -17,16 +18,16 @@ import { isImplemented } from 'js-common-lib'
 //
 //==========================================================================
 
-type DialogsSet = DialogsSet.Props & DialogsSet.Features
+type DialogContainer = DialogContainer.Props & DialogContainer.Features
 
-namespace DialogsSet {
+namespace DialogContainer {
   export interface Props {}
 
   export type Features = UnwrapNestedRefs<WrapFeatures>
 
   export interface WrapFeatures {
     readonly message: ComputedRef<MessageDialog>
-    readonly anchor: ComputedRef<MessageDialog>
+    readonly anchor: ComputedRef<AnchorDialog>
   }
 }
 
@@ -39,23 +40,24 @@ const DialogNames: DialogNames[] = ['message', 'anchor']
 //
 //==========================================================================
 
-const DialogsSet = defineComponent({
-  name: 'DialogsSet',
+const DialogContainer = defineComponent({
+  name: 'DialogContainer',
 
   components: {
     MessageDialog,
+    AnchorDialog,
   },
 
-  setup(props: DialogsSet.Props, ctx) {
+  setup(props: DialogContainer.Props, ctx) {
     const message = ref() as ComputedRef<MessageDialog>
-    const anchor = ref() as ComputedRef<MessageDialog>
+    const anchor = ref() as ComputedRef<AnchorDialog>
 
     const result = {
       message,
       anchor,
     }
 
-    return isImplemented<DialogsSet.WrapFeatures, typeof result>(result)
+    return isImplemented<DialogContainer.WrapFeatures, typeof result>(result)
   },
 })
 
@@ -65,6 +67,6 @@ const DialogsSet = defineComponent({
 //
 //==========================================================================
 
-export default DialogsSet
+export default DialogContainer
 export { DialogNames }
 </script>

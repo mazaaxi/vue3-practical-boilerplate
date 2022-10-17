@@ -22,7 +22,7 @@
 </style>
 
 <template>
-  <PromiseDialog ref="dialog" class="MessageDialog" :persistent="params.persistent">
+  <PromiseDialog ref="dialog" class="MessageDialog" :defaultResult="false">
     <q-card class="container">
       <!-- Title -->
       <q-card-section v-if="Boolean(params.title)">
@@ -53,9 +53,11 @@
 </template>
 
 <script lang="ts">
-import { PropType, defineComponent, reactive, ref, watch } from 'vue'
-import { Dialog } from '@/components/dialogs/base'
-import { PromiseDialog } from '@/components/dialogs/promise'
+import { defineComponent, reactive, ref } from 'vue'
+import type { Dialog } from '@/dialogs'
+import { PromiseDialog } from '@/components/dialog'
+import { UnwrapNestedRefs } from '@vue/reactivity'
+import { isImplemented } from 'js-common-lib'
 import merge from 'lodash/merge'
 
 //==========================================================================
@@ -64,17 +66,27 @@ import merge from 'lodash/merge'
 //
 //==========================================================================
 
-interface MessageDialog extends Dialog<MessageDialog.Props | void, boolean>, MessageDialog.Props {}
+type MessageDialog = Dialog<MessageDialogOpenParams | void, boolean> &
+  MessageDialog.Props &
+  MessageDialog.Features
 
 namespace MessageDialog {
-  export interface Props {
-    readonly modelValue?: boolean
-    readonly type?: 'alert' | 'confirm'
-    readonly title?: string
-    readonly message?: string
-    readonly persistent?: boolean
+  export interface Props {}
+
+  export type Features = UnwrapNestedRefs<WrapFeatures>
+
+  export interface WrapFeatures {
+    readonly params: MessageDialogOpenParams
   }
 }
+
+interface MessageDialogOpenParams {
+  readonly type?: MessageDialogType
+  readonly title?: string
+  readonly message?: string
+}
+
+type MessageDialogType = 'alert' | 'confirm'
 
 //==========================================================================
 //
@@ -89,17 +101,7 @@ const MessageDialog = defineComponent({
     PromiseDialog,
   },
 
-  props: {
-    modelValue: { type: Boolean, default: false },
-    type: { type: String as PropType<'alert' | 'confirm'>, default: 'alert' },
-    title: { type: String },
-    message: { type: String },
-    persistent: { type: Boolean, default: false },
-  },
-
-  emits: {
-    'update:modelValue': null,
-  },
+  props: {},
 
   setup(props: MessageDialog.Props, ctx) {
     //----------------------------------------------------------------------
@@ -108,13 +110,12 @@ const MessageDialog = defineComponent({
     //
     //----------------------------------------------------------------------
 
-    const dialog = ref<PromiseDialog<boolean>>()
+    const dialog = ref<PromiseDialog<void, boolean>>()
 
-    const params = reactive<Required<Omit<MessageDialog.Props, 'modelValue'>>>({
-      type: props.type!,
-      title: props.title ?? '',
-      message: props.message ?? '',
-      persistent: props.persistent ?? false,
+    const params = reactive<MessageDialogOpenParams>({
+      type: 'alert',
+      title: undefined,
+      message: undefined,
     })
 
     //----------------------------------------------------------------------
@@ -125,12 +126,11 @@ const MessageDialog = defineComponent({
 
     const open: MessageDialog['open'] = p => {
       if (p) {
-        const { type, title, message, persistent } = p
-        merge(params, { type, title, message, persistent })
+        const { type, title, message } = p
+        merge(params, { type, title, message })
       }
-      return dialog.value!.open({
-        onBeforeClose: () => close(false),
-      })
+
+      return dialog.value!.open()
     }
 
     const close: MessageDialog['close'] = isOK => {
@@ -139,42 +139,18 @@ const MessageDialog = defineComponent({
 
     //----------------------------------------------------------------------
     //
-    //  Events
-    //
-    //----------------------------------------------------------------------
-
-    watch(
-      () => dialog.value?.opened,
-      (newValue, oldValue) => {
-        ctx.emit('update:modelValue', Boolean(newValue))
-      }
-    )
-
-    watch(
-      () => props.modelValue,
-      (newValue, oldValue) => {
-        if (newValue) {
-          dialog.value!.open({
-            onBeforeClose: () => close(false),
-          })
-        } else {
-          close(false)
-        }
-      }
-    )
-
-    //----------------------------------------------------------------------
-    //
     //  Result
     //
     //----------------------------------------------------------------------
 
-    return {
+    const result = {
       dialog,
       params,
       open,
       close,
     }
+
+    return isImplemented<MessageDialog.WrapFeatures, typeof result>(result)
   },
 })
 
