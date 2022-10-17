@@ -169,7 +169,7 @@
 </template>
 
 <script lang="ts">
-import { CartItem, Product, useService } from '@/services'
+import { CartItem, Product, useServices } from '@/services'
 import { computed, defineComponent, onMounted, onUnmounted, reactive, ref, toRefs } from 'vue'
 import { Loading } from 'quasar'
 import { TestUsers } from '@/services/test-data'
@@ -204,7 +204,7 @@ const ShopPage = defineComponent({
     //
     //----------------------------------------------------------------------
 
-    const services = useService()
+    const services = useServices()
     const i18n = useI18n()
     const dialogs = useDialogs()
 

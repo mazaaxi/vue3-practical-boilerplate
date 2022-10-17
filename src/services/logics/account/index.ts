@@ -5,7 +5,7 @@ import { UnwrapNestedRefs } from '@vue/reactivity'
 import { User } from '@/services/base'
 import { UserStore } from '@/services/stores/user'
 import { extensionMethod } from '@/base'
-import { useStore } from '@/services/stores'
+import { useStores } from '@/services/stores'
 
 //==========================================================================
 //
@@ -54,7 +54,7 @@ namespace AccountLogic {
     //
     //----------------------------------------------------------------------
 
-    const stores = useStore()
+    const stores = useStores()
 
     const user = ref<User>(UserStore.createEmptyUser())
 

@@ -116,18 +116,18 @@
 </template>
 
 <script lang="ts">
-import { AbcView } from '@/pages/examples/abc/abc-view-script'
+import { BaseAbcView } from '@/pages/examples/abc/base'
 import { defineComponent } from 'vue'
 
-interface AbcViewSP extends AbcView {}
+interface AbcViewSP extends BaseAbcView {}
 
 const AbcViewSP = defineComponent({
   name: 'AbcViewSP',
 
-  components: { ...AbcView.components },
+  components: { ...BaseAbcView.components },
 
-  setup(props: AbcView.Props, ctx) {
-    const base = AbcView.setup(props, ctx)
+  setup(props: BaseAbcView.Props, ctx) {
+    const base = BaseAbcView.setup(props, ctx)
     return { ...base }
   },
 })

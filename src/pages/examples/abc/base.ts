@@ -13,7 +13,7 @@ import MessageInput from '@/pages/examples/abc/MessageInput.vue'
 import { QInput } from 'quasar'
 import { TestUsers } from '@/services/test-data'
 import { useRouter } from '@/router'
-import { useService } from '@/services'
+import { useServices } from '@/services'
 
 //==========================================================================
 //
@@ -21,7 +21,7 @@ import { useService } from '@/services'
 //
 //==========================================================================
 
-interface AbcView extends AbcView.Props {}
+interface BaseAbcView extends BaseAbcView.Props {}
 
 //==========================================================================
 //
@@ -29,7 +29,7 @@ interface AbcView extends AbcView.Props {}
 //
 //==========================================================================
 
-namespace AbcView {
+namespace BaseAbcView {
   export interface Props {}
 
   export const components = {
@@ -55,7 +55,7 @@ namespace AbcView {
     //
     //----------------------------------------------------------------------
 
-    const services = useService()
+    const services = useServices()
     const router = useRouter()
     const route = router.routes.examples.abc
 
@@ -151,4 +151,4 @@ namespace AbcView {
 //
 //==========================================================================
 
-export { AbcView }
+export { BaseAbcView }

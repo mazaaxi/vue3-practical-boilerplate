@@ -1,5 +1,5 @@
 import { CartItem, Product, generateId } from '@/services'
-import { TestAPIContainer, TestServiceContainer, provideDependency } from '../../../../helpers'
+import { TestAPIs, TestServices, provideDependency } from '../../../../helpers'
 import { CartItemEditResponse } from '@/services/apis'
 import { TestUsers } from '@/services/test-data'
 import dayjs from 'dayjs'
@@ -90,7 +90,7 @@ function sortIdFunc(a: { id: string }, b: { id: string }): number {
 }
 
 function validateOnItemsChange<ITEM extends { id: string }>(
-  services: TestServiceContainer,
+  services: TestServices,
   event: 'onProductsChange' | 'onUserCartItemsChange',
   expected: { newItem: ITEM | undefined; oldItem: ITEM | undefined }[]
 ) {
@@ -142,7 +142,7 @@ describe('ShopLogic', () => {
 
       const { services, apis, stores } = provideDependency()
       // mock settings
-      const getProducts = td.replace<TestAPIContainer, 'getProducts'>(apis, 'getProducts')
+      const getProducts = td.replace<TestAPIs, 'getProducts'>(apis, 'getProducts')
       td.when(getProducts()).thenResolve(expectedStoreProducts)
 
       // event validation settings
@@ -176,7 +176,7 @@ describe('ShopLogic', () => {
       // store settings
       stores.product.add(oldProduct2)
       // mock settings
-      const getProducts = td.replace<TestAPIContainer, 'getProducts'>(apis, 'getProducts')
+      const getProducts = td.replace<TestAPIs, 'getProducts'>(apis, 'getProducts')
       td.when(getProducts()).thenResolve(expectedStoreProducts)
 
       // event validation settings
@@ -209,7 +209,7 @@ describe('ShopLogic', () => {
       // store settings
       stores.product.add(oldProduct2)
       // mock settings
-      const getProducts = td.replace<TestAPIContainer, 'getProducts'>(apis, 'getProducts')
+      const getProducts = td.replace<TestAPIs, 'getProducts'>(apis, 'getProducts')
       td.when(getProducts()).thenResolve(expectedStoreProducts)
 
       // event validation settings
@@ -240,7 +240,7 @@ describe('ShopLogic', () => {
 
       const { services, apis, stores } = provideDependency()
       // mock settings
-      const getCartItems = td.replace<TestAPIContainer, 'getCartItems'>(apis, 'getCartItems')
+      const getCartItems = td.replace<TestAPIs, 'getCartItems'>(apis, 'getCartItems')
       td.when(getCartItems()).thenResolve(expectedStoreCartItems)
       // sign-in user settings
       await services.account.signIn(TaroYamada.id)
@@ -272,7 +272,7 @@ describe('ShopLogic', () => {
       // store settings
       stores.cart.add(oldCartItem2)
       // mock settings
-      const getCartItems = td.replace<TestAPIContainer, 'getCartItems'>(apis, 'getCartItems')
+      const getCartItems = td.replace<TestAPIs, 'getCartItems'>(apis, 'getCartItems')
       td.when(getCartItems()).thenResolve(expectedStoreCartItems)
       // sign-in user settings
       await services.account.signIn(TaroYamada.id)
@@ -303,7 +303,7 @@ describe('ShopLogic', () => {
       // store settings
       stores.cart.add(oldCartItem2)
       // mock settings
-      const getCartItems = td.replace<TestAPIContainer, 'getCartItems'>(apis, 'getCartItems')
+      const getCartItems = td.replace<TestAPIs, 'getCartItems'>(apis, 'getCartItems')
       td.when(getCartItems()).thenResolve(expectedStoreCartItems)
       // sign-in user settings
       await services.account.signIn(TaroYamada.id)
@@ -346,7 +346,7 @@ describe('ShopLogic', () => {
       const expected = new Error()
       const { services, apis, stores } = provideDependency()
       // mock settings
-      const getCartItems = td.replace<TestAPIContainer, 'getCartItems'>(apis, 'getCartItems')
+      const getCartItems = td.replace<TestAPIs, 'getCartItems'>(apis, 'getCartItems')
       td.when(getCartItems()).thenReject(expected)
       // sign-in user settings
       await services.account.signIn(TaroYamada.id)
@@ -400,7 +400,7 @@ describe('ShopLogic', () => {
       // store settings
       stores.product.setAll(Products())
       // mock settings
-      const addCartItems = td.replace<TestAPIContainer, 'addCartItems'>(apis, 'addCartItems')
+      const addCartItems = td.replace<TestAPIs, 'addCartItems'>(apis, 'addCartItems')
       td.when(
         addCartItems([
           {
@@ -472,10 +472,7 @@ describe('ShopLogic', () => {
       stores.product.setAll(Products())
       stores.cart.add(oldCartItem1)
       // mock settings
-      const updateCartItems = td.replace<TestAPIContainer, 'updateCartItems'>(
-        apis,
-        'updateCartItems'
-      )
+      const updateCartItems = td.replace<TestAPIs, 'updateCartItems'>(apis, 'updateCartItems')
       td.when(
         updateCartItems([
           {
@@ -522,7 +519,7 @@ describe('ShopLogic', () => {
       // store settings
       stores.product.setAll(products)
       // mock settings
-      const addCartItems = td.replace<TestAPIContainer, 'addCartItems'>(apis, 'addCartItems')
+      const addCartItems = td.replace<TestAPIs, 'addCartItems'>(apis, 'addCartItems')
       td.when(addCartItems(td.matchers.anything())).thenReject(new Error())
       // sign-in user settings
       await services.account.signIn(TaroYamada.id)
@@ -575,7 +572,7 @@ describe('ShopLogic', () => {
       // store settings
       stores.product.setAll(products)
       // mock settings
-      const addCartItems = td.replace<TestAPIContainer, 'addCartItems'>(apis, 'addCartItems')
+      const addCartItems = td.replace<TestAPIs, 'addCartItems'>(apis, 'addCartItems')
       td.when(addCartItems(td.matchers.anything())).thenReject(expected)
       // sign-in user settings
       await services.account.signIn(TaroYamada.id)
@@ -628,10 +625,7 @@ describe('ShopLogic', () => {
       stores.product.setAll(Products())
       stores.cart.add(oldCartItem1)
       // mock settings
-      const updateCartItems = td.replace<TestAPIContainer, 'updateCartItems'>(
-        apis,
-        'updateCartItems'
-      )
+      const updateCartItems = td.replace<TestAPIs, 'updateCartItems'>(apis, 'updateCartItems')
       td.when(
         updateCartItems([
           {
@@ -695,10 +689,7 @@ describe('ShopLogic', () => {
       stores.product.setAll(Products())
       stores.cart.add(oldCartItem1)
       // mock settings
-      const removeCartItems = td.replace<TestAPIContainer, 'removeCartItems'>(
-        apis,
-        'removeCartItems'
-      )
+      const removeCartItems = td.replace<TestAPIs, 'removeCartItems'>(apis, 'removeCartItems')
       td.when(removeCartItems([oldCartItem1.id])).thenResolve([response])
       // sign-in user settings
       await services.account.signIn(TaroYamada.id)
@@ -767,10 +758,7 @@ describe('ShopLogic', () => {
       stores.product.setAll(Products())
       stores.cart.setAll(cartItems)
       // mock settings
-      const removeCartItems = td.replace<TestAPIContainer, 'removeCartItems'>(
-        apis,
-        'removeCartItems'
-      )
+      const removeCartItems = td.replace<TestAPIs, 'removeCartItems'>(apis, 'removeCartItems')
       td.when(removeCartItems(td.matchers.anything())).thenReject(expected)
       // sign-in user settings
       await services.account.signIn(TaroYamada.id)
@@ -801,7 +789,7 @@ describe('ShopLogic', () => {
       stores.product.setAll(Products())
       stores.cart.setAll([newCartItem1, newCartItem2])
       // mock settings
-      const checkoutCart = td.replace<TestAPIContainer, 'checkoutCart'>(apis, 'checkoutCart')
+      const checkoutCart = td.replace<TestAPIs, 'checkoutCart'>(apis, 'checkoutCart')
       td.when(checkoutCart()).thenResolve(true)
       // sign-in user settings
       await services.account.signIn(TaroYamada.id)
@@ -858,7 +846,7 @@ describe('ShopLogic', () => {
       stores.product.setAll(Products())
       stores.cart.setAll(CartItems())
       // mock settings
-      const checkoutCart = td.replace<TestAPIContainer, 'checkoutCart'>(apis, 'checkoutCart')
+      const checkoutCart = td.replace<TestAPIs, 'checkoutCart'>(apis, 'checkoutCart')
       td.when(checkoutCart()).thenReject(expected)
       // sign-in user settings
       await services.account.signIn(TaroYamada.id)

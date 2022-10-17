@@ -1,8 +1,8 @@
 import { AccountLogic } from '@/services/logics/account'
 import { ShopLogic } from '@/services/logics/shop'
-import { setupAPI } from '@/services/apis'
+import { setupAPIs } from '@/services/apis'
 import { setupHelper } from '@/services/helpers'
-import { setupStore } from '@/services/stores'
+import { setupStores } from '@/services/stores'
 
 //==========================================================================
 //
@@ -10,7 +10,7 @@ import { setupStore } from '@/services/stores'
 //
 //==========================================================================
 
-interface ServiceContainer {
+interface Services {
   readonly account: AccountLogic
   readonly shop: ShopLogic
 }
@@ -21,12 +21,12 @@ interface ServiceContainer {
 //
 //==========================================================================
 
-namespace ServiceContainer {
-  let instance: ServiceContainer
+namespace Services {
+  let instance: Services
 
-  export function setupService(services?: ServiceContainer): ServiceContainer {
-    setupAPI()
-    setupStore()
+  export function setupServices(services?: Services): Services {
+    setupAPIs()
+    setupStores()
     setupHelper()
 
     instance = services ?? {
@@ -36,7 +36,7 @@ namespace ServiceContainer {
     return instance
   }
 
-  export function useService(): ServiceContainer {
+  export function useServices(): Services {
     return instance
   }
 }
@@ -47,6 +47,6 @@ namespace ServiceContainer {
 //
 //==========================================================================
 
-const { setupService, useService } = ServiceContainer
-export { ServiceContainer, setupService, useService }
+const { setupServices, useServices } = Services
+export { Services, setupServices, useServices }
 export * from '@/services/base'

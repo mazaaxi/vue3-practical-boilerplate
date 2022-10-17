@@ -1,4 +1,4 @@
-import { APIContainer } from '@/services/apis'
+import { APIs } from '@/services/apis'
 
 //==========================================================================
 //
@@ -6,11 +6,11 @@ import { APIContainer } from '@/services/apis'
 //
 //==========================================================================
 
-interface TestAPIContainer extends APIContainer {
+interface TestAPIs extends APIs {
   putTestData(testData: any): Promise<void>
 }
 
-type WrapAPIContainer = ReturnType<typeof APIContainer['newInstance']>
+type WrapAPIs = ReturnType<typeof APIs['newInstance']>
 
 //==========================================================================
 //
@@ -18,14 +18,14 @@ type WrapAPIContainer = ReturnType<typeof APIContainer['newInstance']>
 //
 //==========================================================================
 
-namespace TestAPIContainer {
-  export function newInstance(): TestAPIContainer {
-    const api = APIContainer.newInstance()
+namespace TestAPIs {
+  export function newInstance(): TestAPIs {
+    const api = APIs.newInstance()
     return mix(api)
   }
 
-  function mix<T extends WrapAPIContainer>(api: T): TestAPIContainer & T {
-    const putTestData: TestAPIContainer['putTestData'] = async testData => {
+  function mix<T extends WrapAPIs>(api: T): TestAPIs & T {
+    const putTestData: TestAPIs['putTestData'] = async testData => {
       await api.client.put('testData', testData)
     }
 
@@ -42,4 +42,4 @@ namespace TestAPIContainer {
 //
 //==========================================================================
 
-export { TestAPIContainer }
+export { TestAPIs }

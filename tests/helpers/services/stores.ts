@@ -12,8 +12,7 @@ import { reactive } from 'vue'
 //
 //==========================================================================
 
-interface TestStoreContainer
-  extends UnwrapNestedRefs<ReturnType<typeof TestStoreContainer['newInstance']>> {}
+interface TestStores extends UnwrapNestedRefs<ReturnType<typeof TestStores['newInstance']>> {}
 
 //==========================================================================
 //
@@ -21,7 +20,7 @@ interface TestStoreContainer
 //
 //==========================================================================
 
-namespace TestStoreContainer {
+namespace TestStores {
   export function newInstance() {
     return {
       user: UserStore.setupInstance(reactive(UserStore.newWrapInstance())),
@@ -40,7 +39,7 @@ namespace TestStoreContainer {
  * @param stores
  * @param actual
  */
-function toBeCopyUser<T extends DeepReadonly<User>>(stores: TestStoreContainer, actual: T): void {
+function toBeCopyUser<T extends DeepReadonly<User>>(stores: TestStores, actual: T): void {
   const items = Array.isArray(actual) ? (actual as T[]) : [actual as T]
   for (const item of items) {
     const stateItem = stores.user.all.find(stateItem => stateItem.id === item.id)
@@ -58,7 +57,7 @@ function toBeCopyUser<T extends DeepReadonly<User>>(stores: TestStoreContainer, 
  * @param actual
  */
 function toBeCopyProduct<T extends DeepReadonly<Product>>(
-  stores: TestStoreContainer,
+  stores: TestStores,
   actual: T | T[]
 ): void {
   const items = Array.isArray(actual) ? (actual as T[]) : [actual as T]
@@ -78,7 +77,7 @@ function toBeCopyProduct<T extends DeepReadonly<Product>>(
  * @param actual
  */
 function toBeCopyCartItem<T extends DeepReadonly<CartItem>>(
-  stores: TestStoreContainer,
+  stores: TestStores,
   actual: T | T[]
 ): void {
   const items = Array.isArray(actual) ? (actual as T[]) : [actual as T]
@@ -94,4 +93,4 @@ function toBeCopyCartItem<T extends DeepReadonly<CartItem>>(
 //
 //==========================================================================
 
-export { TestStoreContainer, toBeCopyUser, toBeCopyCartItem, toBeCopyProduct }
+export { TestStores, toBeCopyUser, toBeCopyCartItem, toBeCopyProduct }

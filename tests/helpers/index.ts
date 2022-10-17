@@ -1,14 +1,9 @@
-import {
-  TestAPIContainer,
-  TestHelperContainer,
-  TestServiceContainer,
-  TestStoreContainer,
-} from './services'
+import { TestAPIs, TestHelpers, TestServices, TestStores } from './services'
 import { DefineComponent } from 'vue'
-import { setupAPI } from '@/services/apis'
+import { setupAPIs } from '@/services/apis'
 import { setupHelper } from '@/services/helpers'
-import { setupService } from '@/services'
-import { setupStore } from '@/services/stores'
+import { setupServices } from '@/services'
+import { setupStores } from '@/services/stores'
 import { shallowMount } from '@vue/test-utils'
 
 //==========================================================================
@@ -18,10 +13,10 @@ import { shallowMount } from '@vue/test-utils'
 //==========================================================================
 
 interface ProvidedDependency {
-  apis: TestAPIContainer
-  stores: TestStoreContainer
-  helpers: TestHelperContainer
-  services: TestServiceContainer
+  apis: TestAPIs
+  stores: TestStores
+  helpers: TestHelpers
+  services: TestServices
 }
 
 type SetupFunc = (provided: ProvidedDependency) => void | Promise<void>
@@ -69,17 +64,17 @@ function provideDependencyImpl(
   // setupDialogs(td.object())
 
   if (!provided) {
-    const apis = dependency?.apis ?? TestAPIContainer.newInstance()
-    setupAPI(apis)
+    const apis = dependency?.apis ?? TestAPIs.newInstance()
+    setupAPIs(apis)
 
-    const stores = dependency?.stores ?? TestStoreContainer.newInstance()
-    setupStore(stores)
+    const stores = dependency?.stores ?? TestStores.newInstance()
+    setupStores(stores)
 
-    const helpers = dependency?.helpers ?? TestHelperContainer.newInstance()
+    const helpers = dependency?.helpers ?? TestHelpers.newInstance()
     setupHelper(helpers)
 
-    const services = dependency?.services ?? TestServiceContainer.newInstance()
-    setupService(services)
+    const services = dependency?.services ?? TestServices.newInstance()
+    setupServices(services)
 
     provided = { apis, stores, helpers, services }
   }

@@ -1,11 +1,11 @@
 import { CartItem, Product } from '@/services/base'
-import { CartItemAddInput, CartItemUpdateInput, useAPI } from '@/services/apis'
+import { CartItemAddInput, CartItemUpdateInput, useAPIs } from '@/services/apis'
 import { ComputedRef, computed, reactive, watch } from 'vue'
 import { DeepUnreadonly, arrayToDict, isImplemented } from 'js-common-lib'
 import { Unsubscribe, createNanoEvents } from 'nanoevents'
 import { AccountLogic } from '@/services/logics/account'
 import { UnwrapNestedRefs } from '@vue/reactivity'
-import { useStore } from '@/services/stores'
+import { useStores } from '@/services/stores'
 const cloneDeep = require('rfdc')()
 
 //==========================================================================
@@ -51,8 +51,8 @@ namespace ShopLogic {
     //
     //----------------------------------------------------------------------
 
-    const apis = useAPI()
-    const stores = useStore()
+    const apis = useAPIs()
+    const stores = useStores()
     const accountLogic = AccountLogic.useInternalInstance()
 
     const emitter = createNanoEvents<{

@@ -179,8 +179,8 @@ import { showNotification, useScreen } from '@/base'
 import { useI18n, useI18nUtils } from '@/i18n'
 import { TestUsers } from '@/services/test-data'
 import { useRouter } from '@/router'
-import { useService } from '@/services'
 import { useServiceWorker } from '@/service-worker'
+import { useServices } from '@/services'
 
 const AppPage = defineComponent({
   name: 'AppPage',
@@ -196,7 +196,7 @@ const AppPage = defineComponent({
     //
     //----------------------------------------------------------------------
 
-    const services = useService()
+    const services = useServices()
     const serviceWorker = useServiceWorker()
     const screen = useScreen()
 

@@ -5,8 +5,8 @@ import { createApp } from 'vue'
 import quasarUserOptions from '@/quasar-user-options'
 import { setupConfig } from '@/config'
 import { setupRouter } from '@/router'
-import { setupService } from '@/services'
 import { setupServiceWorker } from '@/service-worker'
+import { setupServices } from '@/services'
 
 async function init() {
   setupConfig()
@@ -14,7 +14,7 @@ async function init() {
   await useI18nUtils().loadI18nLocaleMessages()
   const router = setupRouter(i18n)
   setupServiceWorker()
-  setupService()
+  setupServices()
 
   createApp(AppPage)
     .use(Quasar, quasarUserOptions)

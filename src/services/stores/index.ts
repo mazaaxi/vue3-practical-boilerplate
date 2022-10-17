@@ -8,7 +8,7 @@ import { UserStore } from '@/services/stores/user'
 //
 //==========================================================================
 
-interface StoreContainer {
+interface Stores {
   readonly user: UserStore
   readonly product: ProductStore
   readonly cart: CartStore
@@ -20,10 +20,10 @@ interface StoreContainer {
 //
 //==========================================================================
 
-namespace StoreContainer {
-  let instance: StoreContainer
+namespace Stores {
+  let instance: Stores
 
-  export function setupStore(stores?: StoreContainer): StoreContainer {
+  export function setupStores(stores?: Stores): Stores {
     instance = stores ?? {
       user: UserStore.setupInstance(),
       product: ProductStore.setupInstance(),
@@ -32,7 +32,7 @@ namespace StoreContainer {
     return instance
   }
 
-  export function useStore(): StoreContainer {
+  export function useStores(): Stores {
     return instance
   }
 }
@@ -43,5 +43,5 @@ namespace StoreContainer {
 //
 //==========================================================================
 
-const { setupStore, useStore } = StoreContainer
-export { StoreContainer, setupStore, useStore }
+const { setupStores, useStores } = Stores
+export { Stores, setupStores, useStores }

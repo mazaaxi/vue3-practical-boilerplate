@@ -33,17 +33,17 @@ interface User {
 //==========================================================================
 
 //--------------------------------------------------------------------------
-//  APIContainer
+//  APIs
 //--------------------------------------------------------------------------
 
-interface APIContainer {
+interface APIs {
   getAllUsers(): Promise<User[]>
   addUser(user: User): Promise<User>
   setUser(user: RequiredAre<DeepPartial<User>, 'id'>): Promise<User>
   removeUser(id: string): Promise<User>
 }
 
-namespace APIContainer {
+namespace APIs {
   const users: User[] = []
   for (let i = 1; i <= 3; i++) {
     users.push({
@@ -54,24 +54,24 @@ namespace APIContainer {
     })
   }
 
-  let instance: APIContainer
+  let instance: APIs
 
-  export function setupAPI(): APIContainer {
+  export function setupAPIs(): APIs {
     instance = newInstance()
     return instance
   }
 
-  export function useAPI(): APIContainer {
+  export function useAPIs(): APIs {
     return instance
   }
 
   export function newInstance() {
-    const getAllUsers: APIContainer['getAllUsers'] = async () => {
+    const getAllUsers: APIs['getAllUsers'] = async () => {
       await sleep(500)
       return cloneDeep(users)
     }
 
-    const addUser: APIContainer['addUser'] = async user => {
+    const addUser: APIs['addUser'] = async user => {
       await sleep(500)
       if (users.find(item => item.id === user.id)) {
         throw new Error(`A user with the same id '${user.id}' already exists.`)
@@ -80,7 +80,7 @@ namespace APIContainer {
       return cloneDeep(user)
     }
 
-    const setUser: APIContainer['setUser'] = async user => {
+    const setUser: APIs['setUser'] = async user => {
       await sleep(500)
       const target = users.find(item => item.id === user.id)
       if (!target) {
@@ -89,7 +89,7 @@ namespace APIContainer {
       return cloneDeep(Object.assign(target, user))
     }
 
-    const removeUser: APIContainer['removeUser'] = async id => {
+    const removeUser: APIs['removeUser'] = async id => {
       await sleep(500)
       const index = users.findIndex(item => item.id === id)
       if (index < 0) {
@@ -106,11 +106,11 @@ namespace APIContainer {
       removeUser,
     }
 
-    return isImplemented<APIContainer, typeof result>(result)
+    return isImplemented<APIs, typeof result>(result)
   }
 }
 
-const { setupAPI, useAPI } = APIContainer
+const { setupAPIs, useAPIs } = APIs
 
 //==========================================================================
 //
@@ -119,29 +119,29 @@ const { setupAPI, useAPI } = APIContainer
 //==========================================================================
 
 //--------------------------------------------------------------------------
-//  StoreContainer
+//  Stores
 //--------------------------------------------------------------------------
 
-interface StoreContainer {
+interface Stores {
   readonly user: UserStore
 }
 
-namespace StoreContainer {
-  let instance: StoreContainer
+namespace Stores {
+  let instance: Stores
 
-  export function setupStore(): StoreContainer {
+  export function setupStores(): Stores {
     instance = {
       user: UserStore.setupInstance(),
     }
     return instance
   }
 
-  export function useStore(): StoreContainer {
+  export function useStores(): Stores {
     return instance
   }
 }
 
-const { setupStore, useStore } = StoreContainer
+const { setupStores, useStores } = Stores
 
 //--------------------------------------------------------------------------
 //  UserStore
@@ -233,19 +233,19 @@ namespace UserStore {
 //==========================================================================
 
 //--------------------------------------------------------------------------
-//  ServiceContainer
+//  Services
 //--------------------------------------------------------------------------
 
-interface ServiceContainer {
+interface Services {
   readonly admin: AdminLogic
 }
 
-namespace ServiceContainer {
-  let instance: ServiceContainer
+namespace Services {
+  let instance: Services
 
-  export function setupService(): ServiceContainer {
-    setupAPI()
-    setupStore()
+  export function setupServices(): Services {
+    setupAPIs()
+    setupStores()
 
     instance = {
       admin: AdminLogic.setupInstance(),
@@ -253,12 +253,12 @@ namespace ServiceContainer {
     return instance
   }
 
-  export function useService(): ServiceContainer {
+  export function useServices(): Services {
     return instance
   }
 }
 
-const { setupService, useService } = ServiceContainer
+const { setupServices, useServices } = Services
 
 //--------------------------------------------------------------------------
 //  AdminLogic
@@ -285,8 +285,8 @@ namespace AdminLogic {
   }
 
   export function newWrapInstance() {
-    const apis = useAPI()
-    const stores = useStore()
+    const apis = useAPIs()
+    const stores = useStores()
     const emitter = createNanoEvents<{
       usersChange: (newUser?: User, oldUser?: User) => void
     }>()
@@ -355,4 +355,4 @@ namespace AdminLogic {
 //
 //==========================================================================
 
-export { User, setupService, useService }
+export { User, setupServices, useServices }

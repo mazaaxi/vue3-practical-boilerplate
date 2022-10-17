@@ -8,7 +8,7 @@ import { isImplemented } from 'js-common-lib'
 //
 //==========================================================================
 
-interface APIContainer {
+interface APIs {
   getProduct(id: string): Promise<Product | undefined>
   getProducts(ids?: string[]): Promise<Product[]>
   getCartItems(): Promise<CartItem[]>
@@ -42,15 +42,15 @@ interface CartItemEditResponse extends CartItem {
 //
 //==========================================================================
 
-namespace APIContainer {
-  let instance: APIContainer
+namespace APIs {
+  let instance: APIs
 
-  export function setupAPI(apis?: APIContainer): APIContainer {
+  export function setupAPIs(apis?: APIs): APIs {
     instance = apis ?? newInstance()
     return instance
   }
 
-  export function useAPI(): APIContainer {
+  export function useAPIs(): APIs {
     return instance
   }
 
@@ -69,7 +69,7 @@ namespace APIContainer {
     //
     //----------------------------------------------------------------------
 
-    const getProduct: APIContainer['getProduct'] = async id => {
+    const getProduct: APIs['getProduct'] = async id => {
       const response = await client.get<ToRawEntity<Product>[]>('products', {
         params: { ids: [id] },
       })
@@ -77,35 +77,35 @@ namespace APIContainer {
       return toEntities(response.data)[0]
     }
 
-    const getProducts: APIContainer['getProducts'] = async ids => {
+    const getProducts: APIs['getProducts'] = async ids => {
       const response = await client.get<ToRawEntity<Product>[]>('products', {
         params: { ids },
       })
       return toEntities(response.data)
     }
 
-    const getCartItems: APIContainer['getCartItems'] = async () => {
+    const getCartItems: APIs['getCartItems'] = async () => {
       const response = await client.get<ToRawEntity<CartItem>[]>('cartItems', {
         shouldAuth: true,
       })
       return toEntities(response.data)
     }
 
-    const addCartItems: APIContainer['addCartItems'] = async items => {
+    const addCartItems: APIs['addCartItems'] = async items => {
       const response = await client.post<ToRawEntity<CartItemEditResponse>[]>('cartItems', items, {
         shouldAuth: true,
       })
       return toEntities(response.data)
     }
 
-    const updateCartItems: APIContainer['updateCartItems'] = async items => {
+    const updateCartItems: APIs['updateCartItems'] = async items => {
       const response = await client.put<ToRawEntity<CartItemEditResponse>[]>('cartItems', items, {
         shouldAuth: true,
       })
       return toEntities(response.data)
     }
 
-    const removeCartItems: APIContainer['removeCartItems'] = async cartItemIds => {
+    const removeCartItems: APIs['removeCartItems'] = async cartItemIds => {
       const response = await client.delete<ToRawEntity<CartItemEditResponse>[]>('cartItems', {
         shouldAuth: true,
         params: { ids: cartItemIds },
@@ -113,7 +113,7 @@ namespace APIContainer {
       return toEntities(response.data)
     }
 
-    const checkoutCart: APIContainer['checkoutCart'] = async () => {
+    const checkoutCart: APIs['checkoutCart'] = async () => {
       const response = await client.put<boolean>('cartItems/checkout', undefined, {
         shouldAuth: true,
       })
@@ -137,7 +137,7 @@ namespace APIContainer {
       client,
     }
 
-    return isImplemented<APIContainer, typeof instance>(instance)
+    return isImplemented<APIs, typeof instance>(instance)
   }
 }
 
@@ -147,12 +147,5 @@ namespace APIContainer {
 //
 //==========================================================================
 
-const { setupAPI, useAPI } = APIContainer
-export {
-  APIContainer,
-  CartItemAddInput,
-  CartItemEditResponse,
-  CartItemUpdateInput,
-  setupAPI,
-  useAPI,
-}
+const { setupAPIs, useAPIs } = APIs
+export { APIs, CartItemAddInput, CartItemEditResponse, CartItemUpdateInput, setupAPIs, useAPIs }

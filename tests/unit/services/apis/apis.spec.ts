@@ -104,7 +104,7 @@ function setTestIdToken(): void {
 //
 //==========================================================================
 
-describe('APIContainer', () => {
+describe('APIs', () => {
   describe('getProduct', () => {
     it('basic case', async () => {
       const { apis } = provideDependency()

@@ -1,11 +1,10 @@
 import { AccountLogic } from '@/services/logics/account'
 import { ShopLogic } from '@/services/logics/shop'
-import { StoreContainer } from '@/services/stores'
 import { TestUsers } from '@/services/test-data'
 import { UnwrapNestedRefs } from '@vue/reactivity'
 import { User } from '@/services'
 import { reactive } from 'vue'
-import useStore = StoreContainer.useStore
+import { useStores } from '@/services/stores'
 
 //==========================================================================
 //
@@ -13,8 +12,7 @@ import useStore = StoreContainer.useStore
 //
 //==========================================================================
 
-interface TestServiceContainer
-  extends UnwrapNestedRefs<ReturnType<typeof TestServiceContainer['newInstance']>> {}
+interface TestServices extends UnwrapNestedRefs<ReturnType<typeof TestServices['newInstance']>> {}
 
 //==========================================================================
 //
@@ -22,7 +20,7 @@ interface TestServiceContainer
 //
 //==========================================================================
 
-namespace TestServiceContainer {
+namespace TestServices {
   export function newInstance() {
     return {
       account: AccountLogic.setupInstance(reactive(newTestAccountLogic())),
@@ -37,7 +35,7 @@ namespace TestServiceContainer {
 
 function newTestAccountLogic() {
   const base = AccountLogic.newWrapInstance()
-  const stores = useStore()
+  const stores = useStores()
 
   /**
    * Mocking the sign-in process
@@ -65,7 +63,7 @@ function newTestAccountLogic() {
 //
 //==========================================================================
 
-export { TestServiceContainer }
+export { TestServices }
 export * from './apis'
 export * from './stores'
 export * from './helpers'

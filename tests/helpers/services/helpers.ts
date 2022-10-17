@@ -1,5 +1,4 @@
 import { UnwrapNestedRefs } from '@vue/reactivity'
-import { reactive } from 'vue'
 
 //==========================================================================
 //
@@ -7,8 +6,7 @@ import { reactive } from 'vue'
 //
 //==========================================================================
 
-interface TestHelperContainer
-  extends UnwrapNestedRefs<ReturnType<typeof TestHelperContainer['newInstance']>> {}
+interface TestHelpers extends UnwrapNestedRefs<ReturnType<typeof TestHelpers['newInstance']>> {}
 
 //==========================================================================
 //
@@ -16,7 +14,7 @@ interface TestHelperContainer
 //
 //==========================================================================
 
-namespace TestHelperContainer {
+namespace TestHelpers {
   export function newInstance() {
     return {}
   }
@@ -28,4 +26,4 @@ namespace TestHelperContainer {
 //
 //==========================================================================
 
-export { TestHelperContainer }
+export { TestHelpers }
