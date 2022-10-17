@@ -1,16 +1,17 @@
-import { ComputedRef, Ref, computed, reactive, ref, watch } from 'vue'
 import { Key, compile, pathToRegexp } from 'path-to-regexp'
 import {
   LocationQuery,
   LocationQueryValue,
   NavigationGuardNext,
   RouteParams,
+  RouteRecordRaw,
   RouteRecordRedirectOption,
   RouteLocationNormalized as VueRoute,
   Router as VueRouter,
   createRouter,
   createWebHistory,
 } from 'vue-router'
+import { Ref, computed, reactive, ref } from 'vue'
 import { isImplemented, pickProps, removeEndSlash, sleep } from 'js-common-lib'
 import { UnwrapNestedRefs } from '@vue/reactivity'
 import { extensionMethod } from '@/base'
@@ -149,7 +150,7 @@ interface RawRoute<MOVE_PARAMS extends any | void = void> extends WrapRoute<MOVE
   /**
    * Converts itself to the Vue Router configuration format.
    */
-  toConfig(): RouteConfig
+  toConfig(): RouteRecordRaw
   /**
    * Updates itself state based on the specified route. This method is called before the route
    * is moved by routing.
@@ -343,7 +344,7 @@ namespace Route {
     const baseRoutePath = ref(input.routePath ?? '')
     const routePath = ref(input.routePath ?? '')
     const component = ref(input.component)
-    const redirect = ref(input.redirect) as Ref<RouteRecordRedirectOption | undefined>
+    const redirect = ref(input.redirect)
 
     //----------------------------------------------------------------------
     //
@@ -395,7 +396,16 @@ namespace Route {
     })
 
     const toConfig = extensionMethod<RawRoute['toConfig']>(() => {
-      return { path: baseRoutePath.value, component: component.value, redirect: redirect.value }
+      const baseConfig = {
+        path: baseRoutePath.value,
+        component: component.value,
+      }
+
+      if (redirect.value) {
+        return { ...baseConfig, redirect: redirect.value }
+      } else {
+        return baseConfig
+      }
     })
 
     const update = extensionMethod<RawRoute['update']>(async route => {

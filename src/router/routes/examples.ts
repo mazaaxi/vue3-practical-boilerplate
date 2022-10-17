@@ -74,7 +74,7 @@ namespace AbcRoute {
     //----------------------------------------------------------------------
 
     const move = (base.move.body = extensionMethod<WrapAbcRoute['move']>(async message => {
-      Object.assign(message, pickProps(message || {}, ['title', 'body']))
+      Object.assign(message || {}, pickProps(message || {}, ['title', 'body']))
       await base.router.value.push(toMovePath(message))
     }))
 
