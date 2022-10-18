@@ -22,7 +22,7 @@ namespace constants {
 /**
  * Create an extensible method.
  */
-function extensionMethod<T extends Function>(method: T): T & { readonly super: T; body: T } {
+function extensibleMethod<T extends Function>(method: T): T & { readonly super: T; body: T } {
   const _super = method
   let _body = method
 
@@ -136,6 +136,6 @@ function getBaseURL(): string {
 //
 //==========================================================================
 
-export { constants, extensionMethod, isFontAwesome, showNotification, getBaseURL }
+export { constants, extensibleMethod, isFontAwesome, showNotification, getBaseURL }
 export * from '@/base/screen'
 export * from '@/base/style'

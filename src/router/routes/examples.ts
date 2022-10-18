@@ -3,7 +3,7 @@ import { DeepReadonly, isImplemented, pickProps, removeEndSlash } from 'js-commo
 import { Ref, reactive, ref } from 'vue'
 import { LocationQueryValue } from 'vue-router'
 import { UnwrapNestedRefs } from '@vue/reactivity'
-import { extensionMethod } from '@/base'
+import { extensibleMethod } from '@/base'
 import { pathToRegexp } from 'path-to-regexp'
 import url from 'url'
 
@@ -73,12 +73,12 @@ namespace AbcRoute {
     //
     //----------------------------------------------------------------------
 
-    const move = (base.move.body = extensionMethod<WrapAbcRoute['move']>(async message => {
+    const move = (base.move.body = extensibleMethod<WrapAbcRoute['move']>(async message => {
       Object.assign(message || {}, pickProps(message || {}, ['title', 'body']))
       await base.router.value.push(toMovePath(message))
     }))
 
-    const toMovePath = (base.toMovePath.body = extensionMethod<WrapAbcRoute['toMovePath']>(
+    const toMovePath = (base.toMovePath.body = extensibleMethod<WrapAbcRoute['toMovePath']>(
       message => {
         const query: { [key: string]: string } = {}
         if (message?.title) {
@@ -202,12 +202,12 @@ namespace RoutingRoute {
     //
     //----------------------------------------------------------------------
 
-    const move = (base.move.body = extensionMethod<WrapRoutingRoute['move']>(async newPage => {
+    const move = (base.move.body = extensibleMethod<WrapRoutingRoute['move']>(async newPage => {
       // set new move path as route
       await base.router.value.push(toMovePath(newPage))
     }))
 
-    const toMovePath = (base.toMovePath.body = extensionMethod<WrapRoutingRoute['toMovePath']>(
+    const toMovePath = (base.toMovePath.body = extensibleMethod<WrapRoutingRoute['toMovePath']>(
       page => {
         return base.toPath({
           routePath: base.routePath.value,

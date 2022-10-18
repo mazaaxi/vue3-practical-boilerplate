@@ -14,7 +14,7 @@ import {
 import { Ref, computed, reactive, ref } from 'vue'
 import { isImplemented, pickProps, removeEndSlash, sleep } from 'js-common-lib'
 import { UnwrapNestedRefs } from '@vue/reactivity'
-import { extensionMethod } from '@/base'
+import { extensibleMethod } from '@/base'
 
 //==========================================================================
 //
@@ -370,12 +370,12 @@ namespace Route {
     //
     //----------------------------------------------------------------------
 
-    const move = extensionMethod<RawRoute<any>['move']>(async () => {
+    const move = extensibleMethod<RawRoute<any>['move']>(async () => {
       const nextPath = toMovePath(undefined)
       await router.value.push(nextPath)
     })
 
-    const toMovePath = extensionMethod<RawRoute<any>['toMovePath']>(() => {
+    const toMovePath = extensibleMethod<RawRoute<any>['toMovePath']>(() => {
       return toPath({
         routePath: routePath.value,
       })
@@ -387,7 +387,7 @@ namespace Route {
     //
     //----------------------------------------------------------------------
 
-    const init = extensionMethod<RawRoute['init']>(params => {
+    const init = extensibleMethod<RawRoute['init']>(params => {
       _router = params.router as any
       // when assigning a `ref` to a reactive property,
       // that `ref` will also be automatically unwrapped
@@ -395,7 +395,7 @@ namespace Route {
       state.isHistoryMoving = params.isHistoryMoving as any
     })
 
-    const toConfig = extensionMethod<RawRoute['toConfig']>(() => {
+    const toConfig = extensibleMethod<RawRoute['toConfig']>(() => {
       const baseConfig = {
         path: baseRoutePath.value,
         component: component.value,
@@ -408,7 +408,7 @@ namespace Route {
       }
     })
 
-    const update = extensionMethod<RawRoute['update']>(async route => {
+    const update = extensibleMethod<RawRoute['update']>(async route => {
       // set the flag indicating whether a history move has been performed
       // Note: if it is currently in the process of history move, it means
       // "history move has been performed"
@@ -436,7 +436,7 @@ namespace Route {
       params.value = route.params
     })
 
-    const refresh = extensionMethod<RawRoute['refresh']>(async () => {
+    const refresh = extensibleMethod<RawRoute['refresh']>(async () => {
       // if there is no change in the path, do nothing and exit
       const currentPath = removeEndSlash(router.value.currentRoute.value.fullPath)
       const nextPath = toPath({
@@ -451,7 +451,7 @@ namespace Route {
       await router.value.push(nextPath)
     })
 
-    const toPath = extensionMethod<RawRoute['toPath']>(input => {
+    const toPath = extensibleMethod<RawRoute['toPath']>(input => {
       const { routePath, params, query, hash } = input
 
       const keys: Key[] = []
@@ -476,7 +476,7 @@ namespace Route {
       return result
     })
 
-    const clear = extensionMethod<RawRoute['clear']>(() => {
+    const clear = extensibleMethod<RawRoute['clear']>(() => {
       basePath.value = ''
       path.value = ''
       fullPath.value = ''

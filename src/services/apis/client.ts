@@ -1,5 +1,5 @@
 import axios, { AxiosError, AxiosResponse, Method, ResponseType } from 'axios'
-import { extensionMethod } from '@/base'
+import { extensibleMethod } from '@/base'
 import { removeBothEndsSlash } from 'js-common-lib'
 import { useConfig } from '@/config'
 
@@ -60,7 +60,7 @@ namespace APIClient {
     //
     //----------------------------------------------------------------------
 
-    const request = extensionMethod<APIClient['request']>(async config => {
+    const request = extensibleMethod<APIClient['request']>(async config => {
       const appConfig = useConfig()
 
       const axiosConfig = {

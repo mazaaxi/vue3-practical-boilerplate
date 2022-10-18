@@ -4,7 +4,7 @@ import { TestUsers } from '@/services/test-data'
 import { UnwrapNestedRefs } from '@vue/reactivity'
 import { User } from '@/services/base'
 import { UserStore } from '@/services/stores/user'
-import { extensionMethod } from '@/base'
+import { extensibleMethod } from '@/base'
 import { useStores } from '@/services/stores'
 
 //==========================================================================
@@ -66,7 +66,7 @@ namespace AccountLogic {
     //
     //----------------------------------------------------------------------
 
-    const signIn = extensionMethod<WrapAccountLogic['signIn']>(async (email, password) => {
+    const signIn = extensibleMethod<WrapAccountLogic['signIn']>(async (email, password) => {
       const signedInUser = TestUsers.find(user => {
         return user.email === email && user.password === password
       })

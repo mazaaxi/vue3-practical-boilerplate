@@ -16,7 +16,7 @@
 import { Ref, SetupContext, defineComponent, ref } from 'vue'
 import { QDialog } from 'quasar'
 import { UnwrapNestedRefs } from '@vue/reactivity'
-import { extensionMethod } from '@/base'
+import { extensibleMethod } from '@/base'
 import { isImplemented } from 'js-common-lib'
 
 //==========================================================================
@@ -73,7 +73,7 @@ namespace BasePromiseDialog {
     //
     //----------------------------------------------------------------------
 
-    const open = extensionMethod<PromiseDialog<PARAMS, RESULT>['open']>(() => {
+    const open = extensibleMethod<PromiseDialog<PARAMS, RESULT>['open']>(() => {
       closeResult.value = props.defaultResult
 
       return new Promise<RESULT>(resolve => {
@@ -82,7 +82,7 @@ namespace BasePromiseDialog {
       })
     })
 
-    const close = extensionMethod<PromiseDialog<PARAMS, RESULT>['close']>(value => {
+    const close = extensibleMethod<PromiseDialog<PARAMS, RESULT>['close']>(value => {
       closeResult.value = value
       opened.value = false
     })
@@ -93,19 +93,19 @@ namespace BasePromiseDialog {
     //
     //----------------------------------------------------------------------
 
-    const onBeforeShow = extensionMethod(() => {
+    const onBeforeShow = extensibleMethod(() => {
       ctx.emit('before-show')
     })
 
-    const onShow = extensionMethod(() => {
+    const onShow = extensibleMethod(() => {
       ctx.emit('show')
     })
 
-    const onBeforeHide = extensionMethod(() => {
+    const onBeforeHide = extensibleMethod(() => {
       ctx.emit('before-hide')
     })
 
-    const onHide = extensionMethod(() => {
+    const onHide = extensibleMethod(() => {
       closeResolve.value?.(closeResult.value)
       closeResolve.value = undefined
 

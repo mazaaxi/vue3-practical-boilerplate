@@ -1,6 +1,6 @@
 import { Route, RouteInput, WrapRoute } from '@/router/core'
 import { ComputedRef } from 'vue'
-import { extensionMethod } from '@/base'
+import { extensibleMethod } from '@/base'
 import { isImplemented } from 'js-common-lib'
 
 //==========================================================================
@@ -45,7 +45,7 @@ namespace BaseRoute {
     //
     //----------------------------------------------------------------------
 
-    const update = (base.update.body = extensionMethod(async route => {
+    const update = (base.update.body = extensibleMethod(async route => {
       // if the parameter has a language
       if (route.params[PathParamKeys.Locale]) {
         await base.update.super(route)
@@ -57,7 +57,7 @@ namespace BaseRoute {
       }
     }))
 
-    const toPath = (base.toPath.body = extensionMethod(input => {
+    const toPath = (base.toPath.body = extensibleMethod(input => {
       const { routePath, params, query, hash } = input
       // replace the language in `params` with the language selected by the application
       // Note: Except at a start of the application, the order of processing is

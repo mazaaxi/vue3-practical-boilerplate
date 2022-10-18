@@ -17,7 +17,7 @@ import { SetupContext, defineComponent } from 'vue'
 import { BasePromiseDialog } from '@/components/dialog/PromiseDialog.vue'
 import { QDialog } from 'quasar'
 import { UnwrapNestedRefs } from '@vue/reactivity'
-import { extensionMethod } from '@/base'
+import { extensibleMethod } from '@/base'
 import { isImplemented } from 'js-common-lib'
 import { useRouter } from '@/router'
 
@@ -85,26 +85,28 @@ const URLQueryDialog = defineComponent({
      *
      * @param params Specify the parameters of the URL query.
      */
-    base.open.body = extensionMethod<URLQueryDialog<PARAMS, RESULT>['open']>(params => {
-      base.closeResult.value = props.defaultResult as any
+    const open = (base.open.body = extensibleMethod<URLQueryDialog<PARAMS, RESULT>['open']>(
+      params => {
+        base.closeResult.value = props.defaultResult as any
 
-      return new Promise((resolve, reject) => {
-        base.closeResolve.value = resolve
+        return new Promise((resolve, reject) => {
+          base.closeResolve.value = resolve
 
-        // start transition to the dialog specified by the argument
-        router
-          .push({
-            path: router.currentRoute.path,
-            query: Object.assign({}, router.currentRoute.query, {
-              dialogName: props.dialogName,
-              dialogParams: params ? encodeURIComponent(JSON.stringify(params)) : undefined,
-            }),
-          })
-          .then(() => {
-            base.opened.value = true
-          })
-      })
-    })
+          // start transition to the dialog specified by the argument
+          router
+            .push({
+              path: router.currentRoute.path,
+              query: Object.assign({}, router.currentRoute.query, {
+                dialogName: props.dialogName,
+                dialogParams: params ? encodeURIComponent(JSON.stringify(params)) : undefined,
+              }),
+            })
+            .then(() => {
+              base.opened.value = true
+            })
+        })
+      }
+    ))
 
     //----------------------------------------------------------------------
     //
@@ -112,10 +114,10 @@ const URLQueryDialog = defineComponent({
     //
     //----------------------------------------------------------------------
 
-    base.onHide.body = extensionMethod(() => {
+    const onHide = (base.onHide.body = extensibleMethod(() => {
       URLQueryDialogHelper.clearQuery()
       base.onHide.super()
-    })
+    }))
 
     //----------------------------------------------------------------------
     //
@@ -125,6 +127,8 @@ const URLQueryDialog = defineComponent({
 
     const result = {
       ...base,
+      open,
+      onHide,
     }
 
     return isImplemented<URLQueryDialog.WrapFeatures<PARAMS, RESULT>, typeof result>(result)
