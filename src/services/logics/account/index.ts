@@ -18,7 +18,7 @@ interface AccountLogic extends UnwrapNestedRefs<WrapAccountLogic> {}
 interface WrapAccountLogic {
   readonly user: DeepReadonly<Ref<User>>
   readonly isSignedIn: Ref<boolean>
-  signIn(uid: string): Promise<void>
+  signIn(email: string, password: string): Promise<boolean>
   signOut(): Promise<void>
   validateSignedIn(): void
 }
@@ -66,10 +66,12 @@ namespace AccountLogic {
     //
     //----------------------------------------------------------------------
 
-    const signIn = extensionMethod<WrapAccountLogic['signIn']>(async uid => {
-      const signedInUser = TestUsers.find(user => user.id === uid)
+    const signIn = extensionMethod<WrapAccountLogic['signIn']>(async (email, password) => {
+      const signedInUser = TestUsers.find(user => {
+        return user.email === email && user.password === password
+      })
       if (!signedInUser) {
-        throw new Error(`The specified user does not exist: '${uid}'`)
+        return false
       }
 
       const exists = Boolean(stores.user.get(signedInUser.id))
@@ -82,6 +84,8 @@ namespace AccountLogic {
       //  However, the implementation here is pseudo, and a authentication process
       //  should be implemented based on the specifications of an application.
       localStorage.setItem('idToken', JSON.stringify({ uid: user.value.id }))
+
+      return true
     })
 
     const signOut: WrapAccountLogic['signOut'] = async () => {

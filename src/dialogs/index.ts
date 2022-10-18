@@ -80,8 +80,8 @@ namespace Dialogs {
     //----------------------------------------------------------------------
 
     const message = computed(() => getDialogs().message)
-
     const anchor = computed(() => getDialogs().anchor)
+    const signIn = computed(() => getDialogs().signIn)
 
     //----------------------------------------------------------------------
     //
@@ -156,6 +156,7 @@ namespace Dialogs {
     const result = {
       message,
       anchor,
+      signIn,
       buildQuery,
       getQuery,
       clearQuery,

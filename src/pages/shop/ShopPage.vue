@@ -172,7 +172,6 @@
 import { CartItem, Product, useServices } from '@/services'
 import { computed, defineComponent, onMounted, onUnmounted, reactive, ref, toRefs } from 'vue'
 import { Loading } from 'quasar'
-import { TestUsers } from '@/services/test-data'
 import { useDialogs } from '@/dialogs'
 import { useI18n } from '@/i18n'
 
@@ -280,8 +279,7 @@ const ShopPage = defineComponent({
       if (isSignedIn.value) {
         await services.account.signOut()
       } else {
-        const index = Math.floor(Math.random() * 2)
-        await services.account.signIn(TestUsers[index].id)
+        dialogs.signIn.open()
       }
     }
 

@@ -177,7 +177,6 @@ import { DialogContainer, setupDialogs } from '@/dialogs'
 import { computed, defineComponent, ref, watch } from 'vue'
 import { showNotification, useScreen } from '@/base'
 import { useI18n, useI18nUtils } from '@/i18n'
-import { TestUsers } from '@/services/test-data'
 import { useRouter } from '@/router'
 import { useServiceWorker } from '@/service-worker'
 import { useServices } from '@/services'
@@ -284,8 +283,7 @@ const AppPage = defineComponent({
       if (isSignedIn.value) {
         await services.account.signOut()
       } else {
-        const index = Math.floor(Math.random() * 2)
-        await services.account.signIn(TestUsers[index].id)
+        dialogs.signIn.open()
       }
     }
 

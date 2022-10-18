@@ -9,6 +9,8 @@ export default {
     lang: 'Language | Languages',
     title: 'Title | Titles',
     message: 'Message | Messages',
+    email: 'Email',
+    password: 'Password',
   },
   langs: {
     en: 'English',
@@ -56,5 +58,8 @@ export default {
     active: 'ServiceWorker is now active. You can now operate ServiceWorker.',
     offline: 'ServiceWorker is running in offline mode because it cannot connect to the server.',
     error: 'An error occurred during ServiceWorker registration.',
+  },
+  signIn: {
+    signInError: 'The specified user does not exist or the password does not match.',
   },
 }

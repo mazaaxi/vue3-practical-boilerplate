@@ -9,10 +9,16 @@ export default {
     lang: '言語',
     title: 'タイトル',
     message: 'メッセージ',
+    email: 'メール',
+    password: 'パスワード',
   },
   langs: {
     en: 'English',
     ja: '日本語',
+  },
+  error: {
+    required: '{target}は必須です。',
+    invalid: '{target}は不正です。',
   },
   site: {
     updating: 'サイトアップデートをダウンロードしています。',
@@ -56,5 +62,8 @@ export default {
     updated: 'ServiceWorkerが更新されました。',
     offline: 'サーバーへ接続できないため、ServiceWorkerはオフラインモードで実行しています。',
     error: 'ServiceWorkerの登録でエラーが発生しました.',
+  },
+  signIn: {
+    signInError: '指定されたユーザーが存在しないか、パスワードが一致しません。',
   },
 }

@@ -11,7 +11,7 @@ import {
 } from 'vue'
 import MessageInput from '@/pages/examples/abc/MessageInput.vue'
 import { QInput } from 'quasar'
-import { TestUsers } from '@/services/test-data'
+import { useDialogs } from '@/dialogs'
 import { useRouter } from '@/router'
 import { useServices } from '@/services'
 
@@ -58,6 +58,7 @@ namespace BaseAbcView {
     const services = useServices()
     const router = useRouter()
     const route = router.routes.examples.abc
+    const dialogs = useDialogs()
 
     const isSignedIn = computed(() => services.account.isSignedIn)
 
@@ -112,8 +113,7 @@ namespace BaseAbcView {
       if (isSignedIn.value) {
         await services.account.signOut()
       } else {
-        const index = Math.floor(Math.random() * 2)
-        await services.account.signIn(TestUsers[index].id)
+        dialogs.signIn.open()
       }
     }
 
