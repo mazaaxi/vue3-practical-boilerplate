@@ -69,10 +69,9 @@ namespace ServiceWorkerManager {
 
     const config = useConfig()
 
-    // if a execution mode is not `remote`, return an empty instance and exit
-    // NOTE: Return an empty instance of `ServiceWorkerManager`, since ServiceWorker
-    // gets in the way during development (except in `remote` environments).
-    if (config.env.executionMode !== 'remote') return EmptyInstance
+    // If `buildMode` is not `remote`, return the empty instance and exit.
+    // This is because ServiceWorker gets in the way during development.
+    if (config.env.buildMode !== 'remote') return EmptyInstance
 
     //----------------------------------------------------------------------
     //

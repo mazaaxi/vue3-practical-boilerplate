@@ -128,13 +128,14 @@ namespace APIClient {
     //----------------------------------------------------------------------
 
     // TODO
-    //  The return value of this function is [token], which is used in the "Authorization: Bearer [token]" HTTP header.
-    //  This function gets the value of [token] pseudo-optimally, but please consider the implementation,
-    //  including whether you will use this function in your actual application.
+    //  The return value of this function is [token], which is used in the "Authorization: Bearer
+    //  [token]" HTTP header. This function gets the value of [token] pseudo-optimally, but please
+    //  consider the implementation, including whether you will use this function in your actual
+    //  application.
     async function getIdToken(): Promise<string> {
       const idToken = localStorage.getItem('idToken')
       if (!idToken) {
-        throw new Error(`The 'idToken' could not be obtained. You may not have signed-in.`)
+        throw new Error(`The \`idToken\` could not be obtained. You may not have signed-in.`)
       }
       return idToken
     }

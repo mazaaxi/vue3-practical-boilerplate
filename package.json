@@ -10,8 +10,9 @@
     "serve:api": "npm run db:setup && node server",
     "db:setup": "source ./package.scripts.sh && SetupDB",
     "db:revert": "source ./package.scripts.sh && RevertDB",
-    "build": "vue-cli-service build",
-    "build:predeploy": "vue-cli-service build --mode predeploy",
+    "build:prod": "vue-cli-service build --mode prod",
+    "build:dev": "vue-cli-service build --mode dev",
+    "build:preview": "vue-cli-service build --mode preview",
     "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint && stylelint ./src/**/*.{vue,scss}",
     "prepare": "husky install"

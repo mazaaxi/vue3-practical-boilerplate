@@ -96,7 +96,7 @@ module.exports = {
       // add more if necessary
       // ex. { from: 'node_modules/firebase/firebase-*.js' },
     ]
-    if (process.env.NODE_ENV !== 'production') {
+    if (process.env.VUE_APP_BUILD_MODE !== 'remote') {
       copyFiles = [
         ...copyFiles,
         // add more if necessary

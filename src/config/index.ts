@@ -10,23 +10,23 @@ import { reactive } from 'vue'
 //==========================================================================
 
 interface Config {
-  readonly env: EnvConfig
-  readonly api: APIConfig
+  readonly env: {
+    buildMode: BuildMode
+  }
+  readonly api: {
+    protocol: string
+    host: string
+    port: number
+    basePath: string
+    baseURL: string
+  }
 }
 
-interface EnvConfig {
-  executionMode: ExecutionMode
-}
+type EnvConfig = Config['env']
 
-type ExecutionMode = 'remote' | 'local' | 'test'
+type APIConfig = Config['api']
 
-interface APIConfig {
-  protocol: string
-  host: string
-  port: number
-  basePath: string
-  baseURL: string
-}
+type BuildMode = 'remote' | 'local'
 
 interface CreateConfigParams {
   api?: DeepPartial<Omit<APIConfig, 'baseURL'>>
@@ -59,12 +59,7 @@ namespace Config {
 
     const state = reactive({
       env: <EnvConfig>{
-        executionMode:
-          process.env.NODE_ENV === 'production'
-            ? 'remote'
-            : process.env.NODE_ENV === 'test'
-            ? 'test'
-            : 'local',
+        buildMode: process.env.VUE_APP_BUILD_MODE,
       },
 
       api: getAPIConfig({
