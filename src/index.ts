@@ -1,4 +1,5 @@
 import { setupI18n, useI18nUtils } from '@/i18n'
+import { useConstants, useScreen } from '@/base'
 import AppPage from './pages/app'
 import { Quasar } from 'quasar'
 import { createApp } from 'vue'
@@ -15,12 +16,16 @@ async function init() {
   const router = setupRouter(i18n)
   setupServiceWorker()
   setupServices()
+  const constants = useConstants()
+  const screen = useScreen()
 
   createApp(AppPage)
     .use(Quasar, quasarUserOptions)
     .use(i18n)
     .use(router)
     .use(router.routes)
+    .use(constants)
+    .use(screen)
     .mount('#app')
 }
 init()

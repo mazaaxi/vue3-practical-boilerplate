@@ -1,5 +1,6 @@
-import { computed, reactive } from 'vue'
+import { App, computed, reactive } from 'vue'
 import { Screen as _Screen } from 'quasar'
+import { isImplemented } from 'js-common-lib'
 
 //==========================================================================
 //
@@ -19,6 +20,11 @@ interface Screen {
 
   readonly lt: { sm: boolean; md: boolean; lg: boolean; xl: boolean }
   readonly gt: { xs: boolean; sm: boolean; md: boolean; lg: boolean }
+
+  /**
+   * @see Plugin.install of @vue/runtime-core
+   */
+  install(app: App, ...options: any[]): any
 }
 
 //==========================================================================
@@ -30,12 +36,12 @@ interface Screen {
 namespace Screen {
   let instance: Screen
 
-  export function getInstance(): Screen {
+  export function useScreen(): Screen {
     instance = instance ?? newInstance()
     return instance
   }
 
-  export function newInstance(): Screen {
+  function newInstance(): Screen {
     const name = computed<Screen['name']>(() => _Screen.name)
 
     const sizes = computed<Screen['sizes']>(() => {
@@ -71,12 +77,14 @@ namespace Screen {
       }
     })
 
-    return reactive({ name, sizes, xs, sm, md, lg, xl, lt, gt })
-  }
-}
+    const install: Screen['install'] = (app, options) => {
+      app.config.globalProperties.$screen = instance
+    }
 
-function useScreen(): Screen {
-  return Screen.getInstance()
+    const result = reactive({ name, sizes, xs, sm, md, lg, xl, lt, gt, install })
+
+    return isImplemented<Screen, typeof result>(result)
+  }
 }
 
 //==========================================================================
@@ -85,4 +93,5 @@ function useScreen(): Screen {
 //
 //==========================================================================
 
-export { useScreen }
+const { useScreen } = Screen
+export { Screen, useScreen }

@@ -3,18 +3,6 @@ import merge from 'lodash/merge'
 
 //==========================================================================
 //
-//  Interfaces
-//
-//==========================================================================
-
-namespace constants {
-  export namespace style {
-    export const AppHeaderHeight = 50
-  }
-}
-
-//==========================================================================
-//
 //  Implementation
 //
 //==========================================================================
@@ -136,6 +124,7 @@ function getBaseURL(): string {
 //
 //==========================================================================
 
-export { constants, extensibleMethod, isFontAwesome, showNotification, getBaseURL }
+export { extensibleMethod, isFontAwesome, showNotification, getBaseURL }
+export * from '@/base/constants'
 export * from '@/base/screen'
 export * from '@/base/style'
