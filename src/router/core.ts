@@ -12,9 +12,8 @@ import {
   createWebHistory,
 } from 'vue-router'
 import { Ref, computed, reactive, ref } from 'vue'
-import { isImplemented, pickProps, removeEndSlash, sleep } from 'js-common-lib'
+import { extensibleMethod, isImplemented, pickProps, removeEndSlash, sleep } from 'js-common-lib'
 import { UnwrapNestedRefs } from '@vue/reactivity'
-import { extensibleMethod } from '@/base'
 
 //==========================================================================
 //

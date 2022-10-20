@@ -4,6 +4,7 @@ import { TestUsers } from '@/services/test-data'
 import { UnwrapNestedRefs } from '@vue/reactivity'
 import { User } from '@/services'
 import { reactive } from 'vue'
+import { useI18n } from '@/i18n'
 import { useStores } from '@/services/stores'
 
 //==========================================================================
@@ -36,20 +37,25 @@ namespace TestServices {
 function newTestAccountLogic() {
   const base = AccountLogic.newWrapInstance()
   const stores = useStores()
+  const i18n = useI18n()
 
   /**
    * Mocking the sign-in process
    */
-  base.signIn.body = async uid => {
-    const user = TestUsers.find(u => u.id == uid)
+  base.signIn.body = async (email, password) => {
+    const user = TestUsers.find(user => {
+      return user.email === email && user.password === password
+    })
     if (!user) {
-      throw new Error(`The specified user does not exist: '${uid}'`)
+      throw new Error(i18n.t('signIn.signInError', { email: email }))
     }
 
     const exists = Boolean(stores.user.get(user.id))
     exists ? stores.user.set(user) : stores.user.add(user)
     User.populate(base.user.value, user)
     base.isSignedIn.value = true
+
+    return true
   }
 
   return {

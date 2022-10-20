@@ -1,4 +1,4 @@
-import { CartItem, Product, generateId } from '@/services'
+import { CartItem, ItemsChangeType, Product, generateId } from '@/services'
 import { TestAPIs, TestServices, provideDependency } from '../../../../helpers'
 import { CartItemEditResponse } from '@/services/apis'
 import { TestUsers } from '@/services/test-data'
@@ -92,12 +92,12 @@ function sortIdFunc(a: { id: string }, b: { id: string }): number {
 function validateOnItemsChange<ITEM extends { id: string }>(
   services: TestServices,
   event: 'onProductsChange' | 'onUserCartItemsChange',
-  expected: { newItem: ITEM | undefined; oldItem: ITEM | undefined }[]
+  expected: { changeType: ItemsChangeType; newItem: ITEM | undefined; oldItem: ITEM | undefined }[]
 ) {
   const expectedItems = [...expected]
 
   return new Promise<void>(resolve => {
-    services.shop[event]((newItem, oldItem) => {
+    services.shop[event]((changeType, newItem, oldItem) => {
       const expectedItem = expectedItems.splice(0, 1)[0]
       expect(expectedItem.newItem).toEqual(newItem)
       expect(expectedItem.oldItem).toEqual(oldItem)
@@ -125,7 +125,7 @@ describe('ShopLogic', () => {
     // store settings
     stores.cart.setAll(CartItems())
     // sign-in user settings
-    await services.account.signIn(TaroYamada.id)
+    await services.account.signIn(TaroYamada.email, TaroYamada.password)
 
     const actual = services.shop.cartTotalPrice
 
@@ -138,27 +138,30 @@ describe('ShopLogic', () => {
       const newProduct2: Product = Products()[1]
       const newProduct3: Product = Products()[2]
       const newProduct4: Product = Products()[3]
-      const expectedStoreProducts = [newProduct1, newProduct2, newProduct3, newProduct4]
+      const expectedProducts = [newProduct1, newProduct2, newProduct3, newProduct4]
 
       const { services, apis, stores } = provideDependency()
       // mock settings
       const getProducts = td.replace<TestAPIs, 'getProducts'>(apis, 'getProducts')
-      td.when(getProducts()).thenResolve(expectedStoreProducts)
+      td.when(getProducts()).thenResolve(expectedProducts)
 
       // event validation settings
       const event = validateOnItemsChange(services, 'onProductsChange', [
-        { newItem: newProduct1, oldItem: undefined },
-        { newItem: newProduct2, oldItem: undefined },
-        { newItem: newProduct3, oldItem: undefined },
-        { newItem: newProduct4, oldItem: undefined },
+        { changeType: 'Add', newItem: newProduct1, oldItem: undefined },
+        { changeType: 'Add', newItem: newProduct2, oldItem: undefined },
+        { changeType: 'Add', newItem: newProduct3, oldItem: undefined },
+        { changeType: 'Add', newItem: newProduct4, oldItem: undefined },
       ])
 
       // run the test target
-      await services.shop.fetchProducts()
+      const actual = await services.shop.fetchProducts()
+
+      // result validation
+      expect(actual).toEqual(expectedProducts)
 
       // store validation
-      const actual = [...stores.product.all].sort(sortIdFunc)
-      expect(actual).toEqual(Products().sort(sortIdFunc))
+      const storeProducts = [...stores.product.all].sort(sortIdFunc)
+      expect(storeProducts).toEqual(Products().sort(sortIdFunc))
 
       // wait for the event validation to end
       await event
@@ -170,29 +173,32 @@ describe('ShopLogic', () => {
       const newProduct2: Product = { ...oldProduct2, title: 'FIRE HD 8 TABLET' }
       const newProduct3: Product = Products()[2]
       const newProduct4: Product = Products()[3]
-      const expectedStoreProducts = [newProduct1, newProduct2, newProduct3, newProduct4]
+      const expectedProducts = [newProduct1, newProduct2, newProduct3, newProduct4]
 
       const { services, apis, stores } = provideDependency()
       // store settings
       stores.product.add(oldProduct2)
       // mock settings
       const getProducts = td.replace<TestAPIs, 'getProducts'>(apis, 'getProducts')
-      td.when(getProducts()).thenResolve(expectedStoreProducts)
+      td.when(getProducts()).thenResolve(expectedProducts)
 
       // event validation settings
       const event = validateOnItemsChange(services, 'onProductsChange', [
-        { newItem: newProduct1, oldItem: undefined },
-        { newItem: newProduct2, oldItem: oldProduct2 },
-        { newItem: newProduct3, oldItem: undefined },
-        { newItem: newProduct4, oldItem: undefined },
+        { changeType: 'Add', newItem: newProduct1, oldItem: undefined },
+        { changeType: 'Update', newItem: newProduct2, oldItem: oldProduct2 },
+        { changeType: 'Add', newItem: newProduct3, oldItem: undefined },
+        { changeType: 'Add', newItem: newProduct4, oldItem: undefined },
       ])
 
       // run the test target
-      await services.shop.fetchProducts()
+      const actual = await services.shop.fetchProducts()
+
+      // result validation
+      expect(actual).toEqual(expectedProducts)
 
       // store validation
-      const actual = [...stores.product.all].sort(sortIdFunc)
-      expect(actual).toEqual(expectedStoreProducts.sort(sortIdFunc))
+      const storeProducts = [...stores.product.all].sort(sortIdFunc)
+      expect(storeProducts).toEqual(expectedProducts.sort(sortIdFunc))
 
       // wait for the event validation to end
       await event
@@ -203,29 +209,32 @@ describe('ShopLogic', () => {
       const newProduct1: Product = Products()[0]
       const newProduct3: Product = Products()[2]
       const newProduct4: Product = Products()[3]
-      const expectedStoreProducts = [newProduct1, newProduct3, newProduct4]
+      const expectedProducts = [newProduct1, newProduct3, newProduct4]
 
       const { services, apis, stores } = provideDependency()
       // store settings
       stores.product.add(oldProduct2)
       // mock settings
       const getProducts = td.replace<TestAPIs, 'getProducts'>(apis, 'getProducts')
-      td.when(getProducts()).thenResolve(expectedStoreProducts)
+      td.when(getProducts()).thenResolve(expectedProducts)
 
       // event validation settings
       const event = validateOnItemsChange(services, 'onProductsChange', [
-        { newItem: newProduct1, oldItem: undefined },
-        { newItem: newProduct3, oldItem: undefined },
-        { newItem: newProduct4, oldItem: undefined },
-        { newItem: undefined, oldItem: oldProduct2 },
+        { changeType: 'Add', newItem: newProduct1, oldItem: undefined },
+        { changeType: 'Add', newItem: newProduct3, oldItem: undefined },
+        { changeType: 'Add', newItem: newProduct4, oldItem: undefined },
+        { changeType: 'Remove', newItem: undefined, oldItem: oldProduct2 },
       ])
 
       // run the test target
-      await services.shop.fetchProducts()
+      const actual = await services.shop.fetchProducts()
+
+      // result validation
+      expect(actual).toEqual(expectedProducts)
 
       // store validation
-      const actual = [...stores.product.all].sort(sortIdFunc)
-      expect(actual).toEqual(expectedStoreProducts.sort(sortIdFunc))
+      const storeProducts = [...stores.product.all].sort(sortIdFunc)
+      expect(storeProducts).toEqual(expectedProducts.sort(sortIdFunc))
 
       // wait for the event validation to end
       await event
@@ -236,27 +245,30 @@ describe('ShopLogic', () => {
     it('if cart items has not yet been loaded', async () => {
       const newCartItem1: CartItem = CartItems()[0]
       const newCartItem2: CartItem = CartItems()[1]
-      const expectedStoreCartItems = [newCartItem1, newCartItem2]
+      const expectedCartItems = [newCartItem1, newCartItem2]
 
       const { services, apis, stores } = provideDependency()
       // mock settings
       const getCartItems = td.replace<TestAPIs, 'getCartItems'>(apis, 'getCartItems')
-      td.when(getCartItems()).thenResolve(expectedStoreCartItems)
+      td.when(getCartItems()).thenResolve(expectedCartItems)
       // sign-in user settings
-      await services.account.signIn(TaroYamada.id)
+      await services.account.signIn(TaroYamada.email, TaroYamada.password)
 
       // event validation settings
       const event = validateOnItemsChange(services, 'onUserCartItemsChange', [
-        { newItem: newCartItem1, oldItem: undefined },
-        { newItem: newCartItem2, oldItem: undefined },
+        { changeType: 'Add', newItem: newCartItem1, oldItem: undefined },
+        { changeType: 'Add', newItem: newCartItem2, oldItem: undefined },
       ])
 
       // run the test target
-      await services.shop.fetchUserCartItems()
+      const actual = await services.shop.fetchUserCartItems()
+
+      // result validation
+      expect(actual).toEqual(expectedCartItems)
 
       // store validation
-      const actual = [...stores.cart.all].sort(sortIdFunc)
-      expect(actual).toEqual(expectedStoreCartItems.sort(sortIdFunc))
+      const storeCartItems = [...stores.cart.all].sort(sortIdFunc)
+      expect(storeCartItems).toEqual(expectedCartItems.sort(sortIdFunc))
 
       // wait for the event validation to end
       await event
@@ -266,29 +278,32 @@ describe('ShopLogic', () => {
       const oldCartItem2: CartItem = CartItems()[1]
       const newCartItem1: CartItem = CartItems()[0]
       const newCartItem2: CartItem = { ...oldCartItem2, price: 90, title: 'FIRE HD 8 TABLET' }
-      const expectedStoreCartItems = [newCartItem1, newCartItem2]
+      const expectedCartItems = [newCartItem1, newCartItem2]
 
       const { services, apis, stores } = provideDependency()
       // store settings
       stores.cart.add(oldCartItem2)
       // mock settings
       const getCartItems = td.replace<TestAPIs, 'getCartItems'>(apis, 'getCartItems')
-      td.when(getCartItems()).thenResolve(expectedStoreCartItems)
+      td.when(getCartItems()).thenResolve(expectedCartItems)
       // sign-in user settings
-      await services.account.signIn(TaroYamada.id)
+      await services.account.signIn(TaroYamada.email, TaroYamada.password)
 
       // event validation settings
       const event = validateOnItemsChange(services, 'onUserCartItemsChange', [
-        { newItem: newCartItem1, oldItem: undefined },
-        { newItem: newCartItem2, oldItem: oldCartItem2 },
+        { changeType: 'Add', newItem: newCartItem1, oldItem: undefined },
+        { changeType: 'Update', newItem: newCartItem2, oldItem: oldCartItem2 },
       ])
 
       // run the test target
-      await services.shop.fetchUserCartItems()
+      const actual = await services.shop.fetchUserCartItems()
+
+      // result validation
+      expect(actual).toEqual(expectedCartItems)
 
       // store validation
-      const actual = [...stores.cart.all].sort(sortIdFunc)
-      expect(actual).toEqual(expectedStoreCartItems.sort(sortIdFunc))
+      const storeCartItems = [...stores.cart.all].sort(sortIdFunc)
+      expect(storeCartItems).toEqual(expectedCartItems.sort(sortIdFunc))
 
       // wait for the event validation to end
       await event
@@ -297,29 +312,32 @@ describe('ShopLogic', () => {
     it('if a non-existent cart item has been loaded', async () => {
       const oldCartItem2: CartItem = CartItems()[1] // the cart item that exist locally, but not on the server
       const newCartItem1: CartItem = CartItems()[0]
-      const expectedStoreCartItems = [newCartItem1]
+      const expectedCartItems = [newCartItem1]
 
       const { services, apis, stores } = provideDependency()
       // store settings
       stores.cart.add(oldCartItem2)
       // mock settings
       const getCartItems = td.replace<TestAPIs, 'getCartItems'>(apis, 'getCartItems')
-      td.when(getCartItems()).thenResolve(expectedStoreCartItems)
+      td.when(getCartItems()).thenResolve(expectedCartItems)
       // sign-in user settings
-      await services.account.signIn(TaroYamada.id)
+      await services.account.signIn(TaroYamada.email, TaroYamada.password)
 
       // event validation settings
       const event = validateOnItemsChange(services, 'onUserCartItemsChange', [
-        { newItem: newCartItem1, oldItem: undefined },
-        { newItem: undefined, oldItem: oldCartItem2 },
+        { changeType: 'Add', newItem: newCartItem1, oldItem: undefined },
+        { changeType: 'Remove', newItem: undefined, oldItem: oldCartItem2 },
       ])
 
       // run the test target
-      await services.shop.fetchUserCartItems()
+      const actual = await services.shop.fetchUserCartItems()
+
+      // result validation
+      expect(actual).toEqual(expectedCartItems)
 
       // store validation
-      const actual = [...stores.cart.all].sort(sortIdFunc)
-      expect(actual).toEqual(expectedStoreCartItems.sort(sortIdFunc))
+      const storeCartItems = [...stores.cart.all].sort(sortIdFunc)
+      expect(storeCartItems).toEqual(expectedCartItems.sort(sortIdFunc))
 
       // wait for the event validation to end
       await event
@@ -349,7 +367,7 @@ describe('ShopLogic', () => {
       const getCartItems = td.replace<TestAPIs, 'getCartItems'>(apis, 'getCartItems')
       td.when(getCartItems()).thenReject(expected)
       // sign-in user settings
-      await services.account.signIn(TaroYamada.id)
+      await services.account.signIn(TaroYamada.email, TaroYamada.password)
 
       let actual!: Error
       try {
@@ -413,18 +431,18 @@ describe('ShopLogic', () => {
         ])
       ).thenResolve([response])
       // sign-in user settings
-      await services.account.signIn(TaroYamada.id)
+      await services.account.signIn(TaroYamada.email, TaroYamada.password)
 
       // event validation settings
       const events: Promise<void>[] = []
       events.push(
         validateOnItemsChange(services, 'onProductsChange', [
-          { newItem: newProduct3, oldItem: oldProduct3 },
+          { changeType: 'Update', newItem: newProduct3, oldItem: oldProduct3 },
         ])
       )
       events.push(
         validateOnItemsChange(services, 'onUserCartItemsChange', [
-          { newItem: newCartItem3, oldItem: undefined },
+          { changeType: 'Add', newItem: newCartItem3, oldItem: undefined },
         ])
       )
 
@@ -483,18 +501,18 @@ describe('ShopLogic', () => {
         ])
       ).thenResolve([response])
       // sign-in user settings
-      await services.account.signIn(TaroYamada.id)
+      await services.account.signIn(TaroYamada.email, TaroYamada.password)
 
       // event validation settings
       const events: Promise<void>[] = []
       events.push(
         validateOnItemsChange(services, 'onProductsChange', [
-          { newItem: newProduct1, oldItem: oldProduct1 },
+          { changeType: 'Update', newItem: newProduct1, oldItem: oldProduct1 },
         ])
       )
       events.push(
         validateOnItemsChange(services, 'onUserCartItemsChange', [
-          { newItem: newCartItem1, oldItem: oldCartItem1 },
+          { changeType: 'Update', newItem: newCartItem1, oldItem: oldCartItem1 },
         ])
       )
 
@@ -522,7 +540,7 @@ describe('ShopLogic', () => {
       const addCartItems = td.replace<TestAPIs, 'addCartItems'>(apis, 'addCartItems')
       td.when(addCartItems(td.matchers.anything())).thenReject(new Error())
       // sign-in user settings
-      await services.account.signIn(TaroYamada.id)
+      await services.account.signIn(TaroYamada.email, TaroYamada.password)
 
       let actual!: Error
       try {
@@ -575,7 +593,7 @@ describe('ShopLogic', () => {
       const addCartItems = td.replace<TestAPIs, 'addCartItems'>(apis, 'addCartItems')
       td.when(addCartItems(td.matchers.anything())).thenReject(expected)
       // sign-in user settings
-      await services.account.signIn(TaroYamada.id)
+      await services.account.signIn(TaroYamada.email, TaroYamada.password)
 
       let actual!: Error
       try {
@@ -636,18 +654,18 @@ describe('ShopLogic', () => {
         ])
       ).thenResolve([response])
       // sign-in user settings
-      await services.account.signIn(TaroYamada.id)
+      await services.account.signIn(TaroYamada.email, TaroYamada.password)
 
       // event validation settings
       const events: Promise<void>[] = []
       events.push(
         validateOnItemsChange(services, 'onProductsChange', [
-          { newItem: newProduct1, oldItem: oldProduct1 },
+          { changeType: 'Update', newItem: newProduct1, oldItem: oldProduct1 },
         ])
       )
       events.push(
         validateOnItemsChange(services, 'onUserCartItemsChange', [
-          { newItem: newCartItem1, oldItem: oldCartItem1 },
+          { changeType: 'Update', newItem: newCartItem1, oldItem: oldCartItem1 },
         ])
       )
 
@@ -692,18 +710,18 @@ describe('ShopLogic', () => {
       const removeCartItems = td.replace<TestAPIs, 'removeCartItems'>(apis, 'removeCartItems')
       td.when(removeCartItems([oldCartItem1.id])).thenResolve([response])
       // sign-in user settings
-      await services.account.signIn(TaroYamada.id)
+      await services.account.signIn(TaroYamada.email, TaroYamada.password)
 
       // event validation settings
       const events: Promise<void>[] = []
       events.push(
         validateOnItemsChange(services, 'onProductsChange', [
-          { newItem: newProduct1, oldItem: oldProduct1 },
+          { changeType: 'Update', newItem: newProduct1, oldItem: oldProduct1 },
         ])
       )
       events.push(
         validateOnItemsChange(services, 'onUserCartItemsChange', [
-          { newItem: undefined, oldItem: oldCartItem1 },
+          { changeType: 'Remove', newItem: undefined, oldItem: oldCartItem1 },
         ])
       )
 
@@ -761,7 +779,7 @@ describe('ShopLogic', () => {
       const removeCartItems = td.replace<TestAPIs, 'removeCartItems'>(apis, 'removeCartItems')
       td.when(removeCartItems(td.matchers.anything())).thenReject(expected)
       // sign-in user settings
-      await services.account.signIn(TaroYamada.id)
+      await services.account.signIn(TaroYamada.email, TaroYamada.password)
 
       let actual!: Error
       try {
@@ -792,12 +810,12 @@ describe('ShopLogic', () => {
       const checkoutCart = td.replace<TestAPIs, 'checkoutCart'>(apis, 'checkoutCart')
       td.when(checkoutCart()).thenResolve(true)
       // sign-in user settings
-      await services.account.signIn(TaroYamada.id)
+      await services.account.signIn(TaroYamada.email, TaroYamada.password)
 
       // event validation settings
       const event = validateOnItemsChange(services, 'onUserCartItemsChange', [
-        { newItem: undefined, oldItem: newCartItem1 },
-        { newItem: undefined, oldItem: newCartItem2 },
+        { changeType: 'Remove', newItem: undefined, oldItem: newCartItem1 },
+        { changeType: 'Remove', newItem: undefined, oldItem: newCartItem2 },
       ])
 
       // run the test target
@@ -849,7 +867,7 @@ describe('ShopLogic', () => {
       const checkoutCart = td.replace<TestAPIs, 'checkoutCart'>(apis, 'checkoutCart')
       td.when(checkoutCart()).thenReject(expected)
       // sign-in user settings
-      await services.account.signIn(TaroYamada.id)
+      await services.account.signIn(TaroYamada.email, TaroYamada.password)
 
       let actual!: Error
       try {

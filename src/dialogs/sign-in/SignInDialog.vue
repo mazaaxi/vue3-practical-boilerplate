@@ -182,7 +182,7 @@ const SignInDialog = defineComponent({
       if (signInResult) {
         close(true)
       } else {
-        errorMessage.value = i18n.t('signIn.signInError')
+        errorMessage.value = i18n.t('signIn.signInError', { email: email.value })
       }
     }
 

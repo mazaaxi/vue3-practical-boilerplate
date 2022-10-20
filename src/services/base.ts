@@ -71,6 +71,8 @@ type ToDeepRawDate<T> = {
     : ToDeepRawDate<T[K]>
 }
 
+type ItemsChangeType = 'Add' | 'Update' | 'Remove'
+
 interface User extends TimestampEntity {
   email: string
   first: string
@@ -293,6 +295,7 @@ namespace CartItem {
 
 export {
   CartItem,
+  ItemsChangeType,
   Entity,
   EntityTimestamp,
   Product,

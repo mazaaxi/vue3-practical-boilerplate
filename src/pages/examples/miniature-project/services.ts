@@ -2,15 +2,14 @@ import { ComputedRef, Ref, computed, reactive, ref } from 'vue'
 import {
   DeepPartial,
   DeepReadonly,
-  DeepUnreadonly,
   RequiredAre,
   isImplemented,
   pickProps,
   sleep,
 } from 'js-common-lib'
+import { ItemsChangeType, generateId } from '@/services'
 import { Unsubscribe, createNanoEvents } from 'nanoevents'
 import { UnwrapNestedRefs } from '@vue/reactivity'
-import { generateId } from '@/services'
 const cloneDeep = require('rfdc')()
 
 //==========================================================================
@@ -273,7 +272,9 @@ interface WrapAdminLogic {
   setUser(user: RequiredAre<DeepPartial<User>, 'id'>): Promise<User>
   removeUser(id: string): Promise<User>
   getAllUsers(): User[]
-  onUsersChange(cb: (newUser?: User, oldUser?: User) => void): Unsubscribe
+  onUsersChange(
+    cb: (changeType: ItemsChangeType, newUser?: User, oldUser?: User) => void
+  ): Unsubscribe
 }
 
 namespace AdminLogic {
@@ -288,7 +289,7 @@ namespace AdminLogic {
     const apis = useAPIs()
     const stores = useStores()
     const emitter = createNanoEvents<{
-      usersChange: (newUser?: User, oldUser?: User) => void
+      usersChange: (changeType: ItemsChangeType, newUser?: User, oldUser?: User) => void
     }>()
 
     const fetchUsers: WrapAdminLogic['fetchUsers'] = async () => {
@@ -297,10 +298,10 @@ namespace AdminLogic {
         const exists = stores.user.get(responseUser.id)
         if (exists) {
           const updated = stores.user.set(responseUser)
-          emitter.emit('usersChange', updated, exists)
+          emitter.emit('usersChange', 'Update', updated, exists)
         } else {
           const added = stores.user.add(responseUser)
-          emitter.emit('usersChange', added, undefined)
+          emitter.emit('usersChange', 'Add', added, undefined)
         }
       })
     }
@@ -308,7 +309,7 @@ namespace AdminLogic {
     const addUser: WrapAdminLogic['addUser'] = async user => {
       const response = await apis.addUser(user)
       const added = stores.user.add(response)
-      emitter.emit('usersChange', added, undefined)
+      emitter.emit('usersChange', 'Add', added, undefined)
       return added
     }
 
@@ -316,19 +317,19 @@ namespace AdminLogic {
       const oldUser = stores.user.get(user.id)
       const response = await apis.setUser(user)
       const updated = stores.user.set(response)
-      emitter.emit('usersChange', updated, oldUser)
+      emitter.emit('usersChange', 'Update', updated, oldUser)
       return updated
     }
 
     const removeUser: WrapAdminLogic['removeUser'] = async id => {
       const response = await apis.removeUser(id)
       const removed = stores.user.remove(response.id)
-      emitter.emit('usersChange', undefined, removed)
+      emitter.emit('usersChange', 'Remove', undefined, removed)
       return removed
     }
 
     const getAllUsers: WrapAdminLogic['getAllUsers'] = () => {
-      return cloneDeep(stores.user.all) as DeepUnreadonly<User[]>
+      return cloneDeep(stores.user.all)
     }
 
     const onUsersChange: WrapAdminLogic['onUsersChange'] = cb => {

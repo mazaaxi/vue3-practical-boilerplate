@@ -118,8 +118,8 @@
         <div class="flex-1"></div>
       </div>
       <hr style="width: 100%" />
-      <template v-if="cartIsEmpty">
-        <div class="empty-cart">{{ $t('shop.cartIsEmpty') }}</div>
+      <template v-if="isCartEmpty">
+        <div class="empty-cart">{{ $t('shop.isCartEmpty') }}</div>
       </template>
       <template v-else>
         <div
@@ -158,7 +158,7 @@
         </div>
         <div class="flex-1"></div>
         <q-btn
-          :disable="cartIsEmpty"
+          :disable="isCartEmpty"
           :label="$t('shop.checkout')"
           color="primary"
           @click="checkoutButtonOnClick"
@@ -172,6 +172,7 @@
 import { CartItem, Product, useServices } from '@/services'
 import { computed, defineComponent, onMounted, onUnmounted, reactive, ref, toRefs } from 'vue'
 import { Loading } from 'quasar'
+import { assertNonNullable } from 'js-common-lib'
 import { useDialogs } from '@/dialogs'
 import { useI18n } from '@/i18n'
 
@@ -226,7 +227,7 @@ const ShopPage = defineComponent({
 
     const cartTotalPrice = computed(() => services.shop.cartTotalPrice * exchangeRate.value)
 
-    const cartIsEmpty = computed(() => cartItems.value.length === 0)
+    const isCartEmpty = computed(() => cartItems.value.length === 0)
 
     //----------------------------------------------------------------------
     //
@@ -234,39 +235,47 @@ const ShopPage = defineComponent({
     //
     //----------------------------------------------------------------------
 
-    const offProductsChange = services.shop.onProductsChange((newProduct, oldProduct) => {
-      const toPageProduct = (product: Product) => ({
-        ...product,
-        outOfStock: product.stock === 0,
-      })
+    const offProductsChange = services.shop.onProductsChange(
+      (changeType, newProduct, oldProduct) => {
+        const toPageProduct = (product: Product) => ({
+          ...product,
+          outOfStock: product.stock === 0,
+        })
 
-      if (newProduct) {
-        const targetProduct = products.value.find(product => product.id === newProduct.id)
-        if (!targetProduct) {
-          products.value.push(toPageProduct(newProduct))
+        if (changeType === 'Add' || changeType === 'Update') {
+          assertNonNullable(newProduct)
+          const targetProduct = products.value.find(product => product.id === newProduct.id)
+          if (!targetProduct) {
+            products.value.push(toPageProduct(newProduct))
+          } else {
+            Object.assign(targetProduct, toPageProduct(newProduct))
+          }
         } else {
-          Object.assign(targetProduct, toPageProduct(newProduct))
+          assertNonNullable(oldProduct)
+          const targetProductIndex = products.value.findIndex(
+            product => product.id === oldProduct.id
+          )
+          targetProductIndex >= 0 && products.value.splice(targetProductIndex, 1)
         }
-      } else if (oldProduct) {
-        const targetProductIndex = products.value.findIndex(product => product.id === oldProduct.id)
-        targetProductIndex >= 0 && products.value.splice(targetProductIndex, 1)
       }
-    })
+    )
 
     const offUserCartItemsChange = services.shop.onUserCartItemsChange(
-      (newCartItem, oldCartItem) => {
+      (changeType, newCartItem, oldCartItem) => {
         const toPageCartItem = (cartItem: CartItem) => ({
           ...cartItem,
         })
 
-        if (newCartItem) {
+        if (changeType === 'Add' || changeType === 'Update') {
+          assertNonNullable(newCartItem)
           const targetCartItem = cartItems.value.find(cartItem => cartItem.id === newCartItem.id)
           if (!targetCartItem) {
             cartItems.value.push(toPageCartItem(newCartItem))
           } else {
             Object.assign(targetCartItem, toPageCartItem(newCartItem))
           }
-        } else if (oldCartItem) {
+        } else {
+          assertNonNullable(oldCartItem)
           const targetCartItemIndex = cartItems.value.findIndex(
             cartItem => cartItem.id === oldCartItem.id
           )
@@ -321,7 +330,7 @@ const ShopPage = defineComponent({
       products,
       cartItems,
       cartTotalPrice,
-      cartIsEmpty,
+      isCartEmpty,
       signInOrOutButtonOnClick,
       addButtonOnClick,
       removeButtonOnClick,

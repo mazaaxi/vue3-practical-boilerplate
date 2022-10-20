@@ -8,43 +8,6 @@ import merge from 'lodash/merge'
 //==========================================================================
 
 /**
- * Create an extensible method.
- */
-function extensibleMethod<T extends Function>(method: T): T & { readonly super: T; body: T } {
-  const _super = method
-  let _body = method
-
-  const result: any = (...args: any[]) => {
-    return _body(...args)
-  }
-
-  Object.defineProperty(result, 'super', {
-    get: () => {
-      return _super
-    },
-  })
-
-  Object.defineProperty(result, 'body', {
-    get: () => {
-      return _body
-    },
-    set: v => {
-      _body = v
-    },
-  })
-
-  return result
-}
-
-/**
- * Gets whether the specified icon is FontAwesome or not.
- */
-function isFontAwesome(icon: string | undefined | null): boolean {
-  if (!icon) return false
-  return Boolean(icon.match(/fa[sbr] fa-/))
-}
-
-/**
  * Displays a notification bar on the screen.
  */
 function showNotification(
@@ -118,13 +81,21 @@ function getBaseURL(): string {
   return document.getElementsByTagName('base')[0].href
 }
 
+/**
+ * Gets whether the specified icon is FontAwesome or not.
+ */
+function isFontAwesome(icon: string | undefined | null): boolean {
+  if (!icon) return false
+  return Boolean(icon.match(/fa[sbr] fa-/))
+}
+
 //==========================================================================
 //
 //  Export
 //
 //==========================================================================
 
-export { extensibleMethod, isFontAwesome, showNotification, getBaseURL }
+export { showNotification, getBaseURL, isFontAwesome }
 export * from '@/base/constants'
 export * from '@/base/screen'
 export * from '@/base/style'

@@ -13,7 +13,7 @@ export default {
     password: 'パスワード',
   },
   langs: {
-    en: 'English',
+    en: '英語',
     ja: '日本語',
   },
   error: {
@@ -45,7 +45,7 @@ export default {
     stock: '在庫',
     total: '合計',
     checkout: '精算',
-    cartIsEmpty: 'カートは空です。',
+    isCartEmpty: 'カートは空です。',
     checkoutQ: '精算してもよろしいですか？',
   },
   routing: {
@@ -64,6 +64,6 @@ export default {
     error: 'ServiceWorkerの登録でエラーが発生しました.',
   },
   signIn: {
-    signInError: '指定されたユーザーが存在しないか、パスワードが一致しません。',
+    signInError: '指定された "{email}" が存在しないか、パスワードが一致しません。',
   },
 }

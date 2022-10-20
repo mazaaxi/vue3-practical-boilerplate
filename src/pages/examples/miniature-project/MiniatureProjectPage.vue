@@ -280,7 +280,7 @@ const MiniatureProjectPage = defineComponent({
     //
     //----------------------------------------------------------------------
 
-    const offUsersChange = services.admin.onUsersChange((newUser, oldUser) => {
+    const offUsersChange = services.admin.onUsersChange((changeType, newUser, oldUser) => {
       let operation = ''
 
       if (newUser) {

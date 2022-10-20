@@ -14,7 +14,7 @@ export default {
   },
   langs: {
     en: 'English',
-    ja: '日本語',
+    ja: 'Japanese',
   },
   site: {
     updating: 'Downloading the site update.',
@@ -40,7 +40,7 @@ export default {
     stock: 'Stock',
     total: 'Total',
     checkout: 'Checkout',
-    cartIsEmpty: 'The cart is empty.',
+    isCartEmpty: 'The cart is empty.',
     checkoutQ: 'Are you sure you want to check out?',
   },
   routing: {
@@ -60,6 +60,6 @@ export default {
     error: 'An error occurred during ServiceWorker registration.',
   },
   signIn: {
-    signInError: 'The specified user does not exist or the password does not match.',
+    signInError: 'The specified "{email}" does not exist or the password does not match.',
   },
 }

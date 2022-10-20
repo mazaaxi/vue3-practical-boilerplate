@@ -14,10 +14,9 @@
 
 <script lang="ts">
 import { Ref, SetupContext, defineComponent, ref } from 'vue'
+import { extensibleMethod, isImplemented } from 'js-common-lib'
 import { QDialog } from 'quasar'
 import { UnwrapNestedRefs } from '@vue/reactivity'
-import { extensibleMethod } from '@/base'
-import { isImplemented } from 'js-common-lib'
 
 //==========================================================================
 //

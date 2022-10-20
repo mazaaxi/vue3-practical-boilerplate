@@ -1,6 +1,5 @@
 import axios, { AxiosError, AxiosResponse, Method, ResponseType } from 'axios'
-import { extensibleMethod } from '@/base'
-import { removeBothEndsSlash } from 'js-common-lib'
+import { extensibleMethod, removeBothEndsSlash } from 'js-common-lib'
 import { useConfig } from '@/config'
 
 //==========================================================================

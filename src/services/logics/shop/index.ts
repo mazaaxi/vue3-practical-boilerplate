@@ -1,7 +1,7 @@
-import { CartItem, Product } from '@/services/base'
+import { CartItem, ItemsChangeType, Product } from '@/services/base'
 import { CartItemAddInput, CartItemUpdateInput, useAPIs } from '@/services/apis'
 import { ComputedRef, computed, reactive, watch } from 'vue'
-import { DeepUnreadonly, arrayToDict, isImplemented } from 'js-common-lib'
+import { DeepUnreadonly, arrayToDict, assertNonNullable, isImplemented } from 'js-common-lib'
 import { Unsubscribe, createNanoEvents } from 'nanoevents'
 import { AccountLogic } from '@/services/logics/account'
 import { UnwrapNestedRefs } from '@vue/reactivity'
@@ -18,16 +18,20 @@ interface ShopLogic extends UnwrapNestedRefs<WrapShopLogic> {}
 
 interface WrapShopLogic {
   readonly cartTotalPrice: ComputedRef<number>
-  fetchProducts(): Promise<void>
-  fetchUserCartItems(): Promise<void>
+  fetchProducts(): Promise<Product[]>
+  fetchUserCartItems(): Promise<CartItem[]>
   getAllProducts(): Product[]
   getUserCartItems(uid: string): CartItem[]
   incrementCartItem(productId: string): Promise<void>
   decrementCartItem(productId: string): Promise<void>
   checkout(): Promise<void>
   getExchangeRate(locale: string): number
-  onProductsChange(cb: (newProduct?: Product, oldProduct?: Product) => void): Unsubscribe
-  onUserCartItemsChange(cb: (newCartItem?: CartItem, oldCartItem?: CartItem) => void): Unsubscribe
+  onProductsChange(
+    cb: (changeType: ItemsChangeType, newProduct?: Product, oldProduct?: Product) => void
+  ): Unsubscribe
+  onUserCartItemsChange(
+    cb: (changeType: ItemsChangeType, newCartItem?: CartItem, oldCartItem?: CartItem) => void
+  ): Unsubscribe
 }
 
 //==========================================================================
@@ -56,8 +60,16 @@ namespace ShopLogic {
     const accountLogic = AccountLogic.useInternalInstance()
 
     const emitter = createNanoEvents<{
-      productsChange: (newProduct?: Product, oldProduct?: Product) => void
-      userCartItemsChange: (newCartItem?: CartItem, oldCartItem?: CartItem) => void
+      productsChange: (
+        changeType: ItemsChangeType,
+        newProduct?: Product,
+        oldProduct?: Product
+      ) => void
+      userCartItemsChange: (
+        changeType: ItemsChangeType,
+        newCartItem?: CartItem,
+        oldCartItem?: CartItem
+      ) => void
     }>()
 
     //----------------------------------------------------------------------
@@ -85,14 +97,18 @@ namespace ShopLogic {
       const responseProducts = await apis.getProducts()
       const responseProductDict = arrayToDict(responseProducts, 'id')
 
+      const result: Product[] = []
       responseProducts.forEach(responseProduct => {
         const exists = stores.product.getById(responseProduct.id)
         if (exists) {
           const updated = stores.product.set(responseProduct)
-          emitter.emit('productsChange', updated, exists)
+          emitter.emit('productsChange', 'Update', updated, exists)
+          assertNonNullable(updated)
+          result.push(updated)
         } else {
           const added = stores.product.add(responseProduct)
-          emitter.emit('productsChange', added, undefined)
+          emitter.emit('productsChange', 'Add', added, undefined)
+          result.push(added)
         }
       })
 
@@ -100,9 +116,11 @@ namespace ShopLogic {
         const exists = responseProductDict[product.id]
         if (!exists) {
           const removed = stores.product.remove(product.id)
-          emitter.emit('productsChange', undefined, removed)
+          emitter.emit('productsChange', 'Remove', undefined, removed)
         }
       })
+
+      return result
     }
 
     const fetchUserCartItems: WrapShopLogic['fetchUserCartItems'] = async () => {
@@ -111,14 +129,18 @@ namespace ShopLogic {
       const responseCartItems = await apis.getCartItems()
       const responseCartItemDict = arrayToDict(responseCartItems, 'id')
 
+      const result: CartItem[] = []
       responseCartItems.forEach(responseCartItem => {
         const exists = stores.cart.getById(responseCartItem.id)
         if (exists) {
           const updated = stores.cart.set(responseCartItem)
-          emitter.emit('userCartItemsChange', updated, exists)
+          emitter.emit('userCartItemsChange', 'Update', updated, exists)
+          assertNonNullable(updated)
+          result.push(updated)
         } else {
           const added = stores.cart.add(responseCartItem)
-          emitter.emit('userCartItemsChange', added, undefined)
+          emitter.emit('userCartItemsChange', 'Add', added, undefined)
+          result.push(added)
         }
       })
 
@@ -126,9 +148,11 @@ namespace ShopLogic {
         const exists = responseCartItemDict[cartItem.id]
         if (!exists) {
           const removed = stores.cart.remove(cartItem.id)
-          emitter.emit('userCartItemsChange', undefined, removed)
+          emitter.emit('userCartItemsChange', 'Remove', undefined, removed)
         }
       })
+
+      return result
     }
 
     const getAllProducts: WrapShopLogic['getAllProducts'] = () => {
@@ -176,7 +200,7 @@ namespace ShopLogic {
       // empty the cart
       const removedCartItems = stores.cart.removeByUID(accountLogic.user.id)
       removedCartItems.forEach(removedCartItem => {
-        emitter.emit('userCartItemsChange', undefined, removedCartItem)
+        emitter.emit('userCartItemsChange', 'Remove', undefined, removedCartItem)
       })
     }
 
@@ -217,10 +241,10 @@ namespace ShopLogic {
 
       const oldProduct = stores.product.getById(apiResponse.product.id)
       const newProduct = stores.product.set(apiResponse.product)
-      emitter.emit('productsChange', newProduct, oldProduct)
+      emitter.emit('productsChange', 'Update', newProduct, oldProduct)
 
       const newCartItem = stores.cart.add(apiResponse)
-      emitter.emit('userCartItemsChange', newCartItem, undefined)
+      emitter.emit('userCartItemsChange', 'Add', newCartItem, undefined)
 
       return newCartItem
     }
@@ -236,11 +260,11 @@ namespace ShopLogic {
 
       const oldProduct = stores.product.getById(apiResponse.product.id)
       const newProduct = stores.product.set(apiResponse.product)
-      emitter.emit('productsChange', newProduct, oldProduct)
+      emitter.emit('productsChange', 'Update', newProduct, oldProduct)
 
       const oldCartItem = stores.cart.getById(apiResponse.id)
       const newCartItem = stores.cart.set(apiResponse)!
-      emitter.emit('userCartItemsChange', newCartItem, oldCartItem)
+      emitter.emit('userCartItemsChange', 'Update', newCartItem, oldCartItem)
 
       return newCartItem
     }
@@ -251,10 +275,10 @@ namespace ShopLogic {
 
       const oldProduct = stores.product.getById(apiResponse.product.id)
       const newProduct = stores.product.set(apiResponse.product)
-      emitter.emit('productsChange', newProduct, oldProduct)
+      emitter.emit('productsChange', 'Update', newProduct, oldProduct)
 
       const oldCartItem = stores.cart.remove(apiResponse.id)!
-      emitter.emit('userCartItemsChange', undefined, oldCartItem)
+      emitter.emit('userCartItemsChange', 'Remove', undefined, oldCartItem)
 
       return oldCartItem
     }
@@ -281,7 +305,7 @@ namespace ShopLogic {
         else {
           const removedCartItems = stores.cart.removeByUID(oldValue)
           removedCartItems.forEach(removedCartItem => {
-            emitter.emit('userCartItemsChange', undefined, removedCartItem)
+            emitter.emit('userCartItemsChange', 'Remove', undefined, removedCartItem)
           })
         }
       }

@@ -1,10 +1,9 @@
-import { DeepReadonly, isImplemented } from 'js-common-lib'
+import { DeepReadonly, extensibleMethod, isImplemented } from 'js-common-lib'
 import { Ref, reactive, ref } from 'vue'
 import { TestUsers } from '@/services/test-data'
 import { UnwrapNestedRefs } from '@vue/reactivity'
 import { User } from '@/services/base'
 import { UserStore } from '@/services/stores/user'
-import { extensibleMethod } from '@/base'
 import { useStores } from '@/services/stores'
 
 //==========================================================================
