@@ -1,5 +1,5 @@
 import { CartItem, ItemsChangeType, Product, generateId } from '@/services'
-import { TestAPIs, TestServices, provideDependency } from '../../../../helpers'
+import { TestAPIs, TestServices, useServiceDependencies } from '../../../../helpers'
 import { CartItemEditResponse } from '@/services/apis'
 import { TestUsers } from '@/services/test-data'
 import dayjs from 'dayjs'
@@ -114,14 +114,14 @@ function validateOnItemsChange<ITEM extends { id: string }>(
 
 describe('ShopLogic', () => {
   beforeEach(async () => {
-    const { services } = provideDependency()
+    const { services } = useServiceDependencies()
 
     // Watching for user ID changes, but stopped because they get in the way of testing
     services.shop.userIdWatchStopHandle()
   })
 
   it('totalPrice', async () => {
-    const { services, stores } = provideDependency()
+    const { services, stores } = useServiceDependencies()
     // store settings
     stores.cart.setAll(CartItems())
     // sign-in user settings
@@ -140,7 +140,7 @@ describe('ShopLogic', () => {
       const newProduct4: Product = Products()[3]
       const expectedProducts = [newProduct1, newProduct2, newProduct3, newProduct4]
 
-      const { services, apis, stores } = provideDependency()
+      const { services, apis, stores } = useServiceDependencies()
       // mock settings
       const getProducts = td.replace<TestAPIs, 'getProducts'>(apis, 'getProducts')
       td.when(getProducts()).thenResolve(expectedProducts)
@@ -175,7 +175,7 @@ describe('ShopLogic', () => {
       const newProduct4: Product = Products()[3]
       const expectedProducts = [newProduct1, newProduct2, newProduct3, newProduct4]
 
-      const { services, apis, stores } = provideDependency()
+      const { services, apis, stores } = useServiceDependencies()
       // store settings
       stores.product.add(oldProduct2)
       // mock settings
@@ -211,7 +211,7 @@ describe('ShopLogic', () => {
       const newProduct4: Product = Products()[3]
       const expectedProducts = [newProduct1, newProduct3, newProduct4]
 
-      const { services, apis, stores } = provideDependency()
+      const { services, apis, stores } = useServiceDependencies()
       // store settings
       stores.product.add(oldProduct2)
       // mock settings
@@ -247,7 +247,7 @@ describe('ShopLogic', () => {
       const newCartItem2: CartItem = CartItems()[1]
       const expectedCartItems = [newCartItem1, newCartItem2]
 
-      const { services, apis, stores } = provideDependency()
+      const { services, apis, stores } = useServiceDependencies()
       // mock settings
       const getCartItems = td.replace<TestAPIs, 'getCartItems'>(apis, 'getCartItems')
       td.when(getCartItems()).thenResolve(expectedCartItems)
@@ -280,7 +280,7 @@ describe('ShopLogic', () => {
       const newCartItem2: CartItem = { ...oldCartItem2, price: 90, title: 'FIRE HD 8 TABLET' }
       const expectedCartItems = [newCartItem1, newCartItem2]
 
-      const { services, apis, stores } = provideDependency()
+      const { services, apis, stores } = useServiceDependencies()
       // store settings
       stores.cart.add(oldCartItem2)
       // mock settings
@@ -314,7 +314,7 @@ describe('ShopLogic', () => {
       const newCartItem1: CartItem = CartItems()[0]
       const expectedCartItems = [newCartItem1]
 
-      const { services, apis, stores } = provideDependency()
+      const { services, apis, stores } = useServiceDependencies()
       // store settings
       stores.cart.add(oldCartItem2)
       // mock settings
@@ -344,7 +344,7 @@ describe('ShopLogic', () => {
     })
 
     it('if not signed-in', async () => {
-      const { stores, services } = provideDependency()
+      const { stores, services } = useServiceDependencies()
 
       let actual!: Error
       try {
@@ -362,7 +362,7 @@ describe('ShopLogic', () => {
 
     it('if an error occurs in the API', async () => {
       const expected = new Error()
-      const { services, apis, stores } = provideDependency()
+      const { services, apis, stores } = useServiceDependencies()
       // mock settings
       const getCartItems = td.replace<TestAPIs, 'getCartItems'>(apis, 'getCartItems')
       td.when(getCartItems()).thenReject(expected)
@@ -414,7 +414,7 @@ describe('ShopLogic', () => {
         },
       }
 
-      const { services, stores, apis } = provideDependency()
+      const { services, stores, apis } = useServiceDependencies()
       // store settings
       stores.product.setAll(Products())
       // mock settings
@@ -485,7 +485,7 @@ describe('ShopLogic', () => {
         },
       }
 
-      const { services, apis, stores } = provideDependency()
+      const { services, apis, stores } = useServiceDependencies()
       // store settings
       stores.product.setAll(Products())
       stores.cart.add(oldCartItem1)
@@ -533,7 +533,7 @@ describe('ShopLogic', () => {
       // set a number of items in stock for a current product
       product1.stock = 0
 
-      const { stores, apis, services } = provideDependency()
+      const { stores, apis, services } = useServiceDependencies()
       // store settings
       stores.product.setAll(products)
       // mock settings
@@ -561,7 +561,7 @@ describe('ShopLogic', () => {
       const products = Products()
       const product1 = products[0]
 
-      const { stores, services } = provideDependency(({ stores }) => {
+      const { stores, services } = useServiceDependencies(({ stores }) => {
         // store settings
         stores.product.setAll(products)
       })
@@ -586,7 +586,7 @@ describe('ShopLogic', () => {
       const product1 = products[0]
 
       const expected = new Error()
-      const { stores, apis, services } = provideDependency()
+      const { stores, apis, services } = useServiceDependencies()
       // store settings
       stores.product.setAll(products)
       // mock settings
@@ -638,7 +638,7 @@ describe('ShopLogic', () => {
         },
       }
 
-      const { services, apis, stores } = provideDependency()
+      const { services, apis, stores } = useServiceDependencies()
       // store settings
       stores.product.setAll(Products())
       stores.cart.add(oldCartItem1)
@@ -702,7 +702,7 @@ describe('ShopLogic', () => {
         },
       }
 
-      const { services, apis, stores } = provideDependency()
+      const { services, apis, stores } = useServiceDependencies()
       // store settings
       stores.product.setAll(Products())
       stores.cart.add(oldCartItem1)
@@ -741,7 +741,7 @@ describe('ShopLogic', () => {
       const product1 = products[0]
       const cartItems = CartItems()
 
-      const { stores, services } = provideDependency(({ stores }) => {
+      const { stores, services } = useServiceDependencies(({ stores }) => {
         // store settings
         stores.product.setAll(Products())
         stores.cart.setAll(cartItems)
@@ -771,7 +771,7 @@ describe('ShopLogic', () => {
       cartItem1.quantity = 1
 
       const expected = new Error()
-      const { services, apis, stores } = provideDependency()
+      const { services, apis, stores } = useServiceDependencies()
       // store settings
       stores.product.setAll(Products())
       stores.cart.setAll(cartItems)
@@ -802,7 +802,7 @@ describe('ShopLogic', () => {
       const newCartItem1: CartItem = CartItems()[0]
       const newCartItem2: CartItem = CartItems()[1]
 
-      const { services, apis, stores } = provideDependency()
+      const { services, apis, stores } = useServiceDependencies()
       // store settings
       stores.product.setAll(Products())
       stores.cart.setAll([newCartItem1, newCartItem2])
@@ -836,7 +836,7 @@ describe('ShopLogic', () => {
     })
 
     it('if not signed-in', async () => {
-      const { stores, services } = provideDependency(({ apis, stores, helpers }) => {
+      const { stores, services } = useServiceDependencies(({ apis, stores, helpers }) => {
         // store settings
         stores.product.setAll(Products())
         stores.cart.setAll(CartItems())
@@ -859,7 +859,7 @@ describe('ShopLogic', () => {
 
     it('if an error occurs in the API', async () => {
       const expected = new Error()
-      const { services, apis, stores } = provideDependency()
+      const { services, apis, stores } = useServiceDependencies()
       // store settings
       stores.product.setAll(Products())
       stores.cart.setAll(CartItems())

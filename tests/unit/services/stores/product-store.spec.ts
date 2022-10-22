@@ -1,5 +1,5 @@
 import { Product, generateId } from '@/services'
-import { provideDependency, toBeCopyProduct } from '../../../helpers'
+import { toBeCopyProduct, useServiceDependencies } from '../../../helpers'
 import dayjs from 'dayjs'
 
 //==========================================================================
@@ -57,9 +57,8 @@ function Product1(): Product {
 
 describe('ProductStore', () => {
   it('all', async () => {
-    const { stores } = provideDependency(({ stores }) => {
-      stores.product.setAll(Products())
-    })
+    const { stores } = useServiceDependencies()
+    stores.product.setAll(Products())
 
     // run the test target
     const actual = stores.product.all
@@ -69,9 +68,8 @@ describe('ProductStore', () => {
 
   describe('getById', () => {
     it('basic case', () => {
-      const { stores } = provideDependency(({ stores }) => {
-        stores.product.setAll(Products())
-      })
+      const { stores } = useServiceDependencies()
+      stores.product.setAll(Products())
 
       // run the test target
       const actual = stores.product.getById(Product1().id)!
@@ -82,9 +80,8 @@ describe('ProductStore', () => {
     })
 
     it('if a non-existent product id is specified', () => {
-      const { stores } = provideDependency(({ stores }) => {
-        stores.product.setAll(Products())
-      })
+      const { stores } = useServiceDependencies()
+      stores.product.setAll(Products())
 
       // run the test target
       const actual = stores.product.getById('9999')
@@ -95,9 +92,8 @@ describe('ProductStore', () => {
 
   describe('sgetById', () => {
     it('basic case', () => {
-      const { stores } = provideDependency(({ stores }) => {
-        stores.product.setAll(Products())
-      })
+      const { stores } = useServiceDependencies()
+      stores.product.setAll(Products())
 
       // run the test target
       const actual = stores.product.sgetById(Product1().id)
@@ -108,9 +104,8 @@ describe('ProductStore', () => {
     })
 
     it('if a non-existent product id is specified', () => {
-      const { stores } = provideDependency(({ stores }) => {
-        stores.product.setAll(Products())
-      })
+      const { stores } = useServiceDependencies()
+      stores.product.setAll(Products())
 
       let actual!: Error
       try {
@@ -126,9 +121,8 @@ describe('ProductStore', () => {
 
   describe('add', () => {
     it('basic case', () => {
-      const { stores } = provideDependency(({ stores }) => {
-        stores.product.setAll(Products())
-      })
+      const { stores } = useServiceDependencies()
+      stores.product.setAll(Products())
 
       const productX = Product.clone(Product1())
       productX.id = generateId()
@@ -148,9 +142,8 @@ describe('ProductStore', () => {
     })
 
     it('if product contains extra properties', () => {
-      const { stores } = provideDependency(({ stores }) => {
-        stores.product.setAll(Products())
-      })
+      const { stores } = useServiceDependencies()
+      stores.product.setAll(Products())
 
       const productX = Product.clone(Products()[0])
       productX.id = generateId()
@@ -175,9 +168,8 @@ describe('ProductStore', () => {
     })
 
     it('if specify a product id that already exists', () => {
-      const { stores } = provideDependency(({ stores }) => {
-        stores.product.setAll(Products())
-      })
+      const { stores } = useServiceDependencies()
+      stores.product.setAll(Products())
 
       let actual!: Error
       try {
@@ -193,9 +185,8 @@ describe('ProductStore', () => {
 
   describe('set', () => {
     it('basic case', () => {
-      const { stores } = provideDependency(({ stores }) => {
-        stores.product.setAll(Products())
-      })
+      const { stores } = useServiceDependencies()
+      stores.product.setAll(Products())
 
       const product1 = Product.clone(Products()[0])
       product1.title = 'aaa'
@@ -213,9 +204,8 @@ describe('ProductStore', () => {
     })
 
     it('if product contains extra properties', () => {
-      const { stores } = provideDependency(({ stores }) => {
-        stores.product.setAll(Products())
-      })
+      const { stores } = useServiceDependencies()
+      stores.product.setAll(Products())
 
       const product1 = Product.clone(Product1())
 
@@ -236,9 +226,8 @@ describe('ProductStore', () => {
     })
 
     it('if a non-existent product id is specified', () => {
-      const { stores } = provideDependency(({ stores }) => {
-        stores.product.setAll(Products())
-      })
+      const { stores } = useServiceDependencies()
+      stores.product.setAll(Products())
 
       // run the test target
       const actual = stores.product.set({
@@ -252,9 +241,8 @@ describe('ProductStore', () => {
 
   describe('remove', () => {
     it('basic case', () => {
-      const { stores } = provideDependency(({ stores }) => {
-        stores.product.setAll(Products())
-      })
+      const { stores } = useServiceDependencies()
+      stores.product.setAll(Products())
 
       // run the test target
       const actual = stores.product.remove(Product1().id)!
@@ -265,9 +253,8 @@ describe('ProductStore', () => {
     })
 
     it('if a non-existent product item id is specified', () => {
-      const { stores } = provideDependency(({ stores }) => {
-        stores.product.setAll(Products())
-      })
+      const { stores } = useServiceDependencies()
+      stores.product.setAll(Products())
 
       // run the test target
       const actual = stores.product.remove(Product1().id)
@@ -278,9 +265,8 @@ describe('ProductStore', () => {
 
   describe('decrementStock', () => {
     it('basic case', () => {
-      const { stores } = provideDependency(({ stores }) => {
-        stores.product.setAll(Products())
-      })
+      const { stores } = useServiceDependencies()
+      stores.product.setAll(Products())
 
       // run the test target
       const actual = stores.product.decrementStock(Product1().id)
@@ -290,9 +276,8 @@ describe('ProductStore', () => {
     })
 
     it('if a non-existent product id is specified', () => {
-      const { stores } = provideDependency(({ stores }) => {
-        stores.product.setAll(Products())
-      })
+      const { stores } = useServiceDependencies()
+      stores.product.setAll(Products())
 
       let actual!: Error
       try {
@@ -308,9 +293,8 @@ describe('ProductStore', () => {
 
   describe('incrementStock', () => {
     it('basic case', () => {
-      const { stores } = provideDependency(({ stores }) => {
-        stores.product.setAll(Products())
-      })
+      const { stores } = useServiceDependencies()
+      stores.product.setAll(Products())
 
       // run the test target
       const actual = stores.product.incrementStock(Product1().id)
@@ -320,9 +304,8 @@ describe('ProductStore', () => {
     })
 
     it('if a non-existent product id is specified', () => {
-      const { stores } = provideDependency(({ stores }) => {
-        stores.product.setAll(Products())
-      })
+      const { stores } = useServiceDependencies()
+      stores.product.setAll(Products())
 
       let actual!: Error
       try {

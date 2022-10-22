@@ -1,5 +1,5 @@
 import { User, generateId } from '@/services'
-import { provideDependency, toBeCopyUser } from '../../../helpers'
+import { toBeCopyUser, useServiceDependencies } from '../../../helpers'
 import { cloneDeep } from 'lodash'
 import dayjs from 'dayjs'
 
@@ -50,7 +50,7 @@ function User2(): User {
  * @param id ID of a user you want to retrieve
  */
 function getStoreUser(id: string): User | undefined {
-  const { stores } = provideDependency()
+  const { stores } = useServiceDependencies()
   return stores.user.all.find(user => user.id === id)
 }
 
@@ -63,7 +63,7 @@ function getStoreUser(id: string): User | undefined {
 describe('UserStore', () => {
   describe('get', () => {
     it('basic case', () => {
-      const { stores } = provideDependency()
+      const { stores } = useServiceDependencies()
       stores.user.setAll([User1(), User2()])
 
       const actual = stores.user.get(User1().id)!
@@ -75,7 +75,7 @@ describe('UserStore', () => {
 
   describe('set', () => {
     it('basic case', () => {
-      const { stores } = provideDependency()
+      const { stores } = useServiceDependencies()
       stores.user.add(User1())
 
       // run the test target
@@ -95,7 +95,7 @@ describe('UserStore', () => {
 
   describe('add', () => {
     it('basic case', () => {
-      const { stores } = provideDependency()
+      const { stores } = useServiceDependencies()
 
       // run the test target
       const actual = stores.user.add(User1())
@@ -111,7 +111,7 @@ describe('UserStore', () => {
     })
 
     it('if trying to add a user that already exists', () => {
-      const { stores } = provideDependency()
+      const { stores } = useServiceDependencies()
       stores.user.setAll([User1()])
 
       let actual!: Error
@@ -128,7 +128,7 @@ describe('UserStore', () => {
 
   describe('remove', () => {
     it('basic case', () => {
-      const { stores } = provideDependency()
+      const { stores } = useServiceDependencies()
       stores.user.setAll([User1()])
 
       // run the test target
@@ -145,7 +145,7 @@ describe('UserStore', () => {
     })
 
     it('if trying to remove a user that already exists', () => {
-      const { stores } = provideDependency()
+      const { stores } = useServiceDependencies()
 
       // run the test target
       const actual = stores.user.remove(User1().id)

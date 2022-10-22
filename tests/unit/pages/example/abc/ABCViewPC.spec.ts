@@ -1,12 +1,12 @@
 import AbcViewPC from '@/pages/examples/abc/ABCViewPC.vue'
 import { mount } from '@vue/test-utils'
 import { nextTick } from 'vue'
-import { provideDependency } from '../../../../helpers'
 import { useRouter } from '@/router'
+import { useServiceDependencies } from '../../../../helpers'
 
 describe('ABCViewPC.vue', () => {
   beforeEach(() => {
-    provideDependency()
+    useServiceDependencies()
 
     // disable router as it gets in the way during testing
     const { routes } = useRouter()

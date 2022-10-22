@@ -12,14 +12,14 @@ import { shallowMount } from '@vue/test-utils'
 //
 //==========================================================================
 
-interface ProvidedDependency {
+interface ServiceDependencies {
   apis: TestAPIs
   stores: TestStores
   helpers: TestHelpers
   services: TestServices
 }
 
-type SetupFunc = (provided: ProvidedDependency) => void | Promise<void>
+type SetupFunc = (dependencies: ServiceDependencies) => void | Promise<void>
 
 //==========================================================================
 //
@@ -27,28 +27,28 @@ type SetupFunc = (provided: ProvidedDependency) => void | Promise<void>
 //
 //==========================================================================
 
-let provided: ProvidedDependency | undefined
+let currentDependencies: ServiceDependencies | undefined
 
 /**
- * Register dependent objects required for the application.
- * If the `setup` argument is not specified, default dependent objects will be registered.
+ * Get the test service's dependency objects. If the `setup` argument is not specified,
+ * the default test dependency objects are registered and used.
  * @param setup
- *   Specify this function when you want to perform mock settings for dependent objects.
- *   Dependent objects will be passed as the argument of this function.
- *   Set mock settings for these objects if necessary.
- * @param dependency
- *   Specifies dependency objects to be used in a test.
- *   The object specified here is also passed as an argument to the `setup()` function,
- *   so you can set mock settings on this object if necessary.
+ *   Specify this function when you want to perform mock settings for dependency objects.
+ *   Dependency objects will be passed as the argument of this function. Set mock settings
+ *   for these objects if necessary.
+ * @param dependencies
+ *   Specifies dependency objects to be used in a test. The objects specified here are also
+ *   passed as argument to the `setup()` function, so you can set mock settings on these
+ *   objects if necessary.
  */
-function provideDependency(
+function useServiceDependencies(
   setup?: SetupFunc,
-  dependency?: Partial<ProvidedDependency>
-): ProvidedDependency {
-  const wrapper = shallowMount<ProvidedDependency & DefineComponent>({
+  dependencies?: Partial<ServiceDependencies>
+): ServiceDependencies {
+  const wrapper = shallowMount<ServiceDependencies & DefineComponent>({
     template: '<div></div>',
     setup() {
-      return { ...provideDependencyImpl(setup, dependency) }
+      return { ...useServiceDependenciesImpl(setup, dependencies) }
     },
   })
 
@@ -56,40 +56,41 @@ function provideDependency(
   return { apis, stores, helpers, services }
 }
 
-function provideDependencyImpl(
+function useServiceDependenciesImpl(
   setup?: SetupFunc,
-  dependency?: Partial<ProvidedDependency>
-): ProvidedDependency {
+  dependencies?: Partial<ServiceDependencies>
+): ServiceDependencies {
   // launching a dialog during testing will cause an error, so mock it.
   // setupDialogs(td.object())
 
-  if (!provided) {
-    const apis = dependency?.apis ?? TestAPIs.newInstance()
+  if (!currentDependencies) {
+    const apis = dependencies?.apis ?? TestAPIs.newInstance()
     setupAPIs(apis)
 
-    const stores = dependency?.stores ?? TestStores.newInstance()
+    const stores = dependencies?.stores ?? TestStores.newInstance()
     setupStores(stores)
 
-    const helpers = dependency?.helpers ?? TestHelpers.newInstance()
+    const helpers = dependencies?.helpers ?? TestHelpers.newInstance()
     setupHelper(helpers)
 
-    const services = dependency?.services ?? TestServices.newInstance()
+    const services = dependencies?.services ?? TestServices.newInstance()
     setupServices(services)
 
-    provided = { apis, stores, helpers, services }
+    currentDependencies = { apis, stores, helpers, services }
   }
 
-  // if the `setup` function is not specified, return `provided`
-  if (!setup) return provided
+  // if the `setup` function is not specified, return `currentDependencies`
+  if (!setup) return currentDependencies
 
-  // NOTE: when the `setup` function is executed, the `provided` dependent objects will be mocked as needed.
-  setup(provided)
+  // NOTE: when the `setup` function is executed, the `currentDependencies` will be mocked
+  // as needed.
+  setup(currentDependencies)
 
-  return provided
+  return currentDependencies
 }
 
-function clearProvidedDependency(): void {
-  provided = undefined
+function clearServiceDependencies(): void {
+  currentDependencies = undefined
 }
 
 //==========================================================================
@@ -98,5 +99,5 @@ function clearProvidedDependency(): void {
 //
 //==========================================================================
 
-export { provideDependency, clearProvidedDependency, ProvidedDependency }
+export { useServiceDependencies, clearServiceDependencies, ServiceDependencies }
 export * from './services'

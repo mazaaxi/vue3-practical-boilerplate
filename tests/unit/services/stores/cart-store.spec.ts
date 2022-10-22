@@ -1,5 +1,5 @@
 import { CartItem, generateId } from '@/services'
-import { provideDependency, toBeCopyCartItem } from '../../../helpers'
+import { toBeCopyCartItem, useServiceDependencies } from '../../../helpers'
 import { TestUsers } from '@/services/test-data'
 import dayjs from 'dayjs'
 
@@ -63,9 +63,8 @@ function CartItem2(): CartItem {
 
 describe('CartStore', () => {
   it('all', async () => {
-    const { stores } = provideDependency(({ stores }) => {
-      stores.cart.setAll(CartItems())
-    })
+    const { stores } = useServiceDependencies()
+    stores.cart.setAll(CartItems())
 
     const actual = stores.cart.all
 
@@ -74,9 +73,8 @@ describe('CartStore', () => {
 
   describe('getById', () => {
     it('basic case', () => {
-      const { stores } = provideDependency(({ stores }) => {
-        stores.cart.setAll(CartItems())
-      })
+      const { stores } = useServiceDependencies()
+      stores.cart.setAll(CartItems())
 
       // run the test target
       const actual = stores.cart.getById(CartItem1().id)!
@@ -87,9 +85,8 @@ describe('CartStore', () => {
     })
 
     it('if a non-existent cart item id is specified', () => {
-      const { stores } = provideDependency(({ stores }) => {
-        stores.cart.setAll(CartItems())
-      })
+      const { stores } = useServiceDependencies()
+      stores.cart.setAll(CartItems())
 
       // run the test target
       const actual = stores.cart.getById('9999')
@@ -100,9 +97,8 @@ describe('CartStore', () => {
 
   describe('sgetById', () => {
     it('basic case', () => {
-      const { stores } = provideDependency(({ stores }) => {
-        stores.cart.setAll(CartItems())
-      })
+      const { stores } = useServiceDependencies()
+      stores.cart.setAll(CartItems())
 
       // run the test target
       const actual = stores.cart.sgetById(CartItem1().id)
@@ -113,9 +109,8 @@ describe('CartStore', () => {
     })
 
     it('if a non-existent cart item id is specified', () => {
-      const { stores } = provideDependency(({ stores }) => {
-        stores.cart.setAll(CartItems())
-      })
+      const { stores } = useServiceDependencies()
+      stores.cart.setAll(CartItems())
 
       let actual!: Error
       try {
@@ -131,9 +126,8 @@ describe('CartStore', () => {
 
   describe('getByProductId', () => {
     it('basic case', () => {
-      const { stores } = provideDependency(({ stores }) => {
-        stores.cart.setAll(CartItems())
-      })
+      const { stores } = useServiceDependencies()
+      stores.cart.setAll(CartItems())
 
       // run the test target
       const actual = stores.cart.getByProductId(CartItem1().productId)!
@@ -143,9 +137,8 @@ describe('CartStore', () => {
     })
 
     it('if a non-existent product id is specified', () => {
-      const { stores } = provideDependency(({ stores }) => {
-        stores.cart.setAll(CartItems())
-      })
+      const { stores } = useServiceDependencies()
+      stores.cart.setAll(CartItems())
 
       // run the test target
       const actual = stores.cart.getByProductId('9999')
@@ -156,9 +149,8 @@ describe('CartStore', () => {
 
   describe('sgetByProductId', () => {
     it('basic case', () => {
-      const { stores } = provideDependency(({ stores }) => {
-        stores.cart.setAll(CartItems())
-      })
+      const { stores } = useServiceDependencies()
+      stores.cart.setAll(CartItems())
 
       // run the test target
       const actual = stores.cart.sgetByProductId(CartItem1().productId)
@@ -168,9 +160,8 @@ describe('CartStore', () => {
     })
 
     it('if a non-existent product id is specified', () => {
-      const { stores } = provideDependency(({ stores }) => {
-        stores.cart.setAll(CartItems())
-      })
+      const { stores } = useServiceDependencies()
+      stores.cart.setAll(CartItems())
 
       let actual!: Error
       try {
@@ -186,9 +177,8 @@ describe('CartStore', () => {
 
   describe('getListByUID', () => {
     it('basic case', () => {
-      const { stores } = provideDependency(({ stores }) => {
-        stores.cart.setAll(CartItems())
-      })
+      const { stores } = useServiceDependencies()
+      stores.cart.setAll(CartItems())
 
       // run the test target
       const actual = stores.cart.getListByUID(TaroYamada.id)
@@ -201,9 +191,8 @@ describe('CartStore', () => {
 
   describe('add', () => {
     it('basic case', () => {
-      const { stores } = provideDependency(({ stores }) => {
-        stores.cart.setAll(CartItems())
-      })
+      const { stores } = useServiceDependencies()
+      stores.cart.setAll(CartItems())
 
       const cartItemX = CartItem.clone(CartItem1())
       cartItemX.id = generateId()
@@ -225,9 +214,8 @@ describe('CartStore', () => {
     })
 
     it('if cart item contains extra properties', () => {
-      const { stores } = provideDependency(({ stores }) => {
-        stores.cart.setAll(CartItems())
-      })
+      const { stores } = useServiceDependencies()
+      stores.cart.setAll(CartItems())
 
       const cartItemX = CartItem.clone(CartItem1())
       cartItemX.id = generateId()
@@ -254,9 +242,8 @@ describe('CartStore', () => {
     })
 
     it('if specify a cart item id that already exists', () => {
-      const { stores } = provideDependency(({ stores }) => {
-        stores.cart.setAll(CartItems())
-      })
+      const { stores } = useServiceDependencies()
+      stores.cart.setAll(CartItems())
 
       let actual!: Error
       try {
@@ -272,9 +259,8 @@ describe('CartStore', () => {
 
   describe('set', () => {
     it('basic case', () => {
-      const { stores } = provideDependency(({ stores }) => {
-        stores.cart.setAll(CartItems())
-      })
+      const { stores } = useServiceDependencies()
+      stores.cart.setAll(CartItems())
 
       const cartItem1 = CartItem.clone(CartItem1())
       cartItem1.title = 'aaa'
@@ -292,9 +278,8 @@ describe('CartStore', () => {
     })
 
     it('if cart item contains extra properties', () => {
-      const { stores } = provideDependency(({ stores }) => {
-        stores.cart.setAll(CartItems())
-      })
+      const { stores } = useServiceDependencies()
+      stores.cart.setAll(CartItems())
 
       const cartItem1 = CartItem.clone(CartItem1())
 
@@ -315,9 +300,8 @@ describe('CartStore', () => {
     })
 
     it('if a non-existent cart item id is specified', () => {
-      const { stores } = provideDependency(({ stores }) => {
-        stores.cart.setAll(CartItems())
-      })
+      const { stores } = useServiceDependencies()
+      stores.cart.setAll(CartItems())
 
       // run the test target
       const actual = stores.cart.set({
@@ -331,9 +315,8 @@ describe('CartStore', () => {
 
   describe('remove', () => {
     it('basic case', () => {
-      const { stores } = provideDependency(({ stores }) => {
-        stores.cart.setAll(CartItems())
-      })
+      const { stores } = useServiceDependencies()
+      stores.cart.setAll(CartItems())
 
       // run the test target
       const actual = stores.cart.remove(CartItem1().id)!
@@ -344,9 +327,8 @@ describe('CartStore', () => {
     })
 
     it('if a non-existent cart item id is specified', () => {
-      const { stores } = provideDependency(({ stores }) => {
-        stores.cart.setAll(CartItems())
-      })
+      const { stores } = useServiceDependencies()
+      stores.cart.setAll(CartItems())
 
       // run the test target
       const actual = stores.cart.remove(CartItem1().id)
@@ -357,9 +339,8 @@ describe('CartStore', () => {
 
   describe('clear', () => {
     it('basic case', () => {
-      const { stores } = provideDependency(({ stores }) => {
-        stores.cart.setAll(CartItems())
-      })
+      const { stores } = useServiceDependencies()
+      stores.cart.setAll(CartItems())
 
       // run the test target
       stores.cart.clear()

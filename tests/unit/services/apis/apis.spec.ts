@@ -2,7 +2,7 @@ import { CartItem, Product, ToRawEntity, toRawEntities } from '@/services'
 import { CartItemEditResponse } from '@/services/apis'
 import { TestUsers } from '@/services/test-data'
 import dayjs from 'dayjs'
-import { provideDependency } from '../../../helpers'
+import { useServiceDependencies } from '../../../helpers'
 
 jest.setTimeout(25000)
 
@@ -107,7 +107,7 @@ function setTestIdToken(): void {
 describe('APIs', () => {
   describe('getProduct', () => {
     it('basic case', async () => {
-      const { apis } = provideDependency()
+      const { apis } = useServiceDependencies()
       await apis.putTestData({
         products: RawProducts(),
       })
@@ -123,7 +123,7 @@ describe('APIs', () => {
 
   describe('getProducts', () => {
     it('basic case - without arguments', async () => {
-      const { apis } = provideDependency()
+      const { apis } = useServiceDependencies()
       await apis.putTestData({
         products: RawProducts(),
       })
@@ -135,7 +135,7 @@ describe('APIs', () => {
     })
 
     it('basic case - with arguments', async () => {
-      const { apis } = provideDependency()
+      const { apis } = useServiceDependencies()
       await apis.putTestData({
         products: RawProducts(),
       })
@@ -151,7 +151,7 @@ describe('APIs', () => {
 
   describe('getCartItems', () => {
     it('basic case', async () => {
-      const { apis } = provideDependency()
+      const { apis } = useServiceDependencies()
       await apis.putTestData({
         cartItems: RawCartItems(),
       })
@@ -167,7 +167,7 @@ describe('APIs', () => {
 
   describe('addCartItems', () => {
     it('basic case', async () => {
-      const { apis } = provideDependency()
+      const { apis } = useServiceDependencies()
       await apis.putTestData({
         products: RawProducts(),
         cartItems: RawCartItems(),
@@ -213,7 +213,7 @@ describe('APIs', () => {
 
   describe('updateCartItems', () => {
     it('basic case', async () => {
-      const { apis } = provideDependency()
+      const { apis } = useServiceDependencies()
       await apis.putTestData({
         products: RawProducts(),
         cartItems: RawCartItems(),
@@ -258,7 +258,7 @@ describe('APIs', () => {
 
   describe('removeCartItems', () => {
     it('basic case', async () => {
-      const { apis } = provideDependency()
+      const { apis } = useServiceDependencies()
       await apis.putTestData({
         products: RawProducts(),
         cartItems: RawCartItems(),
@@ -297,7 +297,7 @@ describe('APIs', () => {
 
   describe('checkoutCart', () => {
     it('basic case', async () => {
-      const { apis } = provideDependency()
+      const { apis } = useServiceDependencies()
       await apis.putTestData({
         products: RawProducts(),
         cartItems: RawCartItems(),

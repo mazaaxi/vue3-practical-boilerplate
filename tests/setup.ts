@@ -1,5 +1,5 @@
 import { AppRouter, setupRouter } from '@/router'
-import { clearProvidedDependency } from './helpers'
+import { clearServiceDependencies } from './helpers'
 import { config } from '@vue/test-utils'
 import { setupConfig } from '@/config'
 import { setupI18n } from '@/i18n'
@@ -29,6 +29,6 @@ beforeEach(async () => {
 })
 
 afterEach(() => {
-  clearProvidedDependency()
+  clearServiceDependencies()
   td.reset()
 })
