@@ -129,12 +129,15 @@
 </template>
 
 <script lang="ts">
-import { Loading, QInput, QTable } from 'quasar'
-import { User, setupServices, useServices } from '@/pages/examples/miniature-project/services'
+import type { QInput, QTable, QTableProps } from 'quasar'
 import { defineComponent, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
+import { setupServices, useServices } from '@/pages/examples/miniature-project/services'
+import { Loading } from 'quasar'
+import type { User } from '@/pages/examples/miniature-project/services'
 import debounce from 'lodash/debounce'
 import { generateId } from '@/services'
-const cloneDeep = require('rfdc')()
+import rfdc from 'rfdc'
+const cloneDeep = rfdc()
 
 type UserRow = User & { editType?: 'added' | 'modified' }
 
@@ -220,6 +223,8 @@ const MiniatureProjectPage = defineComponent({
       {
         name: 'save',
         align: 'left',
+        label: '',
+        field: () => {},
       },
     ]
 

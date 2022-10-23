@@ -1,7 +1,8 @@
-import { DeepReadonly, isImplemented } from 'js-common-lib'
-import { Ref, reactive, ref } from 'vue'
+import type { Ref, UnwrapNestedRefs } from 'vue'
+import { reactive, ref } from 'vue'
 import { CartItem } from '@/services/entities'
-import { UnwrapNestedRefs } from '@vue/reactivity'
+import type { DeepReadonly } from 'js-common-lib'
+import { isImplemented } from 'js-common-lib'
 
 //==========================================================================
 //
@@ -186,3 +187,4 @@ namespace CartStore {
 //==========================================================================
 
 export { CartStore }
+export type { SetCartItem }

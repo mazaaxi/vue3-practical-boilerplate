@@ -1,8 +1,9 @@
-import { DeepPartial, DeepReadonly, isImplemented } from 'js-common-lib'
-import { Ref, reactive, ref } from 'vue'
-import { UnwrapNestedRefs } from '@vue/reactivity'
+import type { Ref, UnwrapNestedRefs } from 'vue'
+import { reactive, ref } from 'vue'
+import type { DeepReadonly } from 'js-common-lib'
 import { User } from '@/services/entities'
 import dayjs from 'dayjs'
+import { isImplemented } from 'js-common-lib'
 
 //==========================================================================
 //
@@ -15,18 +16,16 @@ type UserStore = UnwrapNestedRefs<WrapUserStore>
 interface WrapUserStore {
   readonly all: DeepReadonly<Ref<User[]>>
   get(id: string): User | undefined
-  set(input: UserForSet): User
+  set(input: SetUser): User
   add(user: User): User
   remove(id: string): User | undefined
   setAll(inputs: User[]): void
   removeAll(): User[]
 }
 
-type UserForSet = DeepReadonly<
-  DeepPartial<User> & {
-    id: string
-  }
->
+interface SetUser extends Partial<User> {
+  id: string
+}
 
 //==========================================================================
 //
@@ -150,3 +149,4 @@ namespace UserStore {
 //==========================================================================
 
 export { UserStore }
+export type { SetUser }

@@ -1,4 +1,4 @@
-import { App } from 'vue'
+import type { App } from 'vue'
 
 //==========================================================================
 //
@@ -37,4 +37,5 @@ function useConstants(): Constants {
 //
 //==========================================================================
 
-export { Constants, useConstants }
+export { useConstants }
+export type { Constants }

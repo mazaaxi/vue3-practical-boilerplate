@@ -1,5 +1,4 @@
-import { Key, compile, pathToRegexp } from 'path-to-regexp'
-import {
+import type {
   LocationQuery,
   LocationQueryValue,
   NavigationGuardNext,
@@ -8,12 +7,13 @@ import {
   RouteRecordRedirectOption,
   RouteLocationNormalized as VueRoute,
   Router as VueRouter,
-  createRouter,
-  createWebHistory,
 } from 'vue-router'
-import { Ref, computed, reactive, ref } from 'vue'
+import type { Ref, UnwrapNestedRefs } from 'vue'
+import { compile, pathToRegexp } from 'path-to-regexp'
+import { computed, reactive, ref } from 'vue'
+import { createRouter, createWebHistory } from 'vue-router'
 import { extensibleMethod, isImplemented, pickProps, removeEndSlash, sleep } from 'js-common-lib'
-import { UnwrapNestedRefs } from '@vue/reactivity'
+import type { Key } from 'path-to-regexp'
 
 //==========================================================================
 //
@@ -548,4 +548,5 @@ namespace Route {
 //
 //==========================================================================
 
-export { Router, WrapRouter, Route, WrapRoute, RawRoute, RouteInput }
+export { Router, Route }
+export type { WrapRouter, WrapRoute, RawRoute, RouteInput }

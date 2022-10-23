@@ -1,5 +1,6 @@
-import axios, { AxiosError, AxiosResponse, Method, ResponseType } from 'axios'
+import type { AxiosError, AxiosResponse, Method, ResponseType } from 'axios'
 import { extensibleMethod, removeBothEndsSlash } from 'js-common-lib'
+import axios from 'axios'
 import { useConfig } from '@/config'
 
 //==========================================================================
@@ -173,4 +174,5 @@ class APIError extends Error {
 //
 //==========================================================================
 
-export { APIClient, APIPromise, APIRequestConfig, APIResponse }
+export { APIClient }
+export type { APIPromise, APIRequestConfig, APIResponse }

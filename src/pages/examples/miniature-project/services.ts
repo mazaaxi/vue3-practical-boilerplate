@@ -1,17 +1,15 @@
-import { ComputedRef, Ref, computed, reactive, ref } from 'vue'
-import {
-  DeepPartial,
-  DeepReadonly,
-  RequiredAre,
-  isImplemented,
-  pickProps,
-  sleep,
-} from 'js-common-lib'
-import { ItemsChangeType, generateId } from '@/services'
-import { Unsubscribe, createNanoEvents } from 'nanoevents'
+import type { ComputedRef, Ref } from 'vue'
+import type { DeepPartial, DeepReadonly, DeepUnreadonly, RequiredAre } from 'js-common-lib'
+import { computed, reactive, ref } from 'vue'
+import { isImplemented, pickProps, sleep } from 'js-common-lib'
+import type { ItemsChangeType } from '@/services'
+import type { Unsubscribe } from 'nanoevents'
 import { UnwrapNestedRefs } from '@vue/reactivity'
+import { createNanoEvents } from 'nanoevents'
 import { createObjectCopyFunctions } from '@/base'
-const cloneDeep = require('rfdc')()
+import { generateId } from '@/services'
+import rfdc from 'rfdc'
+const cloneDeep = rfdc()
 
 //==========================================================================
 //

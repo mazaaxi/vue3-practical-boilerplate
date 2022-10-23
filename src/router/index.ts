@@ -1,10 +1,12 @@
-import { App, WritableComputedRef, computed, reactive, watch } from 'vue'
-import { RawRoute, Route, Router } from '@/router/core'
+import type { App, WritableComputedRef } from 'vue'
+import { Route, Router } from '@/router/core'
 import { SupportI18nLocales, useI18nUtils } from '@/i18n'
-import { BaseRouteInput } from '@/router/base'
+import { computed, reactive, watch } from 'vue'
+import type { BaseRouteInput } from '@/router/base'
 import { ExamplesRoutes } from '@/router/routes/examples'
 import { HomeRoute } from '@/router/routes/home'
-import { I18n } from 'vue-i18n'
+import type { I18n } from 'vue-i18n'
+import type { RawRoute } from '@/router/core'
 import { ShopRoute } from '@/router/routes/shop'
 
 //==========================================================================
@@ -146,5 +148,6 @@ namespace AppRouter {
 //==========================================================================
 
 const { setupRouter, useRouter } = AppRouter
-export { AppRouter, AppRoutes, setupRouter, useRouter }
+export { AppRouter, setupRouter, useRouter }
+export type { AppRoutes }
 export * from '@/router/core'

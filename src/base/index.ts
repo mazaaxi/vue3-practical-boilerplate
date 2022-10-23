@@ -1,4 +1,4 @@
-import { DeepPartial, DeepReadonly, DeepUnreadonly } from 'js-common-lib'
+import type { DeepPartial, DeepReadonly, DeepUnreadonly } from 'js-common-lib'
 import { Notify } from 'quasar'
 import merge from 'lodash/merge'
 

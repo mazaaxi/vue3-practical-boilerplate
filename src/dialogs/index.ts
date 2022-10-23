@@ -1,7 +1,7 @@
 import DialogContainer, { DialogNames } from '@/dialogs/DialogContainer.vue'
-import { Ref, computed, reactive } from 'vue'
+import type { Ref, UnwrapNestedRefs } from 'vue'
+import { computed, reactive } from 'vue'
 import { URLQueryDialogHelper } from '@/components/dialog/URLQueryDialog.vue'
-import { UnwrapNestedRefs } from '@vue/reactivity'
 import { isImplemented } from 'js-common-lib'
 import { useRouter } from '@/router'
 
@@ -173,6 +173,7 @@ namespace Dialogs {
 //==========================================================================
 
 const { setupDialogs, useDialogs } = Dialogs
-export { DialogContainer, Dialog, setupDialogs, useDialogs }
+export { DialogContainer, setupDialogs, useDialogs }
+export type { Dialog }
 export * from '@/dialogs'
 export * from '@/dialogs/message'

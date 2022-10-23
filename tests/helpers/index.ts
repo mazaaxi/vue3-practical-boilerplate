@@ -99,5 +99,6 @@ function clearServiceDependencies(): void {
 //
 //==========================================================================
 
-export { useServiceDependencies, clearServiceDependencies, ServiceDependencies }
+export { useServiceDependencies, clearServiceDependencies }
+export type { ServiceDependencies }
 export * from './services'

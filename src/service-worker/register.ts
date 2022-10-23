@@ -235,4 +235,5 @@ async function unregister() {
 //
 //==========================================================================
 
-export { register, unregister, ServiceWorkerChangeState }
+export { register, unregister }
+export type { ServiceWorkerChangeState }

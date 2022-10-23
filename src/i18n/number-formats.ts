@@ -1,4 +1,4 @@
-import { IntlNumberFormat, IntlNumberFormats } from 'vue-i18n'
+import type { IntlNumberFormat, IntlNumberFormats } from 'vue-i18n'
 import merge from 'lodash/merge'
 
 const en: IntlNumberFormat = {

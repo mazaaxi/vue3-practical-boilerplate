@@ -1,14 +1,10 @@
-import { BaseRoute, BaseRouteInput, WrapBaseRoute } from '@/router/base'
-import {
-  DeepReadonly,
-  extensibleMethod,
-  isImplemented,
-  pickProps,
-  removeEndSlash,
-} from 'js-common-lib'
-import { Ref, reactive, ref } from 'vue'
-import { LocationQueryValue } from 'vue-router'
-import { UnwrapNestedRefs } from '@vue/reactivity'
+import type { BaseRouteInput, WrapBaseRoute } from '@/router/base'
+import type { Ref, UnwrapNestedRefs } from 'vue'
+import { extensibleMethod, isImplemented, pickProps, removeEndSlash } from 'js-common-lib'
+import { reactive, ref } from 'vue'
+import { BaseRoute } from '@/router/base'
+import type { DeepReadonly } from 'js-common-lib'
+import type { LocationQueryValue } from 'vue-router'
 import { pathToRegexp } from 'path-to-regexp'
 import url from 'url'
 

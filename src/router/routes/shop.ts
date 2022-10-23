@@ -1,5 +1,6 @@
-import { BaseRoute, BaseRouteInput, WrapBaseRoute } from '@/router/base'
-import { UnwrapNestedRefs } from '@vue/reactivity'
+import type { BaseRouteInput, WrapBaseRoute } from '@/router/base'
+import { BaseRoute } from '@/router/base'
+import type { UnwrapNestedRefs } from 'vue'
 import { isImplemented } from 'js-common-lib'
 
 //==========================================================================

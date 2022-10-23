@@ -1,13 +1,17 @@
-import { CartItem, Product } from '@/services/entities'
-import { CartItemAddInput, CartItemUpdateInput, useAPIs } from '@/services/apis'
-import { ComputedRef, computed, reactive, watch } from 'vue'
-import { DeepUnreadonly, arrayToDict, assertNonNullable, isImplemented } from 'js-common-lib'
-import { Unsubscribe, createNanoEvents } from 'nanoevents'
+import type { CartItem, Product } from '@/services/entities'
+import type { CartItemAddInput, CartItemUpdateInput } from '@/services/apis'
+import type { ComputedRef, UnwrapNestedRefs } from 'vue'
+import { arrayToDict, assertNonNullable, isImplemented } from 'js-common-lib'
+import { computed, reactive, watch } from 'vue'
 import { AccountLogic } from '@/services/logics/account'
-import { ItemsChangeType } from '@/services/base'
-import { UnwrapNestedRefs } from '@vue/reactivity'
+import type { DeepUnreadonly } from 'js-common-lib'
+import type { ItemsChangeType } from '@/services/base'
+import type { Unsubscribe } from 'nanoevents'
+import { createNanoEvents } from 'nanoevents'
+import rfdc from 'rfdc'
+import { useAPIs } from '@/services/apis'
 import { useStores } from '@/services/stores'
-const cloneDeep = require('rfdc')()
+const cloneDeep = rfdc()
 
 //==========================================================================
 //

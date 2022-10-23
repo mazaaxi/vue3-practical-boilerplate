@@ -1,4 +1,5 @@
-import { App, computed, reactive } from 'vue'
+import { computed, reactive } from 'vue'
+import type { App } from 'vue'
 import { Screen as _Screen } from 'quasar'
 import { isImplemented } from 'js-common-lib'
 

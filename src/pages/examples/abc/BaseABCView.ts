@@ -1,16 +1,7 @@
-import {
-  SetupContext,
-  computed,
-  nextTick,
-  onMounted,
-  reactive,
-  ref,
-  toRefs,
-  watch,
-  watchEffect,
-} from 'vue'
+import { computed, nextTick, onMounted, reactive, ref, toRefs, watch, watchEffect } from 'vue'
 import MessageInput from '@/pages/examples/abc/MessageInput.vue'
-import { QInput } from 'quasar'
+import type { QInput } from 'quasar'
+import type { SetupContext } from 'vue'
 import { useDialogs } from '@/dialogs'
 import { useRouter } from '@/router'
 import { useServices } from '@/services'

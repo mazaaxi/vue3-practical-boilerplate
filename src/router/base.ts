@@ -1,6 +1,7 @@
-import { Route, RouteInput, WrapRoute } from '@/router/core'
+import type { RouteInput, WrapRoute } from '@/router/core'
 import { extensibleMethod, isImplemented } from 'js-common-lib'
-import { ComputedRef } from 'vue'
+import type { ComputedRef } from 'vue'
+import { Route } from '@/router/core'
 
 //==========================================================================
 //
@@ -92,4 +93,5 @@ namespace BaseRoute {
 //
 //==========================================================================
 
-export { BaseRouteInput, BaseRoute, WrapBaseRoute }
+export { BaseRoute }
+export type { BaseRouteInput, WrapBaseRoute }

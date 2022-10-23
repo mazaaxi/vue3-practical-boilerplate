@@ -32,8 +32,8 @@
 </template>
 
 <script lang="ts">
-import { ComputedRef, computed, defineComponent } from 'vue'
-import { UnwrapNestedRefs } from '@vue/reactivity'
+import type { ComputedRef, UnwrapNestedRefs } from 'vue'
+import { computed, defineComponent } from 'vue'
 import { isImplemented } from 'js-common-lib'
 
 //==========================================================================

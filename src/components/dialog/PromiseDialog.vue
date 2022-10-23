@@ -13,10 +13,10 @@
 </template>
 
 <script lang="ts">
-import { Ref, SetupContext, defineComponent, ref } from 'vue'
+import type { Ref, SetupContext, UnwrapNestedRefs } from 'vue'
+import { defineComponent, ref } from 'vue'
 import { extensibleMethod, isImplemented } from 'js-common-lib'
-import { QDialog } from 'quasar'
-import { UnwrapNestedRefs } from '@vue/reactivity'
+import type { QDialog } from 'quasar'
 
 //==========================================================================
 //

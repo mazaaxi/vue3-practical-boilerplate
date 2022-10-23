@@ -1,4 +1,4 @@
-import { IntlDateTimeFormat, IntlDateTimeFormats } from 'vue-i18n'
+import type { IntlDateTimeFormat, IntlDateTimeFormats } from 'vue-i18n'
 import merge from 'lodash/merge'
 
 const en: IntlDateTimeFormat = {

@@ -170,4 +170,5 @@ namespace ServiceWorkerManager {
 //==========================================================================
 
 const { setupServiceWorker, useServiceWorker } = ServiceWorkerManager
-export { ServiceWorkerChangeState, setupServiceWorker, useServiceWorker }
+export { setupServiceWorker, useServiceWorker }
+export type { ServiceWorkerChangeState }

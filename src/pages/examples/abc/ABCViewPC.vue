@@ -125,7 +125,7 @@
 </template>
 
 <script lang="ts">
-import { BaseAbcView } from '@/pages/examples/abc/base'
+import { BaseAbcView } from '@/pages/examples/abc/BaseABCView'
 import { defineComponent } from 'vue'
 
 interface AbcViewPC extends BaseAbcView {}

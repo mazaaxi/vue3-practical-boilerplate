@@ -93,9 +93,10 @@
 </template>
 
 <script lang="ts">
-import { RouteLocationNormalized, onBeforeRouteLeave, onBeforeRouteUpdate } from 'vue-router'
 import { computed, defineComponent, nextTick, onMounted, ref } from 'vue'
-import { QInput } from 'quasar'
+import { onBeforeRouteLeave, onBeforeRouteUpdate } from 'vue-router'
+import type { QInput } from 'quasar'
+import type { RouteLocationNormalized } from 'vue-router'
 import { useRouter } from '@/router'
 import { useScreen } from '@/base'
 

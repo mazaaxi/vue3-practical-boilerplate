@@ -1,8 +1,10 @@
-import { I18n, Locale, useI18n as _useI18n, createI18n } from 'vue-i18n'
-import { WritableComputedRef, nextTick } from 'vue'
+import type { I18n, Locale } from 'vue-i18n'
+import { useI18n as _useI18n, createI18n } from 'vue-i18n'
+import type { WritableComputedRef } from 'vue'
 import axios from 'axios'
 import { datetimeFormats } from '@/i18n/date-time-formats'
 import en from '@/i18n/locales/en'
+import { nextTick } from 'vue'
 import { numberFormats } from '@/i18n/number-formats'
 
 //----------------------------------------------------------------------
@@ -32,7 +34,7 @@ namespace I18nContainer {
   let instance: I18nContainer
 
   export function setupI18n(): I18n {
-    instance = instance ?? newInstance()
+    instance = newInstance()
     return instance.i18n
   }
 

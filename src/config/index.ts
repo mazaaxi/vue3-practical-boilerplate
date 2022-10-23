@@ -1,7 +1,8 @@
-import { DeepPartial, removeStartSlash } from 'js-common-lib'
+import type { DeepPartial } from 'js-common-lib'
 import URI from 'urijs'
 import merge from 'lodash/merge'
 import { reactive } from 'vue'
+import { removeStartSlash } from 'js-common-lib'
 
 //==========================================================================
 //
@@ -112,4 +113,5 @@ namespace Config {
 //==========================================================================
 
 const { setupConfig, useConfig } = Config
-export { APIConfig, Config, setupConfig, useConfig }
+export { Config, setupConfig, useConfig }
+export type { APIConfig }

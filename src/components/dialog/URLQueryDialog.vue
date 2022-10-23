@@ -13,11 +13,11 @@
 </template>
 
 <script lang="ts">
-import { SetupContext, defineComponent } from 'vue'
+import type { SetupContext, UnwrapNestedRefs } from 'vue'
 import { extensibleMethod, isImplemented } from 'js-common-lib'
 import { BasePromiseDialog } from '@/components/dialog/PromiseDialog.vue'
 import { QDialog } from 'quasar'
-import { UnwrapNestedRefs } from '@vue/reactivity'
+import { defineComponent } from 'vue'
 import { useRouter } from '@/router'
 
 //==========================================================================

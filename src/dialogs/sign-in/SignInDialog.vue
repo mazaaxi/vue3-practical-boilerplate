@@ -83,12 +83,12 @@
 </template>
 
 <script lang="ts">
-import { QInput, QSelect } from 'quasar'
+import type { QInput, QSelect } from 'quasar'
 import { computed, defineComponent, ref, watch } from 'vue'
 import type { Dialog } from '@/dialogs'
 import { PromiseDialog } from '@/components/dialog'
 import { TestUsers } from '@/services/test-data'
-import { UnwrapNestedRefs } from '@vue/reactivity'
+import type { UnwrapNestedRefs } from 'vue'
 import { isImplemented } from 'js-common-lib'
 import { useI18n } from '@/i18n'
 import { useServices } from '@/services'

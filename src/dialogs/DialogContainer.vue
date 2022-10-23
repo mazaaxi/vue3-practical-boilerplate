@@ -7,11 +7,11 @@
 </template>
 
 <script lang="ts">
-import { ComputedRef, defineComponent, ref } from 'vue'
+import type { ComputedRef, UnwrapNestedRefs } from 'vue'
+import { defineComponent, ref } from 'vue'
 import { AnchorDialog } from '@/dialogs/anchor'
 import { MessageDialog } from '@/dialogs/message'
 import { SignInDialog } from '@/dialogs/sign-in'
-import { UnwrapNestedRefs } from '@vue/reactivity'
 import { isImplemented } from 'js-common-lib'
 
 //==========================================================================

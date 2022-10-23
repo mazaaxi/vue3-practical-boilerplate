@@ -1,7 +1,8 @@
-import { DeepReadonly, isImplemented } from 'js-common-lib'
-import { Ref, reactive, ref } from 'vue'
+import type { Ref, UnwrapNestedRefs } from 'vue'
+import { reactive, ref } from 'vue'
+import type { DeepReadonly } from 'js-common-lib'
 import { Product } from '@/services/entities'
-import { UnwrapNestedRefs } from '@vue/reactivity'
+import { isImplemented } from 'js-common-lib'
 
 //==========================================================================
 //
@@ -165,3 +166,4 @@ namespace ProductStore {
 //==========================================================================
 
 export { ProductStore }
+export type { SetProduct }
