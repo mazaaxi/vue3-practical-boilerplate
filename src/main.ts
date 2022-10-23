@@ -6,7 +6,7 @@ import { setupI18n, useI18nUtils } from '@/i18n'
 import App from './App.vue'
 import { Quasar } from 'quasar'
 import { createApp } from 'vue'
-import router from '@/router'
+import { setupRouter } from '@/router'
 import { setupConfig } from '@/config'
 import { setupServices } from '@/services'
 
@@ -20,6 +20,7 @@ async function init() {
   setupConfig()
   const i18n = setupI18n()
   await useI18nUtils().loadI18nLocaleMessages()
+  const router = setupRouter()
   setupServices()
   const constants = useConstants()
   const screen = useScreen()
@@ -43,6 +44,7 @@ async function init() {
     .use(i18n)
     .use(constants)
     .use(router)
+    .use(router.routes)
     .use(screen)
     .mount('#app')
 }
