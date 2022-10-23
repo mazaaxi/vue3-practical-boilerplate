@@ -1,9 +1,13 @@
 {
-  "name": "my-vite-app",
+  "name": "vue3-practical-boilerplate",
   "version": "0.0.0",
+  "private": true,
+  "engines": {
+    "node": "14"
+  },
   "scripts": {
     "dev": "vite",
-    "build": "run-p type-check build-only",
+    "build": "run-p type-check \"build-only --mode {1}\" --",
     "preview": "vite preview --port 4173",
     "test:unit": "vitest --environment jsdom",
     "build-only": "vite build",
