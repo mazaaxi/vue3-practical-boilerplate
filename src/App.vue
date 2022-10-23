@@ -1,6 +1,11 @@
 <script setup lang="ts">
+import { DialogContainer, setupDialogs } from '@/dialogs'
 import { RouterLink, RouterView } from 'vue-router'
 import HelloWorld from '@/components/HelloWorld.vue'
+import { ref } from 'vue'
+
+const dialogContainer = ref<DialogContainer>()
+setupDialogs(dialogContainer)
 </script>
 
 <template>
@@ -18,6 +23,8 @@ import HelloWorld from '@/components/HelloWorld.vue'
   </header>
 
   <RouterView />
+
+  <DialogContainer ref="dialogContainer" />
 </template>
 
 <style scoped>

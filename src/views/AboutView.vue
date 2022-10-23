@@ -30,14 +30,21 @@
 </template>
 
 <script setup lang="ts">
+import { useDialogs } from '@/dialogs'
 import { useI18n } from '@/i18n'
 import { useServices } from '@/services'
 
 const i18n = useI18n()
 const services = useServices()
+const dialogs = useDialogs()
 
 async function iconOnClick() {
-  console.log(i18n.t('langs.ja'))
+  dialogs.anchor.open({
+    title: i18n.t('app.anchorDialog.name'),
+    message: i18n.t('app.anchorDialog.message'),
+  })
+
+  // console.log(i18n.t('langs.ja'))
 
   // const products = await services.shop.fetchProducts()
   // console.log(JSON.stringify(products, null, 2))
