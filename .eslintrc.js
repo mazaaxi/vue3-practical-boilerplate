@@ -29,11 +29,12 @@ module.exports = {
     'no-dupe-class-members': 'off',
     'no-empty': 'off',
     'no-inner-declarations': 'off',
+    'no-redeclare': 'off',
     'no-unreachable': 'error',
+    'no-unused-vars': 'off',
     'no-var': 'error',
-    'quotes': ['error', 'single', { allowTemplateLiterals: true }],
-    'semi': ['error', 'never', { beforeStatementContinuationChars: 'never' }],
-    'sort-imports': ['error'],
+    quotes: ['error', 'single', { allowTemplateLiterals: true }],
+    semi: ['error', 'never', { beforeStatementContinuationChars: 'never' }],
     'space-before-function-paren': [
       'error',
       {
@@ -42,6 +43,7 @@ module.exports = {
         asyncArrow: 'always',
       },
     ],
+    'sort-imports': 'warn',
     'space-in-parens': ['error', 'never'],
     '@typescript-eslint/ban-ts-ignore': 'off',
     '@typescript-eslint/ban-types': [
@@ -63,7 +65,6 @@ module.exports = {
     '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/no-namespace': 'off',
     '@typescript-eslint/no-non-null-assertion': 'off',
-    'no-redeclare': 'off',
     '@typescript-eslint/no-redeclare': 'off',
     '@typescript-eslint/no-unused-vars': 'off',
     '@typescript-eslint/no-use-before-define': 'off',
