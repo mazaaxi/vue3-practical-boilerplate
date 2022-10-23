@@ -3,6 +3,7 @@ import { URL, fileURLToPath } from 'url'
 import { quasar, transformAssetUrls } from '@quasar/vite-plugin'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import vueI18n from '@intlify/vite-plugin-vue-i18n'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 
 // https://vitejs.dev/config/
@@ -14,6 +15,7 @@ export default defineConfig({
     quasar({
       sassVariables: 'src/styles/quasar.scss',
     }),
+    vueI18n(),
     vueJsx(),
   ],
 

@@ -4,6 +4,7 @@ import { TestUsers } from '@/services/test-data'
 import type { UnwrapNestedRefs } from 'vue'
 import { User } from '@/services'
 import { reactive } from 'vue'
+import { useI18n } from '@/i18n'
 import { useStores } from '@/services/stores'
 
 //==========================================================================
@@ -36,6 +37,7 @@ namespace TestServices {
 function newTestAccountLogic() {
   const base = AccountLogic.newWrapInstance()
   const stores = useStores()
+  const i18n = useI18n()
 
   /**
    * Mocking the sign-in process
@@ -45,7 +47,7 @@ function newTestAccountLogic() {
       return user.email === email && user.password === password
     })
     if (!user) {
-      throw new Error(`The specified "${email}" does not exist or the password does not match.`)
+      throw new Error(i18n.t('signIn.signInError', { email: email }))
     }
 
     const exists = Boolean(stores.user.get(user.id))

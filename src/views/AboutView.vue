@@ -30,12 +30,16 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from '@/i18n'
 import { useServices } from '@/services'
 
+const i18n = useI18n()
 const services = useServices()
 
 async function iconOnClick() {
-  const products = await services.shop.fetchProducts()
-  console.log(JSON.stringify(products, null, 2))
+  console.log(i18n.t('langs.ja'))
+
+  // const products = await services.shop.fetchProducts()
+  // console.log(JSON.stringify(products, null, 2))
 }
 </script>

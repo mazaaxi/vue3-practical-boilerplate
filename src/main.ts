@@ -2,6 +2,7 @@
 
 import { Dialog, Loading, Notify } from 'quasar'
 import { useConstants, useScreen } from '@/base'
+import { setupI18n, useI18nUtils } from '@/i18n'
 import App from './App.vue'
 import { Quasar } from 'quasar'
 import { createApp } from 'vue'
@@ -17,6 +18,8 @@ import '@/assets/main.css'
 
 async function init() {
   setupConfig()
+  const i18n = setupI18n()
+  await useI18nUtils().loadI18nLocaleMessages()
   setupServices()
   const constants = useConstants()
   const screen = useScreen()
@@ -37,6 +40,7 @@ async function init() {
         loading: {},
       },
     })
+    .use(i18n)
     .use(constants)
     .use(router)
     .use(screen)
