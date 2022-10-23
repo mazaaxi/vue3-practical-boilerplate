@@ -27,6 +27,16 @@ export default defineConfig({
     },
   },
 
+  css: {
+    preprocessorOptions: {
+      scss: {
+        additionalData: `
+          @use '@/styles/app.scss' as *;
+        `,
+      },
+    },
+  },
+
   test: {
     setupFiles: 'src/tests/setup.ts',
     watch: false,

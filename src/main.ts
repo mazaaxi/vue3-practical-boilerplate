@@ -1,20 +1,14 @@
 /* eslint-disable sort-imports */
 
-import { Dialog, Loading, Notify } from 'quasar'
-import { useConstants, useScreen } from '@/base'
 import { setupI18n, useI18nUtils } from '@/i18n'
+import { useConstants, useScreen } from '@/base'
 import App from './App.vue'
 import { Quasar } from 'quasar'
 import { createApp } from 'vue'
-import { setupRouter } from '@/router'
+import quasarOptions from '@/quasar-options'
 import { setupConfig } from '@/config'
+import { setupRouter } from '@/router'
 import { setupServices } from '@/services'
-
-import 'quasar/src/css/index.sass'
-import '@quasar/extras/roboto-font/roboto-font.css'
-import '@quasar/extras/material-icons/material-icons.css'
-import '@quasar/extras/fontawesome-v5/fontawesome-v5.css'
-import '@/assets/main.css'
 
 async function init() {
   setupConfig()
@@ -26,21 +20,7 @@ async function init() {
   const screen = useScreen()
 
   const app = createApp(App)
-    .use(Quasar, {
-      // import Quasar plugins and add here
-      plugins: {
-        Dialog,
-        Loading,
-        Notify,
-      },
-      config: {
-        screen: {
-          bodyClasses: true,
-        },
-        notify: {},
-        loading: {},
-      },
-    })
+    .use(Quasar, quasarOptions)
     .use(i18n)
     .use(constants)
     .use(router)

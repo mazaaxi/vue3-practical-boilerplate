@@ -1,0 +1,111 @@
+@use '../variables' as v;
+@use '../partials';
+
+.text-primary {
+  color: v.$text-primary;
+}
+.text-secondary {
+  color: v.$text-secondary;
+}
+.text-light {
+  color: v.$text-light;
+}
+.text-disabled {
+  color: v.$text-disabled;
+}
+.text-accent {
+  color: v.$text-accent;
+}
+.text-error {
+  color: v.$text-error;
+}
+
+.color-red {
+  color: v.$color-red !important;
+}
+.color-blue {
+  color: v.$color-blue !important;
+}
+.color-green {
+  color: v.$color-green !important;
+}
+.color-purple {
+  color: v.$color-purple !important;
+}
+.color-orange {
+  color: v.$color-orange !important;
+}
+
+@for $i from 1 through 20 {
+  .text-size-#{$i} {
+    font-size: #{$i}px;
+  }
+}
+
+@for $i from 1 through 20 {
+  .sm-text-size-#{$i} {
+    body.screen--sm & {
+      font-size: #{$i}px;
+    }
+  }
+}
+
+@for $i from 1 through 20 {
+  .xs-text-size-#{$i} {
+    body.screen--xs & {
+      font-size: #{$i}px;
+    }
+  }
+}
+
+@for $i from 1 through 20 {
+  .ltmd-text-size-#{$i} {
+    body.screen--xs &,
+    body.screen--sm & {
+      font-size: #{$i}px;
+    }
+  }
+}
+
+@for $i from 1 through 20 {
+  .ltlg-text-size-#{$i} {
+    body.screen--xs &,
+    body.screen--sm &,
+    body.screen--md & {
+      font-size: #{$i}px;
+    }
+  }
+}
+
+a {
+  @extend %anchor-link;
+}
+
+.anchor-link {
+  @extend %anchor-link;
+}
+
+.q-notification {
+  body.screen--xs &,
+  body.screen--sm & {
+    font-size: 12px;
+    border-radius: 10px;
+  }
+
+  .q-icon {
+    body.screen--xs &,
+    body.screen--sm & {
+      margin-right: 10px;
+      font-size: 20px;
+    }
+
+    .q-btn {
+      body.screen--xs &,
+      body.screen--sm & {
+        min-height: 2em;
+        padding: 0.285em;
+        font-size: 12px;
+      }
+    }
+  }
+}

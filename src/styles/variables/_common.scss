@@ -1,0 +1,40 @@
+@use 'node_modules/quasar/dist/quasar' as q;
+
+//--------------------------------------------------
+//  Application
+//--------------------------------------------------
+
+$text-primary: q.$grey-9 !default;
+$text-secondary: q.$grey-8 !default;
+$text-light: q.$grey-7 !default;
+$text-disabled: q.$grey-6 !default;
+$text-accent: q.$pink-5 !default;
+$text-error: q.$red-10 !default;
+
+$color-red: red !default;
+$color-blue: blue !default;
+$color-green: green !default;
+$color-purple: purple !default;
+$color-orange: orange !default;
+
+$text-weight-thin: map-get(q.$text-weights, 'thin') !default;
+$text-weight-light: map-get(q.$text-weights, 'light') !default;
+$text-weight-regular: map-get(q.$text-weights, 'regular') !default;
+$text-weight-medium: map-get(q.$text-weights, 'medium') !default;
+$text-weight-bold: map-get(q.$text-weights, 'bold') !default;
+$text-weight-bolder: map-get(q.$text-weights, 'bolder') !default;
+
+$app-theme-color: q.$indigo-10;
+$app-page-bg-color: q.$grey-2;
+$app-header-height: 50px;
+
+$item-box-title-color: q.$grey-10 !default;
+$item-box-title-font-size: 13px !default;
+$item-box-title-font-weight: $text-weight-regular !default;
+
+$item-box-value-color: q.$grey-7 !default;
+$item-box-value-font-size: 13px !default;
+$item-box-value-font-weight: $text-weight-regular !default;
+
+$anchor-link-color: q.$indigo-8 !default;
+$anchor-link-font-weight: $text-weight-regular !default;
