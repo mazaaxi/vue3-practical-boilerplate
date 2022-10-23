@@ -16,9 +16,12 @@ export default defineConfig({
     }),
     vueJsx(),
   ],
+
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
+      path: 'path-browserify',
+      url: 'url',
     },
   },
 })
