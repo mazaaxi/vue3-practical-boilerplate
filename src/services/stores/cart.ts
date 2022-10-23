@@ -1,6 +1,6 @@
 import { DeepReadonly, isImplemented } from 'js-common-lib'
 import { Ref, reactive, ref } from 'vue'
-import { CartItem } from '@/services/base'
+import { CartItem } from '@/services/entities'
 import { UnwrapNestedRefs } from '@vue/reactivity'
 
 //==========================================================================
@@ -9,7 +9,7 @@ import { UnwrapNestedRefs } from '@vue/reactivity'
 //
 //==========================================================================
 
-interface CartStore extends UnwrapNestedRefs<WrapCartStore> {}
+type CartStore = UnwrapNestedRefs<WrapCartStore>
 
 interface WrapCartStore {
   readonly all: DeepReadonly<Ref<CartItem[]>>

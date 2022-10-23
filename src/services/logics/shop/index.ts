@@ -1,9 +1,10 @@
-import { CartItem, ItemsChangeType, Product } from '@/services/base'
+import { CartItem, Product } from '@/services/entities'
 import { CartItemAddInput, CartItemUpdateInput, useAPIs } from '@/services/apis'
 import { ComputedRef, computed, reactive, watch } from 'vue'
 import { DeepUnreadonly, arrayToDict, assertNonNullable, isImplemented } from 'js-common-lib'
 import { Unsubscribe, createNanoEvents } from 'nanoevents'
 import { AccountLogic } from '@/services/logics/account'
+import { ItemsChangeType } from '@/services/base'
 import { UnwrapNestedRefs } from '@vue/reactivity'
 import { useStores } from '@/services/stores'
 const cloneDeep = require('rfdc')()
@@ -14,7 +15,7 @@ const cloneDeep = require('rfdc')()
 //
 //==========================================================================
 
-interface ShopLogic extends UnwrapNestedRefs<WrapShopLogic> {}
+type ShopLogic = UnwrapNestedRefs<WrapShopLogic>
 
 interface WrapShopLogic {
   readonly cartTotalPrice: ComputedRef<number>

@@ -1,7 +1,7 @@
 import { DeepPartial, DeepReadonly, isImplemented } from 'js-common-lib'
 import { Ref, reactive, ref } from 'vue'
 import { UnwrapNestedRefs } from '@vue/reactivity'
-import { User } from '@/services/base'
+import { User } from '@/services/entities'
 import dayjs from 'dayjs'
 
 //==========================================================================
@@ -10,7 +10,7 @@ import dayjs from 'dayjs'
 //
 //==========================================================================
 
-interface UserStore extends UnwrapNestedRefs<WrapUserStore> {}
+type UserStore = UnwrapNestedRefs<WrapUserStore>
 
 interface WrapUserStore {
   readonly all: DeepReadonly<Ref<User[]>>

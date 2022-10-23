@@ -1,4 +1,4 @@
-import { User } from '@/services/base'
+import { User } from '@/services/entities'
 import dayjs from 'dayjs'
 
 const TestUsers: (User & { password: string })[] = [

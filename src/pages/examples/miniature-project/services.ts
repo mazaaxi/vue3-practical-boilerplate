@@ -10,6 +10,7 @@ import {
 import { ItemsChangeType, generateId } from '@/services'
 import { Unsubscribe, createNanoEvents } from 'nanoevents'
 import { UnwrapNestedRefs } from '@vue/reactivity'
+import { createObjectCopyFunctions } from '@/base'
 const cloneDeep = require('rfdc')()
 
 //==========================================================================
@@ -23,6 +24,16 @@ interface User {
   first: string
   last: string
   age: number
+}
+
+namespace User {
+  export const { populate, clone } = createObjectCopyFunctions<User>((to, from) => {
+    if (typeof from.id === 'string') to.id = from.id
+    if (typeof from.first === 'string') to.first = from.first
+    if (typeof from.last === 'string') to.last = from.last
+    if (typeof from.age === 'number') to.age = from.age
+    return to
+  })
 }
 
 //==========================================================================
@@ -329,7 +340,7 @@ namespace AdminLogic {
     }
 
     const getAllUsers: WrapAdminLogic['getAllUsers'] = () => {
-      return cloneDeep(stores.user.all)
+      return User.clone(stores.user.all)
     }
 
     const onUsersChange: WrapAdminLogic['onUsersChange'] = cb => {

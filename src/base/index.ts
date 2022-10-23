@@ -1,3 +1,4 @@
+import { DeepPartial, DeepReadonly, DeepUnreadonly } from 'js-common-lib'
 import { Notify } from 'quasar'
 import merge from 'lodash/merge'
 
@@ -6,6 +7,39 @@ import merge from 'lodash/merge'
 //  Implementation
 //
 //==========================================================================
+
+/**
+ * Create copy functions named `populate` and `clone`. Implement a function that populates data
+ * from `from` to `to` for the argument `populateFn`.
+ * @param populateFn
+ */
+function createObjectCopyFunctions<T>(
+  populateFn: <TO extends DeepPartial<T>, FROM extends DeepPartial<DeepReadonly<T>>>(
+    to: TO,
+    from: FROM
+  ) => any
+): {
+  populate: <TO extends DeepPartial<T>, FROM extends DeepPartial<DeepReadonly<T>>>(
+    to: TO,
+    from: FROM
+  ) => DeepUnreadonly<TO & FROM>
+  clone: <SOURCE extends DeepReadonly<T | T[] | undefined | null>>(
+    source: SOURCE
+  ) => DeepUnreadonly<SOURCE>
+} {
+  const populate = populateFn
+
+  const clone: any = (source: any) => {
+    if (!source) return source
+    if (Array.isArray(source)) {
+      return source.map(item => clone(item))
+    } else {
+      return populateFn({} as any, source)
+    }
+  }
+
+  return { populate, clone }
+}
 
 /**
  * Displays a notification bar on the screen.
@@ -95,7 +129,7 @@ function isFontAwesome(icon: string | undefined | null): boolean {
 //
 //==========================================================================
 
-export { showNotification, getBaseURL, isFontAwesome }
+export { createObjectCopyFunctions, showNotification, getBaseURL, isFontAwesome }
 export * from '@/base/constants'
 export * from '@/base/screen'
 export * from '@/base/style'

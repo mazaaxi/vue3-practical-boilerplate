@@ -50,3 +50,4 @@ namespace Services {
 const { setupServices, useServices } = Services
 export { Services, setupServices, useServices }
 export * from '@/services/base'
+export * from '@/services/entities'

@@ -1,4 +1,5 @@
-import { CartItem, Product, ToRawEntity, toEntities } from '@/services/base'
+import { CartItem, Product } from '@/services/entities'
+import { ToRawEntity, toEntities } from '@/services/base'
 import { APIClient } from '@/services/apis/client'
 import { isImplemented } from 'js-common-lib'
 
@@ -148,4 +149,5 @@ namespace APIs {
 //==========================================================================
 
 const { setupAPIs, useAPIs } = APIs
-export { APIs, CartItemAddInput, CartItemEditResponse, CartItemUpdateInput, setupAPIs, useAPIs }
+export { APIs, setupAPIs, useAPIs }
+export type { CartItemAddInput, CartItemEditResponse, CartItemUpdateInput }

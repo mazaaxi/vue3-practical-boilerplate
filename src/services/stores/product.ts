@@ -1,6 +1,6 @@
 import { DeepReadonly, isImplemented } from 'js-common-lib'
 import { Ref, reactive, ref } from 'vue'
-import { Product } from '@/services/base'
+import { Product } from '@/services/entities'
 import { UnwrapNestedRefs } from '@vue/reactivity'
 
 //==========================================================================
@@ -9,7 +9,7 @@ import { UnwrapNestedRefs } from '@vue/reactivity'
 //
 //==========================================================================
 
-interface ProductStore extends UnwrapNestedRefs<WrapProductStore> {}
+type ProductStore = UnwrapNestedRefs<WrapProductStore>
 
 interface WrapProductStore {
   readonly all: DeepReadonly<Ref<Product[]>>

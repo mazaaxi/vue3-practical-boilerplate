@@ -2,7 +2,7 @@ import { DeepReadonly, extensibleMethod, isImplemented } from 'js-common-lib'
 import { Ref, reactive, ref } from 'vue'
 import { TestUsers } from '@/services/test-data'
 import { UnwrapNestedRefs } from '@vue/reactivity'
-import { User } from '@/services/base'
+import { User } from '@/services/entities'
 import { UserStore } from '@/services/stores/user'
 import { useStores } from '@/services/stores'
 
@@ -12,7 +12,7 @@ import { useStores } from '@/services/stores'
 //
 //==========================================================================
 
-interface AccountLogic extends UnwrapNestedRefs<WrapAccountLogic> {}
+type AccountLogic = UnwrapNestedRefs<WrapAccountLogic>
 
 interface WrapAccountLogic {
   readonly user: DeepReadonly<Ref<User>>

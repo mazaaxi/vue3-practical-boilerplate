@@ -1,6 +1,6 @@
-import { DeepPartial, DeepReadonly, DeepUnreadonly, nonNullable } from 'js-common-lib'
 import dayjs, { Dayjs } from 'dayjs'
 import { customAlphabet } from 'nanoid'
+import { nonNullable } from 'js-common-lib'
 
 //==========================================================================
 //
@@ -72,26 +72,6 @@ type ToDeepRawDate<T> = {
 }
 
 type ItemsChangeType = 'Add' | 'Update' | 'Remove'
-
-interface User extends TimestampEntity {
-  email: string
-  first: string
-  last: string
-}
-
-interface Product extends TimestampEntity {
-  title: string
-  price: number
-  stock: number
-}
-
-interface CartItem extends TimestampEntity {
-  uid: string
-  productId: string
-  title: string
-  price: number
-  quantity: number
-}
 
 //==========================================================================
 //
@@ -203,90 +183,6 @@ function generateId(): string {
   return nanoid()
 }
 
-namespace User {
-  export function populate<
-    TO extends DeepPartial<User>,
-    FM extends DeepPartial<DeepReadonly<User>>
-  >(to: TO, from: FM): DeepUnreadonly<FM & TO> {
-    if (typeof from.id === 'string') to.id = from.id
-    if (typeof from.email === 'string') to.email = from.email
-    if (typeof from.first === 'string') to.first = from.first
-    if (typeof from.last === 'string') to.last = from.last
-    if (dayjs.isDayjs(from.createdAt)) to.createdAt = dayjs(from.createdAt)
-    if (dayjs.isDayjs(from.updatedAt)) to.updatedAt = dayjs(from.updatedAt)
-    return to as DeepUnreadonly<FM & TO>
-  }
-
-  export function clone<T extends User | User[] | undefined | null>(source: DeepReadonly<T>): T {
-    if (!source) return source as T
-    if (Array.isArray(source)) {
-      const list = source as DeepReadonly<User>[]
-      return list.map(item => clone(item)) as T
-    } else {
-      const item = source as DeepReadonly<User>
-      return populate({}, item) as T
-    }
-  }
-}
-
-namespace Product {
-  export function populate<
-    TO extends DeepPartial<Product>,
-    FM extends DeepPartial<DeepReadonly<Product>>
-  >(to: TO, from: FM): DeepUnreadonly<FM & TO> {
-    if (typeof from.id === 'string') to.id = from.id
-    if (typeof from.title === 'string') to.title = from.title
-    if (typeof from.price === 'number') to.price = from.price
-    if (typeof from.stock === 'number') to.stock = from.stock
-    if (dayjs.isDayjs(from.createdAt)) to.createdAt = dayjs(from.createdAt)
-    if (dayjs.isDayjs(from.updatedAt)) to.updatedAt = dayjs(from.updatedAt)
-    return to as DeepUnreadonly<FM & TO>
-  }
-
-  export function clone<
-    T extends DeepReadonly<Product> | DeepReadonly<Product[]> | undefined | null
-  >(source: T): DeepUnreadonly<T> {
-    if (!source) return source as DeepUnreadonly<T>
-    if (Array.isArray(source)) {
-      const list = source as DeepReadonly<Product>[]
-      return list.map(item => clone(item)) as DeepUnreadonly<T>
-    } else {
-      const item = source as DeepReadonly<Product>
-      return populate({}, item) as DeepUnreadonly<T>
-    }
-  }
-}
-
-namespace CartItem {
-  export function populate<
-    TO extends DeepPartial<CartItem>,
-    FM extends DeepPartial<DeepReadonly<CartItem>>
-  >(to: TO, from: FM): DeepUnreadonly<FM & TO> {
-    if (typeof from.id === 'string') to.id = from.id
-    if (typeof from.uid === 'string') to.uid = from.uid
-    if (typeof from.productId === 'string') to.productId = from.productId
-    if (typeof from.title === 'string') to.title = from.title
-    if (typeof from.price === 'number') to.price = from.price
-    if (typeof from.quantity === 'number') to.quantity = from.quantity
-    if (dayjs.isDayjs(from.createdAt)) to.createdAt = dayjs(from.createdAt)
-    if (dayjs.isDayjs(from.updatedAt)) to.updatedAt = dayjs(from.updatedAt)
-    return to as DeepUnreadonly<FM & TO>
-  }
-
-  export function clone<
-    T extends DeepReadonly<CartItem> | DeepReadonly<CartItem[]> | undefined | null
-  >(source: T): DeepUnreadonly<T> {
-    if (!source) return source as DeepUnreadonly<T>
-    if (Array.isArray(source)) {
-      const list = source as DeepReadonly<CartItem>[]
-      return list.map(item => clone(item)) as DeepUnreadonly<T>
-    } else {
-      const item = source as DeepUnreadonly<CartItem>
-      return populate({}, item) as DeepUnreadonly<T>
-    }
-  }
-}
-
 //==========================================================================
 //
 //  Export
@@ -294,19 +190,6 @@ namespace CartItem {
 //==========================================================================
 
 export {
-  CartItem,
-  ItemsChangeType,
-  Entity,
-  EntityTimestamp,
-  Product,
-  TimestampEntity,
-  ToDeepEntityDateAre,
-  ToDeepRawDate,
-  ToEntity,
-  ToEntityDate,
-  ToRawDate,
-  ToRawEntity,
-  User,
   generateId,
   toDeepEntityDate,
   toDeepRawDate,
@@ -316,4 +199,17 @@ export {
   toRawDate,
   toRawEntities,
   toRawEntity,
+}
+
+export type {
+  Entity,
+  EntityTimestamp,
+  ItemsChangeType,
+  TimestampEntity,
+  ToDeepEntityDateAre,
+  ToDeepRawDate,
+  ToEntity,
+  ToEntityDate,
+  ToRawDate,
+  ToRawEntity,
 }
