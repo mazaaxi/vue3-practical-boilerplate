@@ -1,5 +1,5 @@
-import type { RouteInput, WrapRoute } from '@/router'
-import { Route } from '@/router'
+import type { BaseRouteInput, WrapBaseRoute } from '@/router/base'
+import { BaseRoute } from '@/router/base'
 import type { UnwrapNestedRefs } from 'vue'
 import { isImplemented } from 'js-common-lib'
 
@@ -7,21 +7,21 @@ import { isImplemented } from 'js-common-lib'
 //  HomeRoute
 //==========================================================================
 
-type HomeRoute = UnwrapNestedRefs<WrapAboutRoute>
+type HomeRoute = UnwrapNestedRefs<WrapHomeRoute>
 
-interface WrapAboutRoute extends WrapRoute {}
+interface WrapHomeRoute extends WrapBaseRoute {}
 
 namespace HomeRoute {
-  export function newWrapInstance(input: RouteInput) {
+  export function newWrapInstance(input: BaseRouteInput) {
     //----------------------------------------------------------------------
     //
     //  Variables
     //
     //----------------------------------------------------------------------
 
-    const base = Route.newWrapInstance({
-      routePath: `/home`,
-      component: () => import('@/views/HomeView.vue'),
+    const base = BaseRoute.newWrapInstance({
+      routePath: `/:locale/home`,
+      component: () => import('@/pages/home'),
       ...input,
     })
 
@@ -35,7 +35,7 @@ namespace HomeRoute {
       ...base,
     }
 
-    return isImplemented<WrapAboutRoute, typeof result>(result)
+    return isImplemented<WrapHomeRoute, typeof result>(result)
   }
 }
 

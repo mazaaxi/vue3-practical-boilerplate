@@ -15,7 +15,12 @@ export default defineConfig({
     quasar({
       sassVariables: 'src/styles/quasar.scss',
     }),
-    vueI18n(),
+
+    // TODO
+    //   When build and run with the following specified, the text is not displayed,
+    //   so please investigate.
+    // vueI18n({}),
+
     vueJsx(),
   ],
 

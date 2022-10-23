@@ -1,27 +1,29 @@
-import type { RouteInput, WrapRoute } from '@/router'
-import { Route } from '@/router'
+import type { BaseRouteInput, WrapBaseRoute } from '@/router/base'
+import { BaseRoute } from '@/router/base'
 import type { UnwrapNestedRefs } from 'vue'
 import { isImplemented } from 'js-common-lib'
 
 //==========================================================================
-//  AboutRoute
+//
+//  ShopRoute
+//
 //==========================================================================
 
-type AboutRoute = UnwrapNestedRefs<WrapAboutRoute>
+type ShopRoute = UnwrapNestedRefs<WrapShopRoute>
 
-interface WrapAboutRoute extends WrapRoute {}
+interface WrapShopRoute extends WrapBaseRoute<void> {}
 
-namespace AboutRoute {
-  export function newWrapInstance(input: RouteInput) {
+namespace ShopRoute {
+  export function newWrapInstance(input: BaseRouteInput) {
     //----------------------------------------------------------------------
     //
     //  Variables
     //
     //----------------------------------------------------------------------
 
-    const base = Route.newWrapInstance({
-      routePath: `/about`,
-      component: () => import('@/views/AboutView.vue'),
+    const base = BaseRoute.newWrapInstance({
+      routePath: `/:locale/shop`,
+      component: () => import('@/pages/shop'),
       ...input,
     })
 
@@ -35,7 +37,7 @@ namespace AboutRoute {
       ...base,
     }
 
-    return isImplemented<WrapAboutRoute, typeof result>(result)
+    return isImplemented<WrapShopRoute, typeof result>(result)
   }
 }
 
@@ -45,4 +47,4 @@ namespace AboutRoute {
 //
 //==========================================================================
 
-export { AboutRoute }
+export { ShopRoute }

@@ -24,42 +24,40 @@ interface TestServices extends UnwrapNestedRefs<ReturnType<typeof TestServices['
 namespace TestServices {
   export function newInstance() {
     return {
-      account: AccountLogic.setupInstance(reactive(newTestAccountLogic())),
+      account: AccountLogic.setupInstance(reactive(TestAccountLogic.newWrapInstance())),
       shop: ShopLogic.setupInstance(reactive(ShopLogic.newWrapInstance())),
     }
   }
 }
 
-//--------------------------------------------------
-//  AccountLogic
-//--------------------------------------------------
+namespace TestAccountLogic {
+  export function newWrapInstance() {
+    const base = AccountLogic.newWrapInstance()
+    const stores = useStores()
+    const i18n = useI18n()
 
-function newTestAccountLogic() {
-  const base = AccountLogic.newWrapInstance()
-  const stores = useStores()
-  const i18n = useI18n()
+    /**
+     * Mocking the sign-in process
+     */
+    base.signIn.body = async (email, password) => {
+      const user = TestUsers.find(user => {
+        return user.email === email && user.password === password
+      })
+      if (!user) {
+        throw new Error(i18n.t('signIn.signInError', { email: email }))
+      }
 
-  /**
-   * Mocking the sign-in process
-   */
-  base.signIn.body = async (email, password) => {
-    const user = TestUsers.find(user => {
-      return user.email === email && user.password === password
-    })
-    if (!user) {
-      throw new Error(i18n.t('signIn.signInError', { email: email }))
+      const exists = Boolean(stores.user.get(user.id))
+      exists ? stores.user.set(user) : stores.user.add(user)
+      User.populate(base.user.value, user)
+      base.isSignedIn.value = true
+
+      return true
     }
 
-    const exists = Boolean(stores.user.get(user.id))
-    exists ? stores.user.set(user) : stores.user.add(user)
-    User.populate(base.user.value, user)
-    base.isSignedIn.value = true
-
-    return true
-  }
-
-  return {
-    ...base,
+    return {
+      ...base,
+    }
   }
 }
 

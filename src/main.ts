@@ -1,8 +1,6 @@
-/* eslint-disable sort-imports */
-
 import { setupI18n, useI18nUtils } from '@/i18n'
 import { useConstants, useScreen } from '@/base'
-import App from './App.vue'
+import AppPage from './pages/app'
 import { Quasar } from 'quasar'
 import { createApp } from 'vue'
 import quasarOptions from '@/quasar-options'
@@ -14,17 +12,17 @@ async function init() {
   setupConfig()
   const i18n = setupI18n()
   await useI18nUtils().loadI18nLocaleMessages()
-  const router = setupRouter()
+  const router = setupRouter(i18n)
   setupServices()
   const constants = useConstants()
   const screen = useScreen()
 
-  const app = createApp(App)
+  const app = createApp(AppPage)
     .use(Quasar, quasarOptions)
     .use(i18n)
-    .use(constants)
     .use(router)
     .use(router.routes)
+    .use(constants)
     .use(screen)
     .mount('#app')
 }

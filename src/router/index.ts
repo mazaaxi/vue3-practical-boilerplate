@@ -1,10 +1,13 @@
+import type { App, WritableComputedRef } from 'vue'
 import { Route, Router } from '@/router/core'
-import { AboutRoute } from '@/router/routes/about'
-import type { App } from 'vue'
+import { SupportI18nLocales, useI18nUtils } from '@/i18n'
+import { computed, reactive, watch } from 'vue'
+import type { BaseRouteInput } from '@/router/base'
+import { ExamplesRoutes } from '@/router/routes/examples'
 import { HomeRoute } from '@/router/routes/home'
+import type { I18n } from 'vue-i18n'
 import type { RawRoute } from '@/router/core'
-import type { RouteInput } from '@/router/core'
-import { reactive } from 'vue'
+import { ShopRoute } from '@/router/routes/shop'
 
 //==========================================================================
 //
@@ -16,7 +19,8 @@ type AppRouter = Router<AppRoutes>
 
 interface AppRoutes {
   home: HomeRoute
-  about: AboutRoute
+  shop: ShopRoute
+  examples: ExamplesRoutes
   /**
    * @see Plugin.install of @vue/runtime-core
    */
@@ -32,8 +36,8 @@ interface AppRoutes {
 namespace AppRouter {
   let instance: AppRouter
 
-  export function setupRouter(router?: AppRouter): AppRouter {
-    instance = router ?? newInstance()
+  export function setupRouter(i18n: I18n, router?: AppRouter): AppRouter {
+    instance = router ?? newInstance(i18n)
     return instance
   }
 
@@ -46,7 +50,17 @@ namespace AppRouter {
     return instance
   }
 
-  function newInstance(): AppRouter {
+  function newInstance(i18n: I18n): AppRouter {
+    //----------------------------------------------------------------------
+    //
+    //  Variables
+    //
+    //----------------------------------------------------------------------
+
+    const locale = computed(() => (i18n.global.locale as WritableComputedRef<string>).value)
+
+    const { loadI18nLocaleMessages } = useI18nUtils()
+
     //----------------------------------------------------------------------
     //
     //  Properties
@@ -56,11 +70,12 @@ namespace AppRouter {
     //--------------------------------------------------
     //  Set your routes
 
-    const routeInput: RouteInput = {}
+    const routeInput: BaseRouteInput = { locale }
 
     const routes = {
       home: HomeRoute.newWrapInstance(routeInput),
-      about: AboutRoute.newWrapInstance(routeInput),
+      shop: ShopRoute.newWrapInstance(routeInput),
+      examples: ExamplesRoutes.newWrapInstance(routeInput),
       install: (app: App) => {
         app.config.globalProperties.$routes = routes
       },
@@ -68,11 +83,14 @@ namespace AppRouter {
 
     const flattenRoutes: RawRoute[] = [
       routes.home,
-      routes.about,
+      routes.shop,
+      routes.examples.abc,
+      routes.examples.miniatureProject,
+      routes.examples.routing,
       // fallback route
       Route.newWrapInstance({
         routePath: `/:pathMatch(.*)*`,
-        redirect: `/home`,
+        redirect: `/${locale.value}/home`,
       }),
     ]
 
@@ -81,7 +99,37 @@ namespace AppRouter {
     const router = Router.newWrapInstance({
       routes,
       flattenRoutes,
+      beforeRouteUpdate: async (router, to, from, next) => {
+        const paramsLocale = to.params.locale as string
+
+        // if `paramsLocale` is not in `SupportI18nLocales`, use current `locale`
+        if (!SupportI18nLocales.includes(paramsLocale)) {
+          next(`/${locale.value}`)
+          return false
+        }
+
+        // load locale messages
+        await loadI18nLocaleMessages(paramsLocale)
+
+        return true
+      },
     })
+
+    //----------------------------------------------------------------------
+    //
+    //  Events
+    //
+    //----------------------------------------------------------------------
+
+    watch(
+      () => locale.value,
+      async (newValue, oldValue) => {
+        // when a language switch occurs, refresh the current route to embed the switched language
+        // in the path.
+        const current = flattenRoutes.find(route => route.isCurrent.value)
+        current && (await current.refresh())
+      }
+    )
 
     //----------------------------------------------------------------------
     //
