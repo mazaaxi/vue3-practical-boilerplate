@@ -25,6 +25,12 @@ export default defineConfig({
     },
   },
 
+  test: {
+    setupFiles: 'src/tests/setup.ts',
+    watch: false,
+    threads: false,
+  },
+
   server: {
     host: '0.0.0.0',
     port: 5050,

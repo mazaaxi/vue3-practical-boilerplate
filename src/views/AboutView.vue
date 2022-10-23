@@ -30,7 +30,12 @@
 </template>
 
 <script setup lang="ts">
-function iconOnClick() {
-  console.log('iconOnClick')
+import { useServices } from '@/services'
+
+const services = useServices()
+
+async function iconOnClick() {
+  const products = await services.shop.fetchProducts()
+  console.log(JSON.stringify(products, null, 2))
 }
 </script>

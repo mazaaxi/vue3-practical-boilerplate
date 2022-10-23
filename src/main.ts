@@ -1,38 +1,45 @@
-import { createApp } from 'vue'
-import App from '@/App.vue'
-import router from '@/router'
-import '@/assets/main.css'
-import { Quasar } from 'quasar'
+/* eslint-disable sort-imports */
+
 import { Dialog, Loading, Notify } from 'quasar'
+import { useConstants, useScreen } from '@/base'
+import App from './App.vue'
+import { Quasar } from 'quasar'
+import { createApp } from 'vue'
+import router from '@/router'
+import { setupConfig } from '@/config'
+import { setupServices } from '@/services'
 
-// Import icon libraries
-import '@quasar/extras/material-icons/material-icons.css'
-import '@quasar/extras/material-icons-outlined/material-icons-outlined.css'
-import '@quasar/extras/material-icons-round/material-icons-round.css'
-import '@quasar/extras/material-icons-sharp/material-icons-sharp.css'
-import '@quasar/extras/material-symbols-outlined/material-symbols-outlined.css'
-import '@quasar/extras/material-symbols-rounded/material-symbols-rounded.css'
-import '@quasar/extras/material-symbols-sharp/material-symbols-sharp.css'
-
-// Import Quasar css
 import 'quasar/src/css/index.sass'
+import '@quasar/extras/roboto-font/roboto-font.css'
+import '@quasar/extras/material-icons/material-icons.css'
+import '@quasar/extras/fontawesome-v5/fontawesome-v5.css'
+import '@/assets/main.css'
 
-const app = createApp(App)
-  .use(router)
-  .use(Quasar, {
-    // import Quasar plugins and add here
-    plugins: {
-      Dialog,
-      Loading,
-      Notify,
-    },
-    config: {
-      screen: {
-        bodyClasses: true,
+async function init() {
+  setupConfig()
+  setupServices()
+  const constants = useConstants()
+  const screen = useScreen()
+
+  const app = createApp(App)
+    .use(Quasar, {
+      // import Quasar plugins and add here
+      plugins: {
+        Dialog,
+        Loading,
+        Notify,
       },
-      notify: {},
-      loading: {},
-    },
-  })
-
-app.mount('#app')
+      config: {
+        screen: {
+          bodyClasses: true,
+        },
+        notify: {},
+        loading: {},
+      },
+    })
+    .use(constants)
+    .use(router)
+    .use(screen)
+    .mount('#app')
+}
+init()
