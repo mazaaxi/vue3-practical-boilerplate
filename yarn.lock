@@ -1290,7 +1290,7 @@ data-urls@^3.0.2:
     whatwg-mimetype "^3.0.0"
     whatwg-url "^11.0.0"
 
-dayjs@^1.10.6, dayjs@^1.11.5:
+dayjs@^1.11.6:
   version "1.11.6"
   resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.11.6.tgz#2e79a226314ec3ec904e3ee1dd5a4f5e5b1c7afb"
   integrity sha512-zZbY5giJAinCG+7AGaw0wIhNZ6J8AhWuSXKvuc1KAyMiRsvGQWqh4L+MomvhdAYjN+lqvVCMq1I41e3YHvXkyQ==
@@ -2479,10 +2479,10 @@ jju@^1.1.0:
   integrity sha512-8wb9Yw966OSxApiCt0K3yNJL8pnNeIv+OEq2YMidz4FKP6nonSRoOXc80iXY4JaN2FC11B9qsNmDsm+ZOfMROA==
 
 "js-common-lib@https://github.com/mazaaxi/js-common-lib.git":
-  version "0.0.1"
-  resolved "https://github.com/mazaaxi/js-common-lib.git#1833d932c543d747fd1556eff7585811c64aa0ed"
+  version "0.0.2"
+  resolved "https://github.com/mazaaxi/js-common-lib.git#1c67b1e36ef4d5848859e12784ae9fe35732fd4b"
   dependencies:
-    dayjs "^1.10.6"
+    dayjs "^1.11.6"
 
 js-sdsl@^4.1.4:
   version "4.1.5"
