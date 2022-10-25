@@ -13,15 +13,19 @@
     "test:unit": "vitest --environment jsdom",
     "build-only": "vite build",
     "type-check": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false",
-    "lint": "npm run lint:eslint",
-    "lint:eslint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
+    "lint": "npm run lint:eslint -- --fix && npm run lint:stylelint -- --fix",
+    "lint:eslint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --ignore-path .gitignore",
+    "lint:stylelint": "stylelint \"./src/**/*.{vue,scss,sass}\"",
     "db:setup": "source ./package.scripts.sh && SetupDB",
     "db:revert": "source ./package.scripts.sh && RevertDB",
     "prepare": "husky install"
   },
   "lint-staged": {
     "./**/*.{vue,js,jsx,cjs,mjs,ts,tsx,cts,mts}": [
-      "npm run lint"
+      "npm run lint:eslint"
+    ],
+    "./**/*.{vue,scss,sass}": [
+      "npm run lint:stylelint"
     ]
   },
   "dependencies": {
@@ -64,9 +68,17 @@
     "json-server": "^0.17.0",
     "lint-staged": "^13.0.3",
     "npm-run-all": "^4.1.5",
+    "postcss": "^8.4.18",
+    "postcss-html": "^1.5.0",
     "prettier": "^2.7.1",
     "sass": "1.32.12",
     "simple-git": "^3.14.1",
+    "stylelint": "^14.14.0",
+    "stylelint-config-prettier": "^9.0.3",
+    "stylelint-config-recess-order": "^3.0.0",
+    "stylelint-config-recommended-scss": "^8.0.0",
+    "stylelint-config-recommended-vue": "^1.4.0",
+    "stylelint-prettier": "^2.0.0",
     "typescript": "~4.7.4",
     "vite": "^3.0.9",
     "vitest": "^0.23.0",
