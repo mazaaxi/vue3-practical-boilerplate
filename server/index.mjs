@@ -366,5 +366,6 @@ server.put(`/${APIPrefix}/cartItems/checkout`, (req, res, next) => {
 
 // launch json-server
 server.listen(VITE_APP_API_PORT, () => {
+  // eslint-disable-next-line no-console
   console.log(`API Server running at: http://localhost:${VITE_APP_API_PORT}/`)
 })
