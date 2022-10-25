@@ -13,7 +13,7 @@
     padding: 24px;
   }
 
-  .log-input {
+  .logInput {
     width: 100%;
     min-height: 300px;
     font-family: 'MS Gothic', 'Osaka-Mono', monospace;
@@ -26,11 +26,11 @@
   }
 }
 
-.page-container {
+.pageContainer {
   width: 100%;
   padding: 10px;
 
-  .page-num-btn {
+  .pageNumBtn {
     color: $primary;
 
     &.active {
@@ -42,7 +42,7 @@
 
 <template>
   <q-page class="RoutingPage layout vertical center">
-    <q-card class="page-container">
+    <q-card class="pageContainer">
       <div class="layout horizontal center-justified">
         <q-btn flat color="primary" noCaps @click="backHistoryButtonOnClick">
           <div class="layout horizontal center">
@@ -62,7 +62,7 @@
         <q-btn
           v-for="page in pages"
           :key="page"
-          class="page-num-btn"
+          class="pageNumBtn"
           :class="{ active: page === currentPage }"
           flat
           :label="page"
@@ -81,14 +81,7 @@
       </q-btn>
     </div>
 
-    <q-input
-      ref="logInput"
-      v-model="logMessage"
-      class="log-input"
-      type="textarea"
-      filled
-      readonly
-    />
+    <q-input ref="logInput" v-model="logMessage" class="logInput" type="textarea" filled readonly />
   </q-page>
 </template>
 

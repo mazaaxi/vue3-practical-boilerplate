@@ -19,12 +19,12 @@
   border: 1px solid $primary;
 }
 
-.title-text {
+.titleText {
   @extend %text-h6;
 }
 
-.product-item,
-.cart-item {
+.productItem,
+.cartItem {
   padding: 12px;
 
   .title {
@@ -37,12 +37,12 @@
   }
 }
 
-.empty-cart {
+.emptyCart {
   padding: 12px;
   @extend %text-subtitle1;
 }
 
-.total-amount {
+.totalAmount {
   padding: 12px;
 
   .title {
@@ -53,13 +53,6 @@
     @extend %text-h6;
     color: $text-light;
   }
-}
-
-.error-text {
-  @extend %text-body2;
-  margin: 0 20px;
-  color: $text-error;
-  text-align: right;
 }
 </style>
 
@@ -83,13 +76,13 @@
 
     <div>
       <div class="layout horizontal center space-mt-20">
-        <div class="title-text">{{ $t('shop.products') }}</div>
+        <div class="titleText">{{ $t('shop.products') }}</div>
       </div>
       <hr style="width: 100%" />
       <div
         v-for="product in products"
         :key="product.id"
-        class="layout horizontal center product-item"
+        class="layout horizontal center productItem"
       >
         <div class="layout vertical center-justified">
           <div class="title">{{ product.title }}</div>
@@ -114,18 +107,18 @@
 
     <div v-show="isSignedIn" class="space-mt-20">
       <div class="layout horizontal center">
-        <div class="title-text">{{ $t('shop.whoseCart', { name: user.fullName }) }}</div>
+        <div class="titleText">{{ $t('shop.whoseCart', { name: user.fullName }) }}</div>
         <div class="flex-1"></div>
       </div>
       <hr style="width: 100%" />
       <template v-if="isCartEmpty">
-        <div class="empty-cart">{{ $t('shop.isCartEmpty') }}</div>
+        <div class="emptyCart">{{ $t('shop.isCartEmpty') }}</div>
       </template>
       <template v-else>
         <div
           v-for="cartItem in cartItems"
           :key="cartItem.id"
-          class="layout horizontal center cart-item"
+          class="layout horizontal center cartItem"
         >
           <div class="layout vertical center-justified">
             <div class="title">{{ cartItem.title }}</div>
@@ -148,12 +141,12 @@
 
     <div v-show="isSignedIn" class="space-mt-20">
       <div class="layout horizontal center">
-        <div class="title-text">{{ $t('shop.total') }}</div>
+        <div class="titleText">{{ $t('shop.total') }}</div>
         <div class="flex-1"></div>
       </div>
       <hr style="width: 100%" />
       <div class="layout horizontal center">
-        <div class="total-amount layout horizontal center">
+        <div class="totalAmount layout horizontal center">
           <div class="detail">{{ $n(cartTotalPrice, 'currency') }}</div>
         </div>
         <div class="flex-1"></div>

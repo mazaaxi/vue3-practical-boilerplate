@@ -1,12 +1,12 @@
 <style lang="scss" scoped>
 .MessageInput {
   &::v-deep(.message-input-class) {
-    color: var(--message-input-color);
+    color: var(--messageInputColor);
   }
 }
 
 .input {
-  width: var(--message-input-width);
+  width: var(--messageInputWidth);
 }
 </style>
 

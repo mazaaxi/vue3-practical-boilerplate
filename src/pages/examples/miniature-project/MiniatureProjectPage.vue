@@ -13,7 +13,7 @@
     padding: 24px;
   }
 
-  .log-input {
+  .logInput {
     width: 100%;
     min-height: 300px;
     margin-top: 24px;
@@ -117,14 +117,7 @@
       </template>
     </q-table>
 
-    <q-input
-      ref="logInput"
-      v-model="logMessage"
-      class="log-input"
-      type="textarea"
-      filled
-      readonly
-    />
+    <q-input ref="logInput" v-model="logMessage" class="logInput" type="textarea" filled readonly />
   </q-page>
 </template>
 
