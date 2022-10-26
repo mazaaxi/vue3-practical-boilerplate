@@ -1,6 +1,6 @@
 import type { BaseRouteInput, WrapBaseRoute } from '@/router/base'
 import type { Ref, UnwrapNestedRefs } from 'vue'
-import { extensibleMethod, isImplemented, pickProps, removeEndSlash } from 'js-common-lib'
+import { isImplemented, pickProps, removeEndSlash } from 'js-common-lib'
 import { reactive, ref } from 'vue'
 import { BaseRoute } from '@/router/base'
 import type { DeepReadonly } from 'js-common-lib'
@@ -74,27 +74,25 @@ namespace AbcRoute {
     //
     //----------------------------------------------------------------------
 
-    const move = (base.move.body = extensibleMethod<WrapAbcRoute['move']>(async message => {
+    base.move.body = <WrapAbcRoute['move']>(async message => {
       Object.assign(message || {}, pickProps(message || {}, ['title', 'body']))
       await base.router.value.push(toMovePath(message))
-    }))
+    })
 
-    const toMovePath = (base.toMovePath.body = extensibleMethod<WrapAbcRoute['toMovePath']>(
-      message => {
-        const query: { [key: string]: string } = {}
-        if (message?.title) {
-          query.title = message.title
-        }
-        if (message?.body) {
-          query.body = message.body
-        }
-
-        return base.toPath({
-          routePath: base.routePath.value,
-          query,
-        })
+    const toMovePath = (base.toMovePath.body = <WrapAbcRoute['toMovePath']>(message => {
+      const query: { [key: string]: string } = {}
+      if (message?.title) {
+        query.title = message.title
       }
-    ))
+      if (message?.body) {
+        query.body = message.body
+      }
+
+      return base.toPath({
+        routePath: base.routePath.value,
+        query,
+      })
+    }))
 
     //----------------------------------------------------------------------
     //
@@ -125,8 +123,6 @@ namespace AbcRoute {
 
     return {
       ...base,
-      move,
-      toMovePath,
       message,
     }
   }
@@ -203,19 +199,17 @@ namespace RoutingRoute {
     //
     //----------------------------------------------------------------------
 
-    const move = (base.move.body = extensibleMethod<WrapRoutingRoute['move']>(async newPage => {
+    base.move.body = <WrapRoutingRoute['move']>(async newPage => {
       // set new move path as route
       await base.router.value.push(toMovePath(newPage))
-    }))
+    })
 
-    const toMovePath = (base.toMovePath.body = extensibleMethod<WrapRoutingRoute['toMovePath']>(
-      page => {
-        return base.toPath({
-          routePath: base.routePath.value,
-          query: { page: page.toString() },
-        })
-      }
-    ))
+    const toMovePath = (base.toMovePath.body = <WrapRoutingRoute['toMovePath']>(page => {
+      return base.toPath({
+        routePath: base.routePath.value,
+        query: { page: page.toString() },
+      })
+    }))
 
     const parse: RoutingRoute['parse'] = path_or_fullPath => {
       const parsedURL = url.parse(path_or_fullPath, true)
@@ -286,8 +280,6 @@ namespace RoutingRoute {
     const result = {
       ...base,
       page,
-      move,
-      toMovePath,
       parse,
       replacePage,
     }
