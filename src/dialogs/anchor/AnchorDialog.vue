@@ -57,16 +57,14 @@ import merge from 'lodash/merge'
 //
 //==========================================================================
 
-type AnchorDialog = Dialog<AnchorDialogOpenParams, void> &
-  AnchorDialog.Props &
-  AnchorDialog.Features
+type AnchorDialog = AnchorDialog.Props & AnchorDialog.Features
 
 namespace AnchorDialog {
   export interface Props {}
 
   export type Features = UnwrapNestedRefs<WrapFeatures>
 
-  export interface WrapFeatures {
+  export interface WrapFeatures extends Dialog<AnchorDialogOpenParams, void> {
     readonly params: AnchorDialogOpenParams
   }
 }

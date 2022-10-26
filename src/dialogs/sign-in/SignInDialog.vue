@@ -99,14 +99,14 @@ import { useServices } from '@/services'
 //
 //==========================================================================
 
-type SignInDialog = Dialog<void, boolean> & SignInDialog.Props & SignInDialog.Features
+type SignInDialog = SignInDialog.Props & SignInDialog.Features
 
 namespace SignInDialog {
   export interface Props {}
 
   export type Features = UnwrapNestedRefs<WrapFeatures>
 
-  export interface WrapFeatures {}
+  export interface WrapFeatures extends Dialog<void, boolean> {}
 }
 
 //==========================================================================

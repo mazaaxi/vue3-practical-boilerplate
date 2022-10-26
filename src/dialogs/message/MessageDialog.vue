@@ -66,16 +66,14 @@ import merge from 'lodash/merge'
 //
 //==========================================================================
 
-type MessageDialog = Dialog<MessageDialogOpenParams | void, boolean> &
-  MessageDialog.Props &
-  MessageDialog.Features
+type MessageDialog = MessageDialog.Props & MessageDialog.Features
 
 namespace MessageDialog {
   export interface Props {}
 
   export type Features = UnwrapNestedRefs<WrapFeatures>
 
-  export interface WrapFeatures {
+  export interface WrapFeatures extends Dialog<MessageDialogOpenParams | void, boolean> {
     readonly params: MessageDialogOpenParams
   }
 }
