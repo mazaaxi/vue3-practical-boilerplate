@@ -1,5 +1,5 @@
 import { CartItem, ItemsChangeType, Product, generateId } from '@/services'
-import { TestAPIs, TestServices, useServiceDependencies } from '../../../../helpers'
+import { TestAPIs, TestServices, useServiceDependencies } from '@/tests/helpers'
 import { CartItemEditResponse } from '@/services/apis'
 import { TestUsers } from '@/services/test-data'
 import dayjs from 'dayjs'

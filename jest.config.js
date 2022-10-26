@@ -3,7 +3,7 @@ module.exports = {
   transform: {
     '^.+\\.vue$': 'vue-jest',
   },
-  setupFilesAfterEnv: ['<rootDir>/tests/setup.ts'],
+  setupFilesAfterEnv: ['<rootDir>/src/tests/setup.ts'],
 
   globals: {
     'ts-jest': {

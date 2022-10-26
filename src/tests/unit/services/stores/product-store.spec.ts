@@ -1,5 +1,5 @@
 import { Product, generateId } from '@/services'
-import { toBeCopyProduct, useServiceDependencies } from '../../../helpers'
+import { toBeCopyProduct, useServiceDependencies } from '@/tests/helpers'
 import dayjs from 'dayjs'
 
 //==========================================================================

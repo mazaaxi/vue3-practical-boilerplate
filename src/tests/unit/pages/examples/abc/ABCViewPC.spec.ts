@@ -2,7 +2,7 @@ import AbcViewPC from '@/pages/examples/abc/ABCViewPC.vue'
 import { mount } from '@vue/test-utils'
 import { nextTick } from 'vue'
 import { useRouter } from '@/router'
-import { useServiceDependencies } from '../../../../helpers'
+import { useServiceDependencies } from '@/tests/helpers'
 
 describe('ABCViewPC.vue', () => {
   beforeEach(() => {

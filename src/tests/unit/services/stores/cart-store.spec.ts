@@ -1,5 +1,5 @@
 import { CartItem, generateId } from '@/services'
-import { toBeCopyCartItem, useServiceDependencies } from '../../../helpers'
+import { toBeCopyCartItem, useServiceDependencies } from '@/tests/helpers'
 import { TestUsers } from '@/services/test-data'
 import dayjs from 'dayjs'
 

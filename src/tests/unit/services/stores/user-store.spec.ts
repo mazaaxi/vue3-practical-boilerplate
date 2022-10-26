@@ -1,5 +1,5 @@
 import { User, generateId } from '@/services'
-import { toBeCopyUser, useServiceDependencies } from '../../../helpers'
+import { toBeCopyUser, useServiceDependencies } from '@/tests/helpers'
 import { cloneDeep } from 'lodash'
 import dayjs from 'dayjs'
 

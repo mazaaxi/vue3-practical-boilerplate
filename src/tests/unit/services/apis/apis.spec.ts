@@ -2,7 +2,7 @@ import { CartItem, Product, ToRawEntity, toRawEntities } from '@/services'
 import { CartItemEditResponse } from '@/services/apis'
 import { TestUsers } from '@/services/test-data'
 import dayjs from 'dayjs'
-import { useServiceDependencies } from '../../../helpers'
+import { useServiceDependencies } from '@/tests/helpers'
 
 jest.setTimeout(25000)
 
