@@ -134,7 +134,10 @@ function isFeatureBranch(branch) {
 }
 
 program
-  .argument('commitMsgFilePath', `Specify the file path for editing commit message (ex: '.git/COMMIT_EDITMSG' or '.git/MERGE_MSG')`)
+  .argument(
+    'commitMsgFilePath',
+    `Specify the file path for editing commit message (ex: '.git/COMMIT_EDITMSG' or '.git/MERGE_MSG')`
+  )
   .action(async commitMsgFilePath => {
     try {
       await addIssueIdToCommitMsg(commitMsgFilePath)

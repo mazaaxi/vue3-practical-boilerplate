@@ -14,15 +14,17 @@
     "build:dev": "vue-cli-service build --mode dev",
     "build:preview": "vue-cli-service build --mode preview",
     "test:unit": "vue-cli-service test:unit",
-    "lint": "vue-cli-service lint && stylelint ./src/**/*.{vue,scss}",
+    "lint": "npm run lint:eslint && npm run lint:stylelint -- --fix",
+    "lint:eslint": "vue-cli-service lint",
+    "lint:stylelint": "stylelint \"./src/**/*.{vue,scss,sass}\"",
     "prepare": "husky install"
   },
   "lint-staged": {
-    "./src/**/*.{vue,js,ts,jsx,tsx}": [
-      "vue-cli-service lint"
+    "./**/*.{vue,js,jsx,cjs,mjs,ts,tsx,cts,mts}": [
+      "npm run lint:eslint"
     ],
-    "./src/**/*.{vue,scss}": [
-      "stylelint"
+    "./**/*.{vue,scss,sass}": [
+      "npm run lint:stylelint"
     ]
   },
   "dependencies": {

@@ -28,7 +28,11 @@ function getUserId(req, res) {
   const encodedIdToken = authorization.split('Bearer ')[1]
   if (!encodedIdToken.trim()) {
     res.header('WWW-Authenticate', `Bearer realm="token_required"`)
-    sendError(res, 401, `Authorization failed because an id token could not be obtained from a HTTP request header.`)
+    sendError(
+      res,
+      401,
+      `Authorization failed because an id token could not be obtained from a HTTP request header.`
+    )
     return
   }
 
@@ -43,7 +47,11 @@ function getUserId(req, res) {
 
   if (!idTokenObject.uid) {
     res.header('WWW-Authenticate', `Bearer error="invalid_token"`)
-    sendError(res, 401, `Authorization failed because an user id could not be obtained from an authorization header.`)
+    sendError(
+      res,
+      401,
+      `Authorization failed because an user id could not be obtained from an authorization header.`
+    )
     return
   }
 
@@ -51,7 +59,10 @@ function getUserId(req, res) {
 }
 
 function generateId() {
-  const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', 20)
+  const nanoid = customAlphabet(
+    '1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
+    20
+  )
   return nanoid()
 }
 
@@ -140,10 +151,15 @@ server.post(`/${APIPrefix}/cartItems`, (req, res, next) => {
 
   for (const input of inputs) {
     if (input.uid !== uid) {
-      return sendError(res, 403, `A request user is trying to add an item to someone else's cart.`, {
-        'request.uid': uid,
-        'request.cartItem': input,
-      })
+      return sendError(
+        res,
+        403,
+        `A request user is trying to add an item to someone else's cart.`,
+        {
+          'request.uid': uid,
+          'request.cartItem': input,
+        }
+      )
     }
   }
 
@@ -210,10 +226,15 @@ server.put(`/${APIPrefix}/cartItems`, (req, res, next) => {
 
   for (const input of inputs) {
     if (input.uid !== uid) {
-      return sendError(res, 403, `A request user is trying to update an item to someone else's cart.`, {
-        'request.uid': uid,
-        'request.cartItem': input,
-      })
+      return sendError(
+        res,
+        403,
+        `A request user is trying to update an item to someone else's cart.`,
+        {
+          'request.uid': uid,
+          'request.cartItem': input,
+        }
+      )
     }
   }
 
@@ -274,10 +295,15 @@ server.delete(`/${APIPrefix}/cartItems`, (req, res, next) => {
     if (!cartItem) continue
 
     if (cartItem.uid !== uid) {
-      return sendError(res, 403, `A request user is trying to remove an item to someone else's cart.`, {
-        'request.uid': uid,
-        'request.cartItem': { id: cartItemId },
-      })
+      return sendError(
+        res,
+        403,
+        `A request user is trying to remove an item to someone else's cart.`,
+        {
+          'request.uid': uid,
+          'request.cartItem': { id: cartItemId },
+        }
+      )
     }
   }
 

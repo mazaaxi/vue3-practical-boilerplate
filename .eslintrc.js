@@ -5,9 +5,15 @@ module.exports = {
   env: {
     node: true,
   },
-  extends: ['plugin:vue/vue3-essential', 'eslint:recommended', '@vue/typescript/recommended', '@vue/prettier', '@vue/prettier/@typescript-eslint'],
+  extends: [
+    'plugin:vue/vue3-essential',
+    'eslint:recommended',
+    '@vue/typescript/recommended',
+    '@vue/prettier',
+    '@vue/prettier/@typescript-eslint',
+  ],
   parserOptions: {
-    ecmaVersion: 2020,
+    ecmaVersion: 'latest',
   },
   rules: {
     'prettier/prettier': ['error', prettierConfig],
@@ -24,7 +30,10 @@ module.exports = {
     ],
     'comma-spacing': ['error', { before: false, after: true }],
     'computed-property-spacing': ['error', 'never'],
-    'no-console': 'off',
+    'no-console': [
+      process.env.NODE_ENV === 'production' ? 'error' : 'off',
+      { allow: ['warn', 'error'] },
+    ],
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     'no-dupe-class-members': 'off',
     'no-empty': 'off',

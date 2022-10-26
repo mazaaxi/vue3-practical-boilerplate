@@ -6,7 +6,7 @@ module.exports = {
     'stylelint-config-recommended-vue',
     'stylelint-prettier/recommended',
   ],
-  ignoreFiles: ['**/*.js', './src/styles/quasar-settings/_index.scss'],
+  ignoreFiles: ['**/*.{js,jsx,cjs,mjs,ts,tsx,cts,mts}', './src/styles/quasar-settings/_index.scss'],
   rules: {
     'prettier/prettier': true,
     'at-rule-no-unknown': null,
@@ -15,4 +15,35 @@ module.exports = {
     'scss/selector-no-union-class-name': true,
     'scss/no-global-function-names': null,
   },
+  overrides: [
+    {
+      files: ['**/*.{scss,sass}'],
+      rules: {
+        'selector-class-pattern': [
+          '^[a-z][a-z0-9-_]+$',
+          { message: 'Expected class name to be lower kebab or snake case' },
+        ],
+        'scss/dollar-variable-pattern': [
+          '^[a-z][a-z0-9-_]+$',
+          { message: 'Expected variable name to be lower kebab or snake case' },
+        ],
+        'scss/percent-placeholder-pattern': [
+          '^[a-z][a-z0-9-_]+$',
+          { message: 'Expected placeholder name to be lower kebab or snake case' },
+        ],
+        'scss/at-mixin-pattern': [
+          '^[a-z][a-z0-9-_]+$',
+          { message: 'Expected mixin name to be lower kebab or snake case' },
+        ],
+        'scss/at-function-pattern': [
+          '^[a-z][a-z0-9-_]+$',
+          { message: 'Expected function name to be lower kebab or snake case' },
+        ],
+        'keyframes-name-pattern': [
+          '^[a-z][a-z0-9-_]+$',
+          { message: 'Expected keyframes name to be lower kebab or snake case' },
+        ],
+      },
+    },
+  ],
 }
