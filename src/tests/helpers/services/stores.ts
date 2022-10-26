@@ -1,8 +1,8 @@
-import { CartItem, Product, User } from '@/services'
+import type { CartItem, Product, User } from '@/services'
 import { CartStore } from '@/services/stores/cart'
-import { DeepReadonly } from 'js-common-lib'
+import type { DeepReadonly } from 'js-common-lib'
 import { ProductStore } from '@/services/stores/product'
-import { UnwrapNestedRefs } from '@vue/reactivity'
+import type { UnwrapNestedRefs } from 'vue'
 import { UserStore } from '@/services/stores/user'
 import { reactive } from 'vue'
 

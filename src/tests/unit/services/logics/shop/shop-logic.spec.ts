@@ -1,8 +1,11 @@
-import { CartItem, ItemsChangeType, Product, generateId } from '@/services'
-import { TestAPIs, TestServices, useServiceDependencies } from '@/tests/helpers'
-import { CartItemEditResponse } from '@/services/apis'
+import type { CartItem, ItemsChangeType, Product } from '@/services'
+import type { CartItemEditResponse } from '@/services/apis'
+import type { TestAPIs } from '@/tests/helpers'
+import type { TestServices } from '@/tests/helpers'
 import { TestUsers } from '@/services/test-data'
 import dayjs from 'dayjs'
+import { generateId } from '@/services'
+import { useServiceDependencies } from '@/tests/helpers'
 
 //==========================================================================
 //

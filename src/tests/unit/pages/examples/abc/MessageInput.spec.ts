@@ -18,11 +18,11 @@ describe('message-input.vue', () => {
       },
     })
 
-    const titleInput = wrapper.get('[data-test="titleInput"]')
+    const titleInput = wrapper.get('[data-testid="titleInput"]')
     expect(titleInput.attributes('modelvalue')).toBe(title)
     expect(titleInput.attributes('label')).toBe('Title')
 
-    const messageInput = wrapper.get('[data-test="bodyInput"]')
+    const messageInput = wrapper.get('[data-testid="bodyInput"]')
     expect(messageInput.attributes('modelvalue')).toBe(body)
     expect(messageInput.attributes('label')).toBe('Message')
   })

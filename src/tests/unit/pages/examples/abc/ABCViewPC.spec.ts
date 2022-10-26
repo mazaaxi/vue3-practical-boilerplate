@@ -24,9 +24,9 @@ describe('ABCViewPC.vue', () => {
   //     },
   //   })
   //
-  //   await wrapper.get('[data-test="signInOrOutButton"]').trigger('click')
+  //   await wrapper.get('[data-testid="signInOrOutButton"]').trigger('click')
   //
-  //   const signedInEmail = wrapper.get('[data-test="signedInEmail"]')
+  //   const signedInEmail = wrapper.get('[data-testid="signedInEmail"]')
   //   expect(signedInEmail.text()).toBe(`Taro Yamada <taro.yamada@example.com>`)
   // })
 
@@ -44,8 +44,8 @@ describe('ABCViewPC.vue', () => {
   //
   //   await nextTick()
   //
-  //   expect(wrapper.get('[data-test="reversedMessage"]').text()).toBe('olleh')
-  //   expect(wrapper.get('[data-test="doubleReversedMessage"]').text()).toBe('hello')
-  //   expect(wrapper.get('[data-test="watchEffectMessage"]').text()).toBe('hello')
+  //   expect(wrapper.get('[data-testid="reversedMessage"]').text()).toBe('olleh')
+  //   expect(wrapper.get('[data-testid="doubleReversedMessage"]').text()).toBe('hello')
+  //   expect(wrapper.get('[data-testid="watchEffectMessage"]').text()).toBe('hello')
   // })
 })

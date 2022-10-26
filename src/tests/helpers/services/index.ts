@@ -1,7 +1,7 @@
 import { AccountLogic } from '@/services/logics/account'
 import { ShopLogic } from '@/services/logics/shop'
 import { TestUsers } from '@/services/test-data'
-import { UnwrapNestedRefs } from '@vue/reactivity'
+import type { UnwrapNestedRefs } from 'vue'
 import { User } from '@/services'
 import { reactive } from 'vue'
 import { useI18n } from '@/i18n'

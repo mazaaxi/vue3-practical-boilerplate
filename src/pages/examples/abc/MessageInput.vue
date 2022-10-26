@@ -18,7 +18,7 @@
       inputClass="message-input-class"
       :label="$t('common.title')"
       dense
-      data-test="titleInput"
+      data-testid="titleInput"
     />
     <q-input
       v-model="inputMessage"
@@ -26,7 +26,7 @@
       inputClass="message-input-class"
       :label="$t('common.message')"
       dense
-      data-test="bodyInput"
+      data-testid="bodyInput"
     />
   </div>
 </template>

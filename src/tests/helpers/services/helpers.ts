@@ -1,4 +1,4 @@
-import { UnwrapNestedRefs } from '@vue/reactivity'
+import type { UnwrapNestedRefs } from 'vue'
 
 //==========================================================================
 //

@@ -1,6 +1,7 @@
-import { CartItem, Product, ToRawEntity, toRawEntities } from '@/services'
-import { CartItemEditResponse } from '@/services/apis'
+import { CartItem, Product, toRawEntities } from '@/services'
+import type { CartItemEditResponse } from '@/services/apis'
 import { TestUsers } from '@/services/test-data'
+import type { ToRawEntity } from '@/services'
 import dayjs from 'dayjs'
 import { useServiceDependencies } from '@/tests/helpers'
 

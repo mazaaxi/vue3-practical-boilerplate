@@ -38,7 +38,7 @@
   <q-card class="AbcViewPC">
     <div class="layout horizontal center">
       <div v-show="isSignedIn">
-        <div data-test="signedInEmail">
+        <div data-testid="signedInEmail">
           {{ $t('abc.signedInUser', { name: user.fullName, email: user.email }) }}
         </div>
         <div>{{ $t('abc.signedInTime', { time: $d(new Date(), 'dateSec') }) }}</div>
@@ -51,7 +51,7 @@
         :label="isSignedIn ? $t('common.signOut') : $t('common.signIn')"
         @click="signInOrOutButtonOnClick"
         dense
-        data-test="signInOrOutButton"
+        data-testid="signInOrOutButton"
       />
     </div>
 
@@ -62,14 +62,14 @@
           class="input"
           :label="$t('common.title')"
           dense
-          data-test="titleInput"
+          data-testid="titleInput"
         />
         <q-input
           v-model="message.body"
           class="input"
           :label="$t('common.message')"
           dense
-          data-test="messageInput"
+          data-testid="messageInput"
         />
       </div>
       <div class="space-mx-10" />
@@ -99,18 +99,18 @@
 
     <div class="space-my-16">
       <span class="caption">Reversed Message: </span>
-      <span class="value" data-test="reversedMessage">{{ reversedMessage }}</span>
+      <span class="value" data-testid="reversedMessage">{{ reversedMessage }}</span>
     </div>
 
     <div class="space-my-16">
       <span class="caption">Double Reversed Message: </span>
-      <span class="value" data-test="doubleReversedMessage">{{ doubleReversedMessage }}</span>
-      <span class="value" data-test="doubleReversedMessage">{{ doubleReversedMessage }}</span>
+      <span class="value" data-testid="doubleReversedMessage">{{ doubleReversedMessage }}</span>
+      <span class="value" data-testid="doubleReversedMessage">{{ doubleReversedMessage }}</span>
     </div>
 
     <div class="space-my-16">
       <span class="caption">Watch Effect Message: </span>
-      <span class="value" data-test="watchEffectMessage">{{ watchEffectMessage }}</span>
+      <span class="value" data-testid="watchEffectMessage">{{ watchEffectMessage }}</span>
     </div>
 
     <q-input
