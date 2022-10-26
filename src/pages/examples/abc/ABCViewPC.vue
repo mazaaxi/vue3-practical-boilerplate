@@ -7,15 +7,15 @@
   margin-left: auto;
 }
 
-.message-container {
+.messageContainer {
   .input,
-  .message-input {
+  .messageInput {
     width: 100%;
   }
 
-  .message-input {
-    --message-input-color: #{$pink};
-    --message-input-width: 100%;
+  .messageInput {
+    --messageInputColor: #{$pink};
+    --messageInputWidth: 100%;
   }
 }
 
@@ -28,7 +28,7 @@
   @extend %text-subtitle1;
 }
 
-.log-input {
+.logInput {
   font-family: 'MS Gothic', 'Osaka-Mono', monospace;
   font-size: 13px;
 }
@@ -55,7 +55,7 @@
       />
     </div>
 
-    <div class="message-container layout horizontal">
+    <div class="messageContainer layout horizontal">
       <div class="layout vertical flex-1">
         <q-input
           v-model="message.title"
@@ -77,7 +77,7 @@
         ref="messageInput"
         v-model:title="message.title"
         v-model="message.body"
-        class="message-input flex-1"
+        class="messageInput flex-1"
       />
     </div>
 
@@ -116,7 +116,7 @@
     <q-input
       ref="logInput"
       v-model="sentMessagesLog"
-      class="log-input"
+      class="logInput"
       type="textarea"
       filled
       readonly

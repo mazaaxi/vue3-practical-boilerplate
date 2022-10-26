@@ -11,7 +11,7 @@
   }
 }
 
-.content-area {
+.contentArea {
   gap: 10px;
 
   .title {
@@ -23,7 +23,7 @@
   }
 }
 
-.error-message {
+.errorMessage {
   @extend %text-caption;
   color: $text-error;
 }
@@ -43,7 +43,7 @@
       </q-card-section>
 
       <!-- Content area -->
-      <q-card-section class="content-area layout vertical">
+      <q-card-section class="contentArea layout vertical">
         <q-select
           ref="emailInput"
           v-model="email"
@@ -68,7 +68,7 @@
 
       <!-- Error area -->
       <q-card-section v-show="isError">
-        <span class="error-message">{{ errorMessage }}</span>
+        <span class="errorMessage">{{ errorMessage }}</span>
       </q-card-section>
 
       <!-- Button area -->

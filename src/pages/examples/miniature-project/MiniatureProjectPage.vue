@@ -13,7 +13,7 @@
     padding: 24px;
   }
 
-  .log-input {
+  .logInput {
     width: 100%;
     min-height: 300px;
     margin-top: 24px;
@@ -117,19 +117,12 @@
       </template>
     </q-table>
 
-    <q-input
-      ref="logInput"
-      v-model="logMessage"
-      class="log-input"
-      type="textarea"
-      filled
-      readonly
-    />
+    <q-input ref="logInput" v-model="logMessage" class="logInput" type="textarea" filled readonly />
   </q-page>
 </template>
 
 <script lang="ts">
-import type { QInput, QTable, QTableProps } from 'quasar'
+import type { QInput, QTable } from 'quasar'
 import { defineComponent, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { setupServices, useServices } from '@/pages/examples/miniature-project/services'
 import { Loading } from 'quasar'

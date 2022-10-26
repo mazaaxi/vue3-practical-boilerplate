@@ -220,6 +220,7 @@ const AppPage = defineComponent({
     watch(
       () => router.currentRoute.fullPath,
       async (newValue, oldValue) => {
+        // eslint-disable-next-line no-console
         console.log(`currentRoute:`, JSON.stringify({ to: newValue, from: oldValue }, null, 2))
       }
     )
@@ -271,6 +272,7 @@ const AppPage = defineComponent({
       if (info.state === 'error') {
         console.error(info.message)
       } else {
+        // eslint-disable-next-line no-console
         console.log('ServiceWorker:', JSON.stringify(info, null, 2))
       }
     })
