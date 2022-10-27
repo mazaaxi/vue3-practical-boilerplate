@@ -130,6 +130,7 @@ function isFontAwesome(icon: string | undefined | null): boolean {
 //==========================================================================
 
 export { createObjectCopyFunctions, showNotification, getBaseURL, isFontAwesome }
+export * from '@/base/config'
 export * from '@/base/constants'
 export * from '@/base/screen'
 export * from '@/base/style'

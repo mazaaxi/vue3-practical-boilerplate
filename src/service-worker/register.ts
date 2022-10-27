@@ -193,6 +193,7 @@ function register(serviceWorkerURL: string, hooks: Hooks = {}): void {
 
       registration.waiting.onstatechange = e => {
         const serviceWorker = e.target as ServiceWorker
+        // eslint-disable-next-line no-console
         console.log('ServiceWorker waiting:', serviceWorker.state)
       }
     }

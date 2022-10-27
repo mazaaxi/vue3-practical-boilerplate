@@ -4,7 +4,7 @@ import {
   register as registerServiceWorker,
 } from '@/service-worker/register'
 import { Unsubscribe, createNanoEvents } from 'nanoevents'
-import { useConfig } from '@/config'
+import { useConfig } from '@/base'
 import { useI18n } from '@/i18n'
 
 //==========================================================================

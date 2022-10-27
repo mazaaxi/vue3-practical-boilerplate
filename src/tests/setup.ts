@@ -1,7 +1,7 @@
 import { AppRouter, setupRouter } from '@/router'
 import { clearServiceDependencies } from './helpers'
 import { config } from '@vue/test-utils'
-import { setupConfig } from '@/config'
+import { setupConfig } from '@/base'
 import { setupI18n } from '@/i18n'
 import td from 'testdouble'
 
