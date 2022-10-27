@@ -64,14 +64,14 @@ namespace AnchorDialog {
 
   export type Features = UnwrapNestedRefs<WrapFeatures>
 
-  export interface WrapFeatures extends Dialog<AnchorDialogOpenParams, void> {
-    readonly params: AnchorDialogOpenParams
+  export interface WrapFeatures extends Dialog<OpenParams, void> {
+    readonly params: OpenParams
   }
-}
 
-interface AnchorDialogOpenParams {
-  title: string
-  message: string
+  export interface OpenParams {
+    title: string
+    message: string
+  }
 }
 
 //==========================================================================
@@ -94,9 +94,9 @@ const AnchorDialog = defineComponent({
     //
     //----------------------------------------------------------------------
 
-    const dialog = ref<URLQueryDialog<AnchorDialogOpenParams, void>>()
+    const dialog = ref<URLQueryDialog<AnchorDialog.OpenParams, void>>()
 
-    const params = reactive<AnchorDialogOpenParams>({
+    const params = reactive<AnchorDialog.OpenParams>({
       title: '',
       message: '',
     })
@@ -107,14 +107,14 @@ const AnchorDialog = defineComponent({
     //
     //----------------------------------------------------------------------
 
-    const open: AnchorDialog['open'] = p => {
+    const open: AnchorDialog.WrapFeatures['open'] = p => {
       const { title, message } = p
       merge(params, { title, message })
 
       return dialog.value!.open({ title, message })
     }
 
-    const close: AnchorDialog['close'] = () => {
+    const close: AnchorDialog.WrapFeatures['close'] = () => {
       dialog.value!.close()
     }
 
