@@ -120,7 +120,7 @@ const MessageDialog = defineComponent({
     //
     //----------------------------------------------------------------------
 
-    const open: MessageDialog['open'] = p => {
+    const open: MessageDialog.WrapFeatures['open'] = p => {
       if (p) {
         const { type, title, message } = p
         merge(params, { type, title, message })
@@ -129,7 +129,7 @@ const MessageDialog = defineComponent({
       return dialog.value!.open()
     }
 
-    const close: MessageDialog['close'] = isOK => {
+    const close: MessageDialog.WrapFeatures['close'] = isOK => {
       dialog.value!.close(isOK)
     }
 

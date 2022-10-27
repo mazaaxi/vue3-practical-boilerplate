@@ -159,11 +159,11 @@ const SignInDialog = defineComponent({
     //
     //----------------------------------------------------------------------
 
-    const open: SignInDialog['open'] = () => {
+    const open: SignInDialog.WrapFeatures['open'] = () => {
       return dialog.value!.open()
     }
 
-    const close: SignInDialog['close'] = isOK => {
+    const close: SignInDialog.WrapFeatures['close'] = isOK => {
       dialog.value!.close(isOK)
     }
 
