@@ -7,7 +7,7 @@ import type {
 } from 'axios'
 import { extensibleMethod, removeBothEndsSlash } from 'js-common-lib'
 import axios from 'axios'
-import { useConfig } from '@/config'
+import { useConfig } from '@/base'
 
 //==========================================================================
 //

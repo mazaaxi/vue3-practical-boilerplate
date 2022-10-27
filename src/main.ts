@@ -1,10 +1,9 @@
+import { setupConfig, useConstants, useScreen } from '@/base'
 import { setupI18n, useI18nUtils } from '@/i18n'
-import { useConstants, useScreen } from '@/base'
 import AppPage from './pages/app'
 import { Quasar } from 'quasar'
 import { createApp } from 'vue'
 import quasarOptions from '@/quasar-options'
-import { setupConfig } from '@/config'
 import { setupRouter } from '@/router'
 import { setupServices } from '@/services'
 
