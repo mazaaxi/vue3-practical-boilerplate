@@ -47,8 +47,6 @@ namespace URLQueryDialog {
 //==========================================================================
 
 const URLQueryDialog = defineComponent({
-  name: 'URLQueryDialog',
-
   props: {
     ...BasePromiseDialog.props,
     dialogName: { type: String, required: true },

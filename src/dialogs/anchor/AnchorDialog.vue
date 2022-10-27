@@ -81,8 +81,6 @@ interface AnchorDialogOpenParams {
 //==========================================================================
 
 const AnchorDialog = defineComponent({
-  name: 'AnchorDialog',
-
   components: {
     URLQueryDialog,
   },

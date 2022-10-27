@@ -93,8 +93,6 @@ type MessageDialogType = 'alert' | 'confirm'
 //==========================================================================
 
 const MessageDialog = defineComponent({
-  name: 'MessageDialog',
-
   components: {
     PromiseDialog,
   },

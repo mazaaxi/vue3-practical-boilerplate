@@ -182,8 +182,6 @@ import { useServiceWorker } from '@/service-worker'
 import { useServices } from '@/services'
 
 const AppPage = defineComponent({
-  name: 'AppPage',
-
   components: {
     DialogContainer,
   },
