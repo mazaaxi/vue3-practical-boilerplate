@@ -116,8 +116,6 @@ namespace SignInDialog {
 //==========================================================================
 
 const SignInDialog = defineComponent({
-  name: 'SignInDialog',
-
   components: {
     PromiseDialog,
   },

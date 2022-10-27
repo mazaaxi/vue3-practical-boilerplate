@@ -159,8 +159,6 @@ namespace PromiseDialog {
 //==========================================================================
 
 const PromiseDialog = defineComponent({
-  name: 'PromiseDialog',
-
   props: { ...BasePromiseDialog.props },
 
   emits: { ...BasePromiseDialog.emits },

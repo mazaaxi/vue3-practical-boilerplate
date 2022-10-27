@@ -170,8 +170,6 @@ import { useDialogs } from '@/dialogs'
 import { useI18n } from '@/i18n'
 
 const ShopPage = defineComponent({
-  name: 'ShopPage',
-
   setup(props, context) {
     //----------------------------------------------------------------------
     //

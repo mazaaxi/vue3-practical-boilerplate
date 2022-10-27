@@ -131,8 +131,6 @@ import { defineComponent } from 'vue'
 interface AbcViewPC extends BaseAbcView {}
 
 const AbcViewPC = defineComponent({
-  name: 'AbcViewPC',
-
   components: { ...BaseAbcView.components },
 
   setup(props: BaseAbcView.Props, ctx) {

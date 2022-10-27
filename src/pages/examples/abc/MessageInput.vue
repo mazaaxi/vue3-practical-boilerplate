@@ -86,8 +86,6 @@ namespace MessageInput {
 //     ex. ctx.emit('update:title', newTitle)
 
 const MessageInput = defineComponent({
-  name: 'MessageInput',
-
   components: {},
 
   props: {

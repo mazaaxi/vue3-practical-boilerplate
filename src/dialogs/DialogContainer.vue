@@ -44,8 +44,6 @@ const DialogNames: DialogNames[] = ['message', 'anchor', 'signIn']
 //==========================================================================
 
 const DialogContainer = defineComponent({
-  name: 'DialogContainer',
-
   components: {
     MessageDialog,
     AnchorDialog,

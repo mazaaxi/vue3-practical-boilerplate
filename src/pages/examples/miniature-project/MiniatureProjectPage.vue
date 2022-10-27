@@ -138,8 +138,6 @@ let isSetupServices = false
 let isFetchedUsers = false
 
 const MiniatureProjectPage = defineComponent({
-  name: 'MiniatureProjectPage',
-
   components: {},
 
   setup() {

@@ -10,8 +10,6 @@ import AbcViewSP from '@/pages/examples/abc/ABCViewSP.vue'
 import { useScreen } from '@/base'
 
 const AbcPage = defineComponent({
-  name: 'AbcPage',
-
   components: {
     AbcViewPC,
     AbcViewSP,

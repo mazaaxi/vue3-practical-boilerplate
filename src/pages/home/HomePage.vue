@@ -32,8 +32,6 @@ import { defineComponent, reactive } from 'vue'
 import { useRouter } from '@/router'
 
 const HomePage = defineComponent({
-  name: 'HomePage',
-
   components: {},
 
   setup() {

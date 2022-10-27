@@ -94,8 +94,6 @@ import { useRouter } from '@/router'
 import { useScreen } from '@/base'
 
 const RoutingPage = defineComponent({
-  name: 'RoutingPage',
-
   components: {},
 
   setup(props, ctx) {
