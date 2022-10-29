@@ -11,6 +11,7 @@ export default {
     message: 'Message | Messages',
     email: 'Email',
     password: 'Password',
+    clear: 'Clear',
   },
   langs: {
     en: 'English',
@@ -27,6 +28,9 @@ export default {
       message:
         'This dialog is an anchor dialog.\nReloading the browser will display this dialog again.',
     },
+  },
+  home: {
+    moveToAbcPage: 'Move to ABC page',
   },
   abc: {
     signedInUser: '{name} <{email}>',

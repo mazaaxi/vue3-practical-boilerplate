@@ -1,13 +1,17 @@
 <style lang="scss" scoped>
 .AbcViewPC {
   max-width: 800px;
-  padding: 32px;
   margin-top: 48px;
   margin-right: auto;
   margin-left: auto;
+
+  .viewWrapper {
+    padding: 32px;
+    margin: 0 40px;
+  }
 }
 
-.messageContainer {
+.messageInputBox {
   .input,
   .messageInput {
     width: 100%;
@@ -17,111 +21,68 @@
     --messageInputColor: #{$pink};
     --messageInputWidth: 100%;
   }
+  .displayMessage {
+    @extend %text-subtitle1;
+  }
 }
 
-.caption {
-  @extend %text-subtitle1;
-  font-weight: $text-weight-medium;
-}
-
-.value {
-  @extend %text-subtitle1;
-}
-
-.logInput {
-  font-family: 'MS Gothic', 'Osaka-Mono', monospace;
-  font-size: 13px;
+.messageOutputBox {
+  @extend %layout-vertical;
+  gap: 6px;
+  margin-top: 30px;
 }
 </style>
 
 <template>
-  <q-card class="AbcViewPC">
-    <div class="layout horizontal center">
-      <div v-show="isSignedIn">
-        <div data-testid="signedInEmail">
-          {{ $t('abc.signedInUser', { name: user.fullName, email: user.email }) }}
-        </div>
-        <div>{{ $t('abc.signedInTime', { time: $d(new Date(), 'dateSec') }) }}</div>
-      </div>
-      <div class="flex-1" />
-      <q-btn
-        flat
-        rounded
-        color="primary"
-        :label="isSignedIn ? $t('common.signOut') : $t('common.signIn')"
-        @click="signInOrOutButtonOnClick"
-        dense
-        data-testid="signInOrOutButton"
-      />
-    </div>
-
-    <div class="messageContainer layout horizontal">
-      <div class="layout vertical flex-1">
-        <q-input
-          v-model="message.title"
-          class="input"
-          :label="$t('common.title')"
-          dense
-          data-testid="titleInput"
-        />
-        <q-input
+  <div class="AbcViewPC">
+    <q-card class="viewWrapper">
+      <div class="messageInputBox layout vertical">
+        <MessageInput
+          ref="messageInput"
+          v-model:title="message.title"
           v-model="message.body"
-          class="input"
-          :label="$t('common.message')"
-          dense
+          class="messageInput"
           data-testid="messageInput"
         />
+        <div class="layout horizontal space-mt-10">
+          <div class="displayMessage flex-1">{{ displayMessage }}</div>
+          <q-btn
+            color="primary"
+            @click="clearBtnOnClick"
+            flat
+            dense
+            rounded
+            noCaps
+            data-testid="clearBtn"
+          >
+            {{ $t('common.clear') }}</q-btn
+          >
+        </div>
       </div>
-      <div class="space-mx-10" />
-      <MessageInput
-        ref="messageInput"
-        v-model:title="message.title"
-        v-model="message.body"
-        class="messageInput flex-1"
-      />
-    </div>
 
-    <div class="space-my-16">
-      <div class="value">{{ displayMessage }}</div>
-      <div class="layout horizontal center end-justified">
-        <q-btn
-          class="space-ml-10"
-          flat
-          rounded
-          color="primary"
-          :label="$t('common.send')"
-          @click="sendButtonOnClick"
-          :disabled="!isSignedIn"
-          dense
+      <div class="messageOutputBox">
+        <q-input
+          v-model="reversedMessage"
+          label="Reversed Message"
+          readonly
+          data-testid="reversedMessage"
+        />
+        <q-input
+          v-model="doubleReversedMessage"
+          label="Double Reversed Message"
+          readonly
+          data-testid="doubleReversedMessage"
+        />
+        <q-input v-model="watchMessage" label="Watch Message" readonly data-testid="watchMessage" />
+        <q-input
+          v-model="watchEffectMessage"
+          label="Watch Effect Message"
+          readonly
+          data-testid="watchEffectMessage"
         />
       </div>
-    </div>
-
-    <div class="space-my-16">
-      <span class="caption">Reversed Message: </span>
-      <span class="value" data-testid="reversedMessage">{{ reversedMessage }}</span>
-    </div>
-
-    <div class="space-my-16">
-      <span class="caption">Double Reversed Message: </span>
-      <span class="value" data-testid="doubleReversedMessage">{{ doubleReversedMessage }}</span>
-      <span class="value" data-testid="doubleReversedMessage">{{ doubleReversedMessage }}</span>
-    </div>
-
-    <div class="space-my-16">
-      <span class="caption">Watch Effect Message: </span>
-      <span class="value" data-testid="watchEffectMessage">{{ watchEffectMessage }}</span>
-    </div>
-
-    <q-input
-      ref="logInput"
-      v-model="sentMessagesLog"
-      class="logInput"
-      type="textarea"
-      filled
-      readonly
-    />
-  </q-card>
+    </q-card>
+  </div>
 </template>
 
 <script lang="ts">

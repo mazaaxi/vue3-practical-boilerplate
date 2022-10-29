@@ -19,7 +19,7 @@
           rounded
           noCaps
           color="primary"
-          label="Move to ABC page"
+          :label="$t('home.moveToAbcPage')"
           @click="moveToAbcPageButtonOnClick"
         />
       </div>

@@ -12,7 +12,7 @@
   }
 }
 
-.message-container {
+.messageInputBox {
   @extend %layout-vertical;
 
   .input,
@@ -24,94 +24,64 @@
     --messageInputColor: #{$pink};
     --messageInputWidth: 100%;
   }
+
+  .displayMessage {
+    @extend %text-subtitle1;
+  }
 }
 
-.caption {
-  @extend %text-subtitle1;
-  font-weight: $text-weight-medium;
-}
-
-.value {
-  @extend %text-subtitle1;
-}
-
-.logInput {
-  font-family: 'MS Gothic', 'Osaka-Mono', monospace;
-  font-size: 13px;
+.messageOutputBox {
+  @extend %layout-vertical;
+  gap: 6px;
+  margin-top: 30px;
 }
 </style>
 
 <template>
   <div class="AbcViewSP">
-    <div class="layout horizontal center">
-      <div v-show="isSignedIn">
-        <div>{{ $t('abc.signedInUser', { name: user.fullName, email: user.email }) }}</div>
-        <div>{{ $t('abc.signedInTime', { time: $d(new Date(), 'dateSec') }) }}</div>
-      </div>
-      <div class="flex-1" />
-      <q-btn
-        flat
-        rounded
-        color="primary"
-        :label="isSignedIn ? $t('common.signOut') : $t('common.signIn')"
-        @click="signInOrOutButtonOnClick"
-        dense
-      />
-    </div>
-
-    <div class="message-container">
-      <div class="layout vertical">
-        <q-input v-model="message.title" class="input" :label="$t('common.title')" dense />
-        <q-input v-model="message.body" class="input" :label="$t('common.message')" dense />
-      </div>
-      <div class="space-mx-10" />
+    <div class="messageInputBox layout vertical">
       <MessageInput
         ref="messageInput"
         v-model:title="message.title"
         v-model="message.body"
         class="messageInput"
       />
+      <div class="displayMessage">{{ displayMessage }}</div>
+      <q-btn
+        class="layout self-end"
+        color="primary"
+        @click="clearBtnOnClick"
+        flat
+        dense
+        rounded
+        noCaps
+        data-testid="clearBtn"
+      >
+        {{ $t('common.clear') }}</q-btn
+      >
     </div>
 
-    <div class="space-my-16">
-      <div class="value">{{ displayMessage }}</div>
-      <div class="layout horizontal center end-justified">
-        <q-btn
-          class="space-ml-10"
-          flat
-          rounded
-          color="primary"
-          :label="$t('common.send')"
-          @click="sendButtonOnClick"
-          :disabled="!isSignedIn"
-          dense
-        />
-      </div>
+    <div class="messageOutputBox">
+      <q-input
+        v-model="reversedMessage"
+        label="Reversed Message"
+        readonly
+        data-testid="reversedMessage"
+      />
+      <q-input
+        v-model="doubleReversedMessage"
+        label="Double Reversed Message"
+        readonly
+        data-testid="doubleReversedMessage"
+      />
+      <q-input v-model="watchMessage" label="Watch Message" readonly data-testid="watchMessage" />
+      <q-input
+        v-model="watchEffectMessage"
+        label="Watch Effect Message"
+        readonly
+        data-testid="watchEffectMessage"
+      />
     </div>
-
-    <div class="space-my-16">
-      <span class="caption">Reversed Message: </span
-      ><span class="value">{{ reversedMessage }}</span>
-    </div>
-
-    <div class="space-my-16">
-      <span class="caption">Double Reversed Message: </span>
-      <span class="value">{{ doubleReversedMessage }}</span>
-    </div>
-
-    <div class="space-my-16">
-      <span class="caption">Watch Effect Message: </span>
-      <span class="value">{{ watchEffectMessage }}</span>
-    </div>
-
-    <q-input
-      ref="logInput"
-      v-model="sentMessagesLog"
-      class="logInput"
-      type="textarea"
-      filled
-      readonly
-    />
   </div>
 </template>
 

@@ -27,7 +27,7 @@ const AbcPage = defineComponent({
     const pcView = ref<AbcViewPC>()
     const spView = ref<AbcViewSP>()
 
-    const deviceType = computed(() => (screen.gt.md ? 'PC' : 'SP'))
+    const deviceType = computed(() => (screen.gt.xs ? 'PC' : 'SP'))
 
     //----------------------------------------------------------------------
     //

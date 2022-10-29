@@ -11,6 +11,7 @@ export default {
     message: 'メッセージ',
     email: 'メール',
     password: 'パスワード',
+    clear: 'クリア',
   },
   langs: {
     en: '英語',
@@ -32,6 +33,9 @@ export default {
       message:
         'このダイアログはアンカーダイアログです。\nブラウザをリロードすると、再度このダイアログが表示されます。',
     },
+  },
+  home: {
+    moveToAbcPage: 'ABCページへ移動',
   },
   abc: {
     signedInUser: '{name} <{email}>',

@@ -1,8 +1,7 @@
-import { computed, nextTick, onMounted, reactive, ref, toRefs, watch, watchEffect } from 'vue'
+import { computed, onMounted, reactive, ref, toRefs, watch, watchEffect } from 'vue'
 import MessageInput from '@/pages/examples/abc/MessageInput.vue'
 import type { QInput } from 'quasar'
 import type { SetupContext } from 'vue'
-import { useDialogs } from '@/dialogs'
 import { useRouter } from '@/router'
 import { useServices } from '@/services'
 
@@ -49,9 +48,6 @@ namespace BaseAbcView {
     const services = useServices()
     const router = useRouter()
     const route = router.routes.examples.abc
-    const dialogs = useDialogs()
-
-    const isSignedIn = computed(() => services.account.isSignedIn)
 
     // see below for why we use `toRefs`:
     // https://v3.vuejs.org/guide/reactivity-fundamentals.html#destructuring-reactive-state
@@ -65,15 +61,13 @@ namespace BaseAbcView {
 
     const message = reactive({ title: '', body: '' })
 
-    const sentMessages = reactive<{ [uid: string]: string[] }>({})
-
-    const sentMessagesLog = ref('')
-
     const displayMessage = computed(() => messageInput.value?.displayMessage || '')
 
     const reversedMessage = computed(() => message.body.split('').reverse().join(''))
 
     const doubleReversedMessage = computed(() => reversedMessage.value.split('').reverse().join(''))
+
+    const watchMessage = ref('')
 
     const watchEffectMessage = ref('')
 
@@ -83,34 +77,20 @@ namespace BaseAbcView {
     //
     //----------------------------------------------------------------------
 
-    watchEffect(() => {
-      watchEffectMessage.value = message.body
-    })
-
     watch(
-      () => sentMessages,
+      () => message,
       (newValue, oldValue) => {
-        const latestMessage = sentMessages[user.id][0]
-        sentMessagesLog.value = `[${user.id}] ${latestMessage}\n${sentMessagesLog.value}`
-        nextTick(() => {
-          const inputEl = logInput.value!.getNativeElement() as HTMLTextAreaElement
-          inputEl.scrollTop = inputEl.scrollHeight
-        })
+        watchMessage.value = newValue.body
       },
       { deep: true }
     )
 
-    async function signInOrOutButtonOnClick() {
-      if (isSignedIn.value) {
-        await services.account.signOut()
-      } else {
-        dialogs.signIn.open()
-      }
-    }
+    watchEffect(() => {
+      watchEffectMessage.value = message.body
+    })
 
-    const sendButtonOnClick = () => {
-      sentMessages[user.id] = sentMessages[user.id] ?? []
-      sentMessages[user.id].unshift(displayMessage.value)
+    function clearBtnOnClick() {
+      Object.assign(message, { title: '', body: '' })
     }
 
     //----------------------------------------------------------------------
@@ -122,16 +102,14 @@ namespace BaseAbcView {
     return {
       messageInput,
       logInput,
-      isSignedIn,
       user,
       message,
-      sentMessagesLog,
       displayMessage,
       reversedMessage,
       doubleReversedMessage,
+      watchMessage,
       watchEffectMessage,
-      signInOrOutButtonOnClick,
-      sendButtonOnClick,
+      clearBtnOnClick,
     }
   }
 }
