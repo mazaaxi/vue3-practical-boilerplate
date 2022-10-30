@@ -35,7 +35,7 @@
       </q-card-section>
 
       <!-- Button area -->
-      <q-card-actions class="layout horizontal center end-justified">
+      <q-card-actions class="row items-center justify-end">
         <!-- OK button -->
         <q-btn flat rounded color="primary" :label="$t('common.ok')" @click="close()" />
       </q-card-actions>

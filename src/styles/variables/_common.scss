@@ -1,8 +1,4 @@
-@use 'node_modules/quasar/dist/quasar' as q;
-
-//--------------------------------------------------
-//  Application
-//--------------------------------------------------
+@use 'node_modules/quasar/src/css/variables.sass' as q;
 
 $text-primary: q.$grey-9 !default;
 $text-secondary: q.$grey-8 !default;
@@ -36,5 +32,5 @@ $item-box-value-color: q.$grey-7 !default;
 $item-box-value-font-size: 13px !default;
 $item-box-value-font-weight: $text-weight-regular !default;
 
-$anchor-link-color: q.$indigo-8 !default;
+$anchor-link-color: q.$indigo-10 !default;
 $anchor-link-font-weight: $text-weight-regular !default;

@@ -1,0 +1,386 @@
+@use 'node_modules/quasar/src/css/helpers/math.sass' as *;
+@use 'node_modules/quasar/src/css/variables.sass' as q;
+
+//--------------------------------------------------
+//  Setting Direction
+//--------------------------------------------------
+
+%row,
+%flex {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+%column {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+}
+
+%row-inline,
+%flex-inline {
+  display: inline-flex;
+  flex-wrap: wrap;
+}
+
+%column-inline {
+  display: inline-flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+}
+
+//--------------------------------------------------
+//  Wrapping by default
+//--------------------------------------------------
+
+%row-reverse {
+  flex-direction: row-reverse;
+}
+
+%column-reverse {
+  flex-direction: column-reverse;
+}
+
+%wrap {
+  flex-wrap: wrap;
+}
+
+%no-wrap {
+  flex-wrap: nowrap;
+}
+
+%reverse-wrap {
+  flex-wrap: wrap-reverse;
+}
+
+//--------------------------------------------------
+//  Alignment
+//--------------------------------------------------
+
+%justify-start {
+  justify-content: flex-start;
+}
+%justify-end {
+  justify-content: flex-end;
+}
+%justify-center,
+%flex-center {
+  justify-content: center;
+}
+%justify-between {
+  justify-content: space-between;
+}
+%justify-around {
+  justify-content: space-around;
+}
+%justify-evenly {
+  justify-content: space-evenly;
+}
+
+%items-start {
+  align-items: flex-start;
+}
+%items-end {
+  align-items: flex-end;
+}
+%items-center,
+%flex-center {
+  align-items: center;
+}
+%items-baseline {
+  align-items: baseline;
+}
+%items-stretch {
+  align-items: stretch;
+}
+
+%content-start {
+  align-content: flex-start;
+}
+%content-end {
+  align-content: flex-end;
+}
+%content-center {
+  align-content: center;
+}
+%content-stretch {
+  align-content: stretch;
+}
+%content-between {
+  align-content: space-between;
+}
+%content-around {
+  align-content: space-around;
+}
+
+//--------------------------------------------------
+//  Self Alignment
+//--------------------------------------------------
+
+%self-start {
+  align-self: flex-start;
+}
+%self-end {
+  align-self: flex-end;
+}
+%self-center {
+  align-self: center;
+}
+%self-baseline {
+  align-self: baseline;
+}
+%self-stretch {
+  align-self: stretch;
+}
+
+//--------------------------------------------------
+//  Grid Row or Column
+//--------------------------------------------------
+
+/* stylelint-disable */
+@mixin fg($name, $size) {
+  $noProcNotZero: $size > 0;
+
+  $col-name: 'col';
+  @if $name != '' {
+    $col-name: 'col-' + $name;
+  }
+
+  @media (min-width: $size) {
+    //--------------------------------------------------
+
+    %flex-#{$col-name} {
+      flex: 10000 1 0%;
+
+      width: auto;
+      min-width: 0;
+      max-width: 100%;
+
+      height: auto;
+      min-height: 0;
+      max-height: 100%;
+    }
+
+    %row-#{$col-name} {
+      flex: 10000 1 0%;
+
+      width: auto;
+      min-width: 0;
+      max-width: 100%;
+    }
+
+    %column-#{$col-name} {
+      flex: 10000 1 0%;
+
+      height: auto;
+      min-height: 0;
+      max-height: 100%;
+    }
+
+    //--------------------------------------------------
+
+    %flex-#{$col-name}-grow {
+      flex: 1 0 auto;
+
+      width: auto;
+      min-width: 0;
+      max-width: 100%;
+
+      height: auto;
+      min-height: 0;
+      max-height: 100%;
+    }
+
+    %row-#{$col-name}-grow {
+      flex: 1 0 auto;
+
+      width: auto;
+      min-width: 0;
+      max-width: 100%;
+    }
+
+    %column-#{$col-name}-grow {
+      flex: 1 0 auto;
+
+      height: auto;
+      min-height: 0;
+      max-height: 100%;
+    }
+
+    //--------------------------------------------------
+
+    %flex-#{$col-name}-shrink {
+      flex: 0 1 auto;
+
+      width: auto;
+      min-width: 0;
+      max-width: 100%;
+
+      height: auto;
+      min-height: 0;
+      max-height: 100%;
+    }
+
+    %row-#{$col-name}-shrink {
+      flex: 0 1 auto;
+
+      width: auto;
+      min-width: 0;
+      max-width: 100%;
+    }
+
+    %column-#{$col-name}-shrink {
+      flex: 0 1 auto;
+
+      height: auto;
+      min-height: 0;
+      max-height: 100%;
+    }
+
+    //--------------------------------------------------
+
+    %flex-#{$col-name}-auto {
+      flex: 0 0 auto;
+
+      width: auto;
+      min-width: 0;
+      max-width: 100%;
+
+      height: auto;
+      min-height: 0;
+      max-height: 100%;
+    }
+
+    %row-#{$col-name}-auto {
+      flex: 0 0 auto;
+
+      width: auto;
+      min-width: 0;
+      max-width: 100%;
+    }
+
+    %column-#{$col-name}-auto {
+      flex: 0 0 auto;
+
+      height: auto;
+      min-height: 0;
+      max-height: 100%;
+    }
+
+    //--------------------------------------------------
+
+    @for $i from 0 through q.$flex-cols {
+      $ic: quote('' + $i);
+
+      //----------------------------------------
+
+      %flex-#{$col-name}-#{$ic} {
+        flex: 0 0 auto;
+
+        width: auto;
+        min-width: 0;
+        max-width: 100%;
+
+        height: auto;
+        min-height: 0;
+        max-height: 100%;
+      }
+
+      %row-#{$col-name}-#{$ic} {
+        flex: 0 0 auto;
+
+        min-width: 0;
+        max-width: 100%;
+
+        height: auto;
+        width: toFixed(percentage($i / q.$flex-cols), 10000);
+      }
+
+      %column-#{$col-name}-#{$ic} {
+        flex: 0 0 auto;
+
+        min-height: 0;
+        max-height: 100%;
+
+        height: toFixed(percentage($i / q.$flex-cols), 10000);
+        width: auto;
+      }
+
+      //----------------------------------------
+
+      @if $name == '' {
+        %offset-#{$ic} {
+          margin-left: toFixed(percentage($i / q.$flex-cols), 10000);
+        }
+      } @else {
+        %offset-#{$col-name}-#{$ic} {
+          margin-left: toFixed(percentage($i / q.$flex-cols), 10000);
+        }
+      }
+
+      //----------------------------------------
+    }
+
+    //--------------------------------------------------
+  }
+}
+/* stylelint-enable */
+
+$sizes: map-merge(
+  (
+    '': 0,
+  ),
+  q.$sizes
+);
+
+@each $name, $size in $sizes {
+  @include fg($name, $size);
+}
+
+%row-col-all {
+  flex: 0 0 100%;
+  height: auto;
+}
+
+//--------------------------------------------------
+//  Grid Gutter
+//--------------------------------------------------
+
+@each $name, $size in q.$flex-gutter {
+  %q-gutter {
+    &-x-#{$name} {
+      margin-left: -$size;
+      > * {
+        margin-left: $size;
+      }
+    }
+    &-y-#{$name} {
+      margin-top: -$size;
+      > * {
+        margin-top: $size;
+      }
+    }
+    &-#{$name} {
+      @extend %q-gutter-x-#{$name};
+      @extend %q-gutter-y-#{$name};
+    }
+  }
+  %q-col-gutter {
+    &-x-#{$name} {
+      margin-left: -$size;
+      > * {
+        padding-left: $size;
+      }
+    }
+    &-y-#{$name} {
+      margin-top: -$size;
+      > * {
+        padding-top: $size;
+      }
+    }
+    &-#{$name} {
+      @extend %q-col-gutter-x-#{$name};
+      @extend %q-col-gutter-y-#{$name};
+    }
+  }
+}

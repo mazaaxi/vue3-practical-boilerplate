@@ -25,18 +25,12 @@
     @extend %text-subtitle1;
   }
 }
-
-.messageOutputBox {
-  @extend %layout-vertical;
-  gap: 6px;
-  margin-top: 30px;
-}
 </style>
 
 <template>
   <div class="AbcViewPC">
     <q-card class="viewWrapper">
-      <div class="messageInputBox layout vertical">
+      <div class="messageInputBox column">
         <MessageInput
           ref="messageInput"
           v-model:title="message.title"
@@ -44,8 +38,8 @@
           class="messageInput"
           data-testid="messageInput"
         />
-        <div class="layout horizontal space-mt-10">
-          <div class="displayMessage flex-1">{{ displayMessage }}</div>
+        <div class="row space-mt-10">
+          <div class="displayMessage col-grow">{{ displayMessage }}</div>
           <q-btn
             color="primary"
             @click="clearBtnOnClick"
@@ -60,7 +54,7 @@
         </div>
       </div>
 
-      <div class="messageOutputBox">
+      <div class="column q-mt-md q-gutter-y-sm">
         <q-input
           v-model="reversedMessage"
           label="Reversed Message"

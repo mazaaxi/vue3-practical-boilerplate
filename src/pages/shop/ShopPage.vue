@@ -15,8 +15,28 @@
   }
 }
 
-.toggle {
-  border: 1px solid $primary;
+.signInSection {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  .spacer {
+    flex: 1;
+  }
+
+  body.screen--xs &,
+  body.screen--sm & {
+    display: flex;
+    flex-direction: column;
+
+    .signInInfo {
+      align-self: start;
+    }
+
+    .signInBtn {
+      align-self: end;
+    }
+  }
 }
 
 .titleText {
@@ -57,14 +77,15 @@
 </style>
 
 <template>
-  <div class="ShopPage layout vertical">
-    <div class="layout horizontal center">
-      <div v-show="isSignedIn">
+  <div class="ShopPage column">
+    <div class="signInSection">
+      <div v-show="isSignedIn" class="signInInfo">
         <div>{{ $t('abc.signedInUser', { name: user.fullName, email: user.email }) }}</div>
         <div>{{ $t('abc.signedInTime', { time: $d(new Date(), 'dateSec') }) }}</div>
       </div>
-      <div class="flex-1" />
+      <div class="spacer" />
       <q-btn
+        class="signInBtn"
         flat
         rounded
         color="primary"
@@ -75,16 +96,12 @@
     </div>
 
     <div>
-      <div class="layout horizontal center space-mt-20">
+      <div class="row items-center q-mt-xl">
         <div class="titleText">{{ $t('shop.products') }}</div>
       </div>
-      <hr style="width: 100%" />
-      <div
-        v-for="product in products"
-        :key="product.id"
-        class="layout horizontal center productItem"
-      >
-        <div class="layout vertical center-justified">
+      <hr class="full-width" />
+      <div v-for="product in products" :key="product.id" class="productItem row items-center">
+        <div class="column justify-center col-grow">
           <div class="title">{{ product.title }}</div>
           <div class="detail">
             <span>{{ $n(product.price * exchangeRate, 'currency') }}</span
@@ -92,7 +109,6 @@
             {{ product.stock }}
           </div>
         </div>
-        <div class="flex-1"></div>
         <q-btn
           v-show="isSignedIn"
           :disable="product.outOfStock"
@@ -106,28 +122,22 @@
     </div>
 
     <div v-show="isSignedIn" class="space-mt-20">
-      <div class="layout horizontal center">
+      <div class="row items-center">
         <div class="titleText">{{ $t('shop.whoseCart', { name: user.fullName }) }}</div>
-        <div class="flex-1"></div>
       </div>
       <hr style="width: 100%" />
       <template v-if="isCartEmpty">
         <div class="emptyCart">{{ $t('shop.isCartEmpty') }}</div>
       </template>
       <template v-else>
-        <div
-          v-for="cartItem in cartItems"
-          :key="cartItem.id"
-          class="layout horizontal center cartItem"
-        >
-          <div class="layout vertical center-justified">
+        <div v-for="cartItem in cartItems" :key="cartItem.id" class="cartItem row items-center">
+          <div class="column justify-center col-grow">
             <div class="title">{{ cartItem.title }}</div>
             <div class="detail">
               <span>{{ $n(cartItem.price * exchangeRate, 'currency') }}</span> x
               {{ cartItem.quantity }}
             </div>
           </div>
-          <div class="flex-1"></div>
           <q-btn
             round
             color="primary"
@@ -140,16 +150,14 @@
     </div>
 
     <div v-show="isSignedIn" class="space-mt-20">
-      <div class="layout horizontal center">
+      <div class="row items-center">
         <div class="titleText">{{ $t('shop.total') }}</div>
-        <div class="flex-1"></div>
       </div>
-      <hr style="width: 100%" />
-      <div class="layout horizontal center">
-        <div class="totalAmount layout horizontal center">
+      <hr class="full-width" />
+      <div class="row items-center">
+        <div class="totalAmount row items-center col-grow">
           <div class="detail">{{ $n(cartTotalPrice, 'currency') }}</div>
         </div>
-        <div class="flex-1"></div>
         <q-btn
           :disable="isCartEmpty"
           :label="$t('shop.checkout')"

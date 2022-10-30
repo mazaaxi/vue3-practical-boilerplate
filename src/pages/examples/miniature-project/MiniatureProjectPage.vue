@@ -12,19 +12,6 @@
   body.screen--sm & {
     padding: 24px;
   }
-
-  .logInput {
-    width: 100%;
-    min-height: 300px;
-    margin-top: 24px;
-    font-family: 'MS Gothic', 'Osaka-Mono', monospace;
-    font-size: 13px;
-    @extend %layout-flex-1;
-
-    &::v-deep(.q-field__control) {
-      height: 100%;
-    }
-  }
 }
 
 .table {
@@ -39,10 +26,23 @@
     color: $text-accent;
   }
 }
+
+.logInput {
+  flex: 1;
+  width: 100%;
+  min-height: 300px;
+  margin-top: 24px;
+  font-family: 'MS Gothic', 'Osaka-Mono', monospace;
+  font-size: 13px;
+
+  &::v-deep(.q-field__control) {
+    height: 100%;
+  }
+}
 </style>
 
 <template>
-  <q-page class="MiniatureProjectPage layout vertical center">
+  <q-page class="MiniatureProjectPage column items-center">
     <q-table
       ref="table"
       class="table"
@@ -53,9 +53,8 @@
       binaryStateSort
     >
       <template v-slot:top>
-        <div class="layout horizontal center full-width">
+        <div class="row justify-between full-width">
           <div class="title">Users</div>
-          <div class="flex-1" />
           <q-btn label="Add User" color="primary" flat dense noCaps @click="addUserRow()" />
         </div>
       </template>

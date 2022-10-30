@@ -77,35 +77,6 @@
   }
 }
 
-a {
-  @extend %anchor-link;
-}
-
 .anchor-link {
   @extend %anchor-link;
-}
-
-.q-notification {
-  body.screen--xs &,
-  body.screen--sm & {
-    font-size: 12px;
-    border-radius: 10px;
-  }
-
-  .q-icon {
-    body.screen--xs &,
-    body.screen--sm & {
-      margin-right: 10px;
-      font-size: 20px;
-    }
-
-    .q-btn {
-      body.screen--xs &,
-      body.screen--sm & {
-        min-height: 2em;
-        padding: 0.285em;
-        font-size: 12px;
-      }
-    }
-  }
 }

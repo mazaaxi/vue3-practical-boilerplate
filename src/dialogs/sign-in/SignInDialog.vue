@@ -43,7 +43,7 @@
       </q-card-section>
 
       <!-- Content area -->
-      <q-card-section class="contentArea layout vertical">
+      <q-card-section class="contentArea column">
         <q-select
           ref="emailInput"
           v-model="email"
@@ -72,7 +72,7 @@
       </q-card-section>
 
       <!-- Button area -->
-      <q-card-actions class="layout horizontal center end-justified">
+      <q-card-actions class="row items-center justify-end">
         <!-- Cancel button -->
         <q-btn flat rounded color="primary" :label="$t('common.cancel')" @click="close(false)" />
         <!-- OK button -->

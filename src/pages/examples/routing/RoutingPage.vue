@@ -12,52 +12,47 @@
   body.screen--sm & {
     padding: 24px;
   }
+}
 
-  .logInput {
-    width: 100%;
-    min-height: 300px;
-    font-family: 'MS Gothic', 'Osaka-Mono', monospace;
-    font-size: 13px;
-    @extend %layout-flex-1;
+.pageNumBtn {
+  color: $primary;
 
-    &::v-deep(.q-field__control) {
-      height: 100%;
-    }
+  &.active {
+    color: $accent;
   }
 }
 
-.pageContainer {
+.logInput {
+  flex: 1;
   width: 100%;
-  padding: 10px;
+  min-height: 300px;
+  font-family: 'MS Gothic', 'Osaka-Mono', monospace;
+  font-size: 13px;
 
-  .pageNumBtn {
-    color: $primary;
-
-    &.active {
-      color: $accent;
-    }
+  &::v-deep(.q-field__control) {
+    height: 100%;
   }
 }
 </style>
 
 <template>
-  <q-page class="RoutingPage layout vertical center">
-    <q-card class="pageContainer">
-      <div class="layout horizontal center-justified">
+  <q-page class="RoutingPage column items-center">
+    <q-card class="full-width q-pa-md">
+      <div class="row justify-center">
         <q-btn flat color="primary" noCaps @click="backHistoryButtonOnClick">
-          <div class="layout horizontal center">
+          <div class="row items-center">
             <q-icon name="arrow_back" />
             <div class="space-ml-10">{{ $t('routing.backHistory') }}</div>
           </div>
         </q-btn>
         <q-btn flat color="primary" noCaps @click="forwardHistoryButtonOnClick">
-          <div class="layout horizontal center">
+          <div class="row items-center">
             <div class="space-mr-10">{{ $t('routing.forwardHistory') }}</div>
             <q-icon name="arrow_forward" />
           </div>
         </q-btn>
       </div>
-      <div class="layout horizontal center-justified">
+      <div class="row justify-center">
         <q-btn flat color="primary" label="<" @click="prevPageButtonOnClick" />
         <q-btn
           v-for="page in pages"
@@ -72,7 +67,7 @@
       </div>
     </q-card>
 
-    <div class="layout horizontal end-justified full-width">
+    <div class="row justify-end full-width">
       <q-btn icon="description" color="primary" flat @click="descButtonOnClick">
         <q-tooltip>{{ $t('routing.logCurrentRoute') }}</q-tooltip>
       </q-btn>

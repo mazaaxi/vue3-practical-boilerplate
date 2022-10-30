@@ -1,3 +1,4 @@
+import '@/styles/settings.scss'
 import { setupConfig, useConstants, useScreen } from '@/base'
 import { setupI18n, useI18nUtils } from '@/i18n'
 import AppPage from './pages/app'

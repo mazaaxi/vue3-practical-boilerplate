@@ -13,8 +13,6 @@
 }
 
 .messageInputBox {
-  @extend %layout-vertical;
-
   .input,
   .messageInput {
     width: 100%;
@@ -29,17 +27,11 @@
     @extend %text-subtitle1;
   }
 }
-
-.messageOutputBox {
-  @extend %layout-vertical;
-  gap: 6px;
-  margin-top: 30px;
-}
 </style>
 
 <template>
   <div class="AbcViewSP">
-    <div class="messageInputBox layout vertical">
+    <div class="messageInputBox column">
       <MessageInput
         ref="messageInput"
         v-model:title="message.title"
@@ -48,7 +40,7 @@
       />
       <div class="displayMessage">{{ displayMessage }}</div>
       <q-btn
-        class="layout self-end"
+        class="self-end"
         color="primary"
         @click="clearBtnOnClick"
         flat
@@ -61,7 +53,7 @@
       >
     </div>
 
-    <div class="messageOutputBox">
+    <div class="column q-mt-md q-gutter-y-sm">
       <q-input
         v-model="reversedMessage"
         label="Reversed Message"
