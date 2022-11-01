@@ -83,11 +83,6 @@ type Route = UnwrapNestedRefs<WrapRoute>
 
 interface WrapRoute<MOVE_PARAMS extends any | void = void> {
   /**
-   * A base path of a route.
-   * e.g. /ja/articles
-   */
-  readonly basePath: Ref<string>
-  /**
    * A path of a route.
    * e.g. /ja/articles/1234567890
    */
@@ -174,6 +169,10 @@ interface RawRoute<MOVE_PARAMS extends any | void = void> extends WrapRoute<MOVE
    * Clears the state of itself route.
    */
   clear(): void
+  /**
+   * Get whether the specified `route` matches its own route.
+   */
+  getIsCurrent(route: VueRoute): boolean
 }
 
 type CurrentRoute = Omit<Route, 'move' | 'toMovePath'>
@@ -222,7 +221,6 @@ namespace Router {
     })
 
     const currentRoute: Ref<CurrentRoute> = ref({
-      basePath: '',
       path: '',
       fullPath: '',
       hash: '',
@@ -239,13 +237,30 @@ namespace Router {
     //
     //----------------------------------------------------------------------
 
+    async function updateAllRoutes(to: VueRoute) {
+      // the first matched next route is the current route.
+      let alreadyExistsCurrentRoute = false
+      for (const route of flattenRoutes) {
+        if (!alreadyExistsCurrentRoute) {
+          route.isCurrent.value = route.getIsCurrent(to)
+          if (route.isCurrent.value) {
+            alreadyExistsCurrentRoute = true
+          }
+        } else {
+          route.isCurrent.value = false
+        }
+      }
+
+      // update all routes
+      await Promise.all(flattenRoutes.map(route => route.update(to)))
+    }
+
     function updateCurrentRoute(): void {
       const newCurrentRoute = flattenRoutes.find(route => route.isCurrent.value)
       if (!newCurrentRoute) return
 
       currentRoute.value = reactive({
         ...pickProps(newCurrentRoute, [
-          'basePath',
           'path',
           'fullPath',
           'hash',
@@ -271,8 +286,8 @@ namespace Router {
         if (!shouldNext) return
       }
 
-      // update each route object
-      await Promise.all(flattenRoutes.map(route => route.update(to)))
+      // update all route object
+      await updateAllRoutes(to)
 
       next()
     })
@@ -281,8 +296,8 @@ namespace Router {
       isHistoryMoving.value = false
 
       if (failure) {
-        // update each route object in the previous route
-        await Promise.all(flattenRoutes.map(route => route.update(from)))
+        // update all route object in the previous route
+        await updateAllRoutes(from)
 
         updateCurrentRoute()
 
@@ -340,7 +355,6 @@ namespace Route {
       },
     }
 
-    const baseRoutePath = ref(input.routePath ?? '')
     const routePath = ref(input.routePath ?? '')
     const component = ref(input.component)
     const redirect = ref(input.redirect)
@@ -351,7 +365,6 @@ namespace Route {
     //
     //----------------------------------------------------------------------
 
-    const basePath = ref('')
     const path = ref('')
     const fullPath = ref('')
     const hash = ref('')
@@ -361,7 +374,9 @@ namespace Route {
     const isHistoryMoving = computed(() => state.isHistoryMoving)
 
     const _hasHistoryMoved = ref(false)
-    const hasHistoryMoved = computed(() => isCurrent.value && _hasHistoryMoved.value)
+    const hasHistoryMoved = computed(() => {
+      return isCurrent.value && !isHistoryMoving.value && _hasHistoryMoved.value
+    })
 
     //----------------------------------------------------------------------
     //
@@ -396,7 +411,7 @@ namespace Route {
 
     const toConfig = extensibleMethod<RawRoute['toConfig']>(() => {
       const baseConfig = {
-        path: baseRoutePath.value,
+        path: routePath.value,
         component: component.value,
       }
 
@@ -408,31 +423,21 @@ namespace Route {
     })
 
     const update = extensibleMethod<RawRoute['update']>(async route => {
-      // set the flag indicating whether a history move has been performed
-      // Note: if it is currently in the process of history move, it means
-      // "history move has been performed"
-      _hasHistoryMoved.value = isHistoryMoving.value
-
-      // determine if itself is a current route
-      isCurrent.value = getIsCurrent(route)
-      // reconfigure its own base path
-      basePath.value = getBasePath(route)
-
-      // reconfigure its own path
-      // NOTE: Reconfigure a path if itself is the current route or if the base route path and
-      // a route path are the same. Otherwise, reconfiguring a path will result in an incomplete path.
-      if (isCurrent.value || baseRoutePath.value === routePath.value) {
+      if (isCurrent.value) {
+        // reconfigure its own state
         path.value = getPath(route)
         fullPath.value = getFullPath(route)
+        hash.value = route.hash
+        query.value = route.query
+        params.value = route.params
+        // set the flag indicating whether a history move has been performed
+        // Note: if it is currently in the process of history move, it means
+        // "history move has been performed"
+        _hasHistoryMoved.value = isHistoryMoving.value
       } else {
-        path.value = ''
-        fullPath.value = ''
+        // clear its own state
+        clear()
       }
-
-      // set properties other than the above
-      hash.value = route.hash
-      query.value = route.query
-      params.value = route.params
     })
 
     const refresh = extensibleMethod<RawRoute['refresh']>(async () => {
@@ -476,7 +481,6 @@ namespace Route {
     })
 
     const clear = extensibleMethod<RawRoute['clear']>(() => {
-      basePath.value = ''
       path.value = ''
       fullPath.value = ''
       hash.value = ''
@@ -485,10 +489,6 @@ namespace Route {
       isCurrent.value = false
       _hasHistoryMoved.value = false
     })
-
-    function getBasePath(route: VueRoute): string {
-      return toPath({ routePath: baseRoutePath.value, params: route.params })
-    }
 
     function getPath(route: VueRoute): string {
       return toPath({ routePath: routePath.value, params: route.params })
@@ -516,10 +516,8 @@ namespace Route {
 
     const result = {
       router,
-      baseRoutePath,
       routePath,
       component,
-      basePath,
       path,
       fullPath,
       hash,
@@ -536,6 +534,7 @@ namespace Route {
       refresh,
       toPath,
       clear,
+      getIsCurrent,
     }
 
     return isImplemented<RawRoute, typeof result>(result)

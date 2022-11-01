@@ -237,6 +237,7 @@ const AppPage = defineComponent({
     //       {
     //         fullPath: router.currentRoute.fullPath,
     //         isHistoryMoving: router.currentRoute.isHistoryMoving,
+    //         hasHistoryMoved: router.currentRoute.hasHistoryMoved,
     //       },
     //       null,
     //       2
