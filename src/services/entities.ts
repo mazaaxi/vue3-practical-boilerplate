@@ -1,4 +1,5 @@
-import type { TimestampEntity } from '@/services/base'
+import type { APITimestampEntity, TimestampEntity } from '@/services/base'
+import type { KeysToCamel, Merge } from 'js-common-lib'
 import { createObjectCopyFunctions } from '@/base'
 import dayjs from 'dayjs'
 
@@ -8,25 +9,42 @@ import dayjs from 'dayjs'
 //
 //==========================================================================
 
-interface User extends TimestampEntity {
+interface APIUser extends APITimestampEntity {
   email: string
   first: string
   last: string
 }
 
-interface Product extends TimestampEntity {
+type User = Merge<KeysToCamel<APIUser>, TimestampEntity>
+
+interface APIProduct extends APITimestampEntity {
   title: string
   price: number
   stock: number
 }
 
-interface CartItem extends TimestampEntity {
+type Product = Merge<KeysToCamel<APIProduct>, TimestampEntity>
+
+interface APICartItem extends APITimestampEntity {
   uid: string
-  productId: string
+  product_id: string
   title: string
   price: number
   quantity: number
 }
+
+type CartItem = Merge<KeysToCamel<APICartItem>, TimestampEntity>
+
+interface APICartItemEditResponse extends APICartItem {
+  product: Pick<APIProduct, 'id' | 'stock' | 'created_at' | 'updated_at'>
+}
+
+type CartItemEditResponse = Merge<
+  KeysToCamel<APICartItemEditResponse>,
+  TimestampEntity & {
+    product: Merge<KeysToCamel<APICartItemEditResponse['product']>, TimestampEntity>
+  }
+>
 
 //==========================================================================
 //
@@ -79,3 +97,12 @@ namespace CartItem {
 //==========================================================================
 
 export { CartItem, Product, User }
+
+export type {
+  APICartItem,
+  APICartItemEditResponse,
+  APIProduct,
+  APITimestampEntity,
+  APIUser,
+  CartItemEditResponse,
+}

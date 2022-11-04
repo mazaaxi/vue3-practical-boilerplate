@@ -105,7 +105,7 @@ server.use('api', router)
 
 const APIPrefix = 'api'
 
-server.put(`/${APIPrefix}/testData`, (req, res, next) => {
+server.put(`/${APIPrefix}/test_data`, (req, res, next) => {
   const data = req.body
 
   for (const key in data) {
@@ -138,16 +138,16 @@ server.get(`/${APIPrefix}/products`, (req, res, next) => {
   res.json(products)
 })
 
-server.get(`/${APIPrefix}/cartItems`, (req, res, next) => {
+server.get(`/${APIPrefix}/cart_items`, (req, res, next) => {
   const uid = getUserId(req, res)
   if (!uid) return
 
-  const cartItems = db.get('cartItems').filter({ uid }).value()
+  const cartItems = db.get('cart_items').filter({ uid }).value()
 
   res.json(cartItems)
 })
 
-server.post(`/${APIPrefix}/cartItems`, (req, res, next) => {
+server.post(`/${APIPrefix}/cart_items`, (req, res, next) => {
   const uid = getUserId(req, res)
   if (!uid) return
   const inputs = req.body
@@ -160,7 +160,7 @@ server.post(`/${APIPrefix}/cartItems`, (req, res, next) => {
         `A request user is trying to add an item to someone else's cart.`,
         {
           'request.uid': uid,
-          'request.cartItem': input,
+          'request.cart_item': input,
         }
       )
     }
@@ -168,43 +168,43 @@ server.post(`/${APIPrefix}/cartItems`, (req, res, next) => {
 
   const result = []
   for (const input of inputs) {
-    let cartItem = db.get('cartItems').find({ uid, productId: input.productId }).value()
+    let cartItem = db.get('cart_items').find({ uid, product_id: input.product_id }).value()
     if (cartItem) {
       return sendError(res, 400, `A cart item trying to add already exists.`, {
-        'exists.cartItem': cartItem,
-        'input.cartItem': input,
+        'exists.cart_item': cartItem,
+        'input.cart_item': input,
       })
     }
 
-    let product = db.get('products').find({ id: input.productId }).value()
+    let product = db.get('products').find({ id: input.product_id }).value()
     if (!product) {
-      return sendError(res, 400, `There are no product.`, { 'input.cartItem': input })
+      return sendError(res, 400, `There are no product.`, { 'input.cart_item': input })
     }
 
     const now = dayjs().toISOString()
 
     const cartItemId = generateId()
     cartItem = db
-      .get('cartItems')
+      .get('cart_items')
       .push({
         id: cartItemId,
         uid: input.uid,
-        productId: input.productId,
+        product_id: input.product_id,
         title: input.title,
         price: input.price,
         quantity: input.quantity,
-        createdAt: now,
-        updatedAt: now,
+        created_at: now,
+        updated_at: now,
       })
       .find({ id: cartItemId })
       .write()
 
     product = db
       .get('products')
-      .find({ id: cartItem.productId })
+      .find({ id: cartItem.product_id })
       .assign({
         stock: product.stock - cartItem.quantity,
-        updatedAt: now,
+        updated_at: now,
       })
       .write()
 
@@ -213,8 +213,8 @@ server.post(`/${APIPrefix}/cartItems`, (req, res, next) => {
       product: {
         id: product.id,
         stock: product.stock,
-        createdAt: product.createdAt,
-        updatedAt: now,
+        created_at: product.created_at,
+        updated_at: now,
       },
     })
   }
@@ -222,7 +222,7 @@ server.post(`/${APIPrefix}/cartItems`, (req, res, next) => {
   res.json(result)
 })
 
-server.put(`/${APIPrefix}/cartItems`, (req, res, next) => {
+server.put(`/${APIPrefix}/cart_items`, (req, res, next) => {
   const uid = getUserId(req, res)
   if (!uid) return
   const inputs = req.body
@@ -235,7 +235,7 @@ server.put(`/${APIPrefix}/cartItems`, (req, res, next) => {
         `A request user is trying to update an item to someone else's cart.`,
         {
           'request.uid': uid,
-          'request.cartItem': input,
+          'request.cart_item': input,
         }
       )
     }
@@ -243,34 +243,34 @@ server.put(`/${APIPrefix}/cartItems`, (req, res, next) => {
 
   const result = []
   for (const input of inputs) {
-    let cartItem = db.get('cartItems').find({ id: input.id, uid }).value()
+    let cartItem = db.get('cart_items').find({ id: input.id, uid }).value()
     if (!cartItem) {
-      return sendError(res, 400, `There are no cart item.`, { 'input.cartItem': input })
+      return sendError(res, 400, `There are no cart item.`, { 'input.cart_item': input })
     }
 
-    const product = db.get('products').find({ id: cartItem.productId }).value()
+    const product = db.get('products').find({ id: cartItem.product_id }).value()
     if (!product) {
-      return sendError(res, 400, `There are no product.`, { 'input.cartItem': input })
+      return sendError(res, 400, `There are no product.`, { 'input.cart_item': input })
     }
 
     const now = dayjs().toISOString()
 
     const addedQuantity = input.quantity - cartItem.quantity
     cartItem = db
-      .get('cartItems')
+      .get('cart_items')
       .find({ id: input.id, uid: input.uid })
       .assign({
         quantity: input.quantity,
-        updatedAt: now,
+        updated_at: now,
       })
       .write()
 
     const stock = product.stock - addedQuantity
     db.get('products')
-      .find({ id: cartItem.productId })
+      .find({ id: cartItem.product_id })
       .assign({
         stock,
-        updatedAt: now,
+        updated_at: now,
       })
       .write()
 
@@ -279,8 +279,8 @@ server.put(`/${APIPrefix}/cartItems`, (req, res, next) => {
       product: {
         id: product.id,
         stock,
-        createdAt: product.createdAt,
-        updatedAt: now,
+        created_at: product.created_at,
+        updated_at: now,
       },
     })
   }
@@ -288,13 +288,13 @@ server.put(`/${APIPrefix}/cartItems`, (req, res, next) => {
   res.json(result)
 })
 
-server.delete(`/${APIPrefix}/cartItems`, (req, res, next) => {
+server.delete(`/${APIPrefix}/cart_items`, (req, res, next) => {
   const uid = getUserId(req, res)
   if (!uid) return
   const cartItemIds = req.query.ids
 
   for (const cartItemId of cartItemIds) {
-    const cartItem = db.get('cartItems').find({ id: cartItemId, uid }).value()
+    const cartItem = db.get('cart_items').find({ id: cartItemId, uid }).value()
     if (!cartItem) continue
 
     if (cartItem.uid !== uid) {
@@ -304,7 +304,7 @@ server.delete(`/${APIPrefix}/cartItems`, (req, res, next) => {
         `A request user is trying to remove an item to someone else's cart.`,
         {
           'request.uid': uid,
-          'request.cartItem': { id: cartItemId },
+          'request.cart_item': { id: cartItemId },
         }
       )
     }
@@ -312,26 +312,26 @@ server.delete(`/${APIPrefix}/cartItems`, (req, res, next) => {
 
   const result = []
   for (const cartItemId of cartItemIds) {
-    const cartItem = db.get('cartItems').find({ id: cartItemId, uid }).value()
+    const cartItem = db.get('cart_items').find({ id: cartItemId, uid }).value()
     if (!cartItem) {
       throw new Error(`There are no CartItem: ${JSON.stringify({ id: cartItemId, uid })}`)
     }
 
-    const product = db.get('products').find({ id: cartItem.productId }).value()
+    const product = db.get('products').find({ id: cartItem.product_id }).value()
     if (!cartItem) {
-      throw new Error(`There are no Product: ${JSON.stringify({ id: cartItem.productId })}`)
+      throw new Error(`There are no Product: ${JSON.stringify({ id: cartItem.product_id })}`)
     }
 
     const now = dayjs().toISOString()
 
-    db.get('cartItems').remove({ id: cartItemId }).write()
+    db.get('cart_items').remove({ id: cartItemId }).write()
 
     const stock = product.stock + cartItem.quantity
     db.get('products')
-      .find({ id: cartItem.productId })
+      .find({ id: cartItem.product_id })
       .assign({
         stock,
-        updatedAt: now,
+        updated_at: now,
       })
       .write()
 
@@ -340,8 +340,8 @@ server.delete(`/${APIPrefix}/cartItems`, (req, res, next) => {
       product: {
         id: product.id,
         stock,
-        createdAt: product.createdAt,
-        updatedAt: now,
+        created_at: product.created_at,
+        updated_at: now,
       },
     })
   }
@@ -349,11 +349,11 @@ server.delete(`/${APIPrefix}/cartItems`, (req, res, next) => {
   res.json(result)
 })
 
-server.put(`/${APIPrefix}/cartItems/checkout`, (req, res, next) => {
+server.put(`/${APIPrefix}/cart_items/checkout`, (req, res, next) => {
   const uid = getUserId(req, res)
   if (!uid) return
 
-  db.get('cartItems').remove({ uid }).write()
+  db.get('cart_items').remove({ uid }).write()
 
   res.send(true)
 })

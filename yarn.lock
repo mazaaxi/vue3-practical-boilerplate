@@ -2819,8 +2819,8 @@ jju@^1.1.0:
   integrity sha512-8wb9Yw966OSxApiCt0K3yNJL8pnNeIv+OEq2YMidz4FKP6nonSRoOXc80iXY4JaN2FC11B9qsNmDsm+ZOfMROA==
 
 "js-common-lib@https://github.com/mazaaxi/js-common-lib.git":
-  version "0.0.2"
-  resolved "https://github.com/mazaaxi/js-common-lib.git#1c67b1e36ef4d5848859e12784ae9fe35732fd4b"
+  version "0.0.0"
+  resolved "https://github.com/mazaaxi/js-common-lib.git#e2d0f39272f23bced5af880c2480bfcf98fccdd3"
   dependencies:
     dayjs "^1.11.6"
 
@@ -4692,10 +4692,10 @@ typedarray-to-buffer@^3.1.5:
   dependencies:
     is-typedarray "^1.0.0"
 
-typescript@~4.7.4:
-  version "4.7.4"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.7.4.tgz#1a88596d1cf47d59507a1bcdfb5b9dfe4d488235"
-  integrity sha512-C0WQT0gezHuw6AdY1M2jxUO83Rjf0HP7Sk1DtXj6j1EwkQNZrHAg2XPWlq62oqEhYvONq5pkC2Y9oPljWToLmQ==
+typescript@~4.8.4:
+  version "4.8.4"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.8.4.tgz#c464abca159669597be5f96b8943500b238e60e6"
+  integrity sha512-QCh+85mCy+h0IGff8r5XWzOVSbBO+KfeYrMQh7NJ58QujwcE22u+NUSmUxqF+un70P9GXKxa2HCNiTTMJknyjQ==
 
 unbox-primitive@^1.0.2:
   version "1.0.2"

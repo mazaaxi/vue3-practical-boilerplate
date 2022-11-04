@@ -1,9 +1,9 @@
-import { CartItem, Product, toRawEntities } from '@/services'
+import type { APICartItem, APIProduct, CartItem, Product } from '@/services'
 import { describe, expect, it } from 'vitest'
 import type { CartItemEditResponse } from '@/services/apis'
 import { TestUsers } from '@/services/test-data'
-import type { ToRawEntity } from '@/services'
 import dayjs from 'dayjs'
+import { keysToSnake } from 'js-common-lib'
 import { useServiceDependencies } from '@/tests/helpers'
 
 //==========================================================================
@@ -51,8 +51,15 @@ function Products(): Product[] {
   ]
 }
 
-function RawProducts(): ToRawEntity<Product>[] {
-  return toRawEntities(Products())
+function APIProducts(): APIProduct[] {
+  const products = Products()
+  return keysToSnake<typeof products, APIProduct[]>(products, {
+    convertor: (key, value) => {
+      if (key === 'createdAt' && dayjs.isDayjs(value)) return value.toISOString()
+      if (key === 'updatedAt' && dayjs.isDayjs(value)) return value.toISOString()
+      return value
+    },
+  })
 }
 
 function CartItems(): CartItem[] {
@@ -80,8 +87,15 @@ function CartItems(): CartItem[] {
   ]
 }
 
-function RawCartItems(): ToRawEntity<CartItem>[] {
-  return toRawEntities(CartItems())
+function APICartItems(): APICartItem[] {
+  const cartItems = CartItems()
+  return keysToSnake<typeof cartItems, APICartItem[]>(cartItems, {
+    convertor: (key, value) => {
+      if (key === 'createdAt' && dayjs.isDayjs(value)) return value.toISOString()
+      if (key === 'updatedAt' && dayjs.isDayjs(value)) return value.toISOString()
+      return value
+    },
+  })
 }
 
 //==========================================================================
@@ -109,7 +123,7 @@ describe('APIs', () => {
     it('basic case', async () => {
       const { apis } = useServiceDependencies()
       await apis.putTestData({
-        products: RawProducts(),
+        products: APIProducts(),
       })
 
       const product1 = Products()[0]
@@ -125,7 +139,7 @@ describe('APIs', () => {
     it('basic case - without arguments', async () => {
       const { apis } = useServiceDependencies()
       await apis.putTestData({
-        products: RawProducts(),
+        products: APIProducts(),
       })
 
       // run the test target
@@ -137,7 +151,7 @@ describe('APIs', () => {
     it('basic case - with arguments', async () => {
       const { apis } = useServiceDependencies()
       await apis.putTestData({
-        products: RawProducts(),
+        products: APIProducts(),
       })
 
       const [product1, product2] = Products() // with arguments
@@ -153,7 +167,7 @@ describe('APIs', () => {
     it('basic case', async () => {
       const { apis } = useServiceDependencies()
       await apis.putTestData({
-        cartItems: RawCartItems(),
+        cart_items: APICartItems(),
       })
 
       setTestIdToken()
@@ -169,8 +183,8 @@ describe('APIs', () => {
     it('basic case', async () => {
       const { apis } = useServiceDependencies()
       await apis.putTestData({
-        products: RawProducts(),
-        cartItems: RawCartItems(),
+        products: APIProducts(),
+        cart_items: APICartItems(),
       })
 
       setTestIdToken()
@@ -215,8 +229,8 @@ describe('APIs', () => {
     it('basic case', async () => {
       const { apis } = useServiceDependencies()
       await apis.putTestData({
-        products: RawProducts(),
-        cartItems: RawCartItems(),
+        products: APIProducts(),
+        cart_items: APICartItems(),
       })
 
       setTestIdToken()
@@ -260,8 +274,8 @@ describe('APIs', () => {
     it('basic case', async () => {
       const { apis } = useServiceDependencies()
       await apis.putTestData({
-        products: RawProducts(),
-        cartItems: RawCartItems(),
+        products: APIProducts(),
+        cart_items: APICartItems(),
       })
 
       setTestIdToken()
@@ -299,8 +313,8 @@ describe('APIs', () => {
     it('basic case', async () => {
       const { apis } = useServiceDependencies()
       await apis.putTestData({
-        products: RawProducts(),
-        cartItems: RawCartItems(),
+        products: APIProducts(),
+        cart_items: APICartItems(),
       })
 
       setTestIdToken()

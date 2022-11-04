@@ -1,8 +1,15 @@
-import type { CartItem, Product } from '@/services/entities'
+import type {
+  APICartItem,
+  APICartItemEditResponse,
+  APIProduct,
+  CartItem,
+  CartItemEditResponse,
+  Product,
+} from '@/services/entities'
+import { isImplemented, keysToCamel, keysToSnake } from 'js-common-lib'
 import { APIClient } from '@/services/apis/client'
-import type { ToRawEntity } from '@/services/base'
-import { isImplemented } from 'js-common-lib'
-import { toEntities } from '@/services/base'
+import type { KeysToCamel } from 'js-common-lib'
+import dayjs from 'dayjs'
 
 //==========================================================================
 //
@@ -20,23 +27,21 @@ interface APIs {
   checkoutCart(): Promise<boolean>
 }
 
-interface CartItemAddInput {
+interface APICartItemAddInput {
   uid: string
-  productId: string
+  product_id: string
   title: string
   price: number
   quantity: number
 }
+type CartItemAddInput = KeysToCamel<APICartItemAddInput>
 
-interface CartItemUpdateInput {
+interface APICartItemUpdateInput {
   uid: string
   id: string
   quantity: number
 }
-
-interface CartItemEditResponse extends CartItem {
-  product: Pick<Product, 'id' | 'stock' | 'createdAt' | 'updatedAt'>
-}
+type CartItemUpdateInput = KeysToCamel<APICartItemUpdateInput>
 
 //==========================================================================
 //
@@ -72,54 +77,112 @@ namespace APIs {
     //----------------------------------------------------------------------
 
     const getProduct: APIs['getProduct'] = async id => {
-      const response = await client.get<ToRawEntity<Product>[]>('products', {
+      const response = await client.get<APIProduct[]>('products', {
         params: { ids: [id] },
       })
       if (response.data.length === 0) return
-      return toEntities(response.data)[0]
+
+      const product = response.data[0]
+      return keysToCamel<typeof product, Product>(product, {
+        convertor: (key, value) => {
+          if (key === 'created_at') return dayjs(value)
+          if (key === 'updated_at') return dayjs(value)
+          return value
+        },
+      })
     }
 
     const getProducts: APIs['getProducts'] = async ids => {
-      const response = await client.get<ToRawEntity<Product>[]>('products', {
+      const response = await client.get<APIProduct[]>('products', {
         params: { ids },
       })
-      return toEntities(response.data)
+
+      return keysToCamel<typeof response.data, Product[]>(response.data, {
+        convertor: (key, value) => {
+          if (key === 'created_at') return dayjs(value)
+          if (key === 'updated_at') return dayjs(value)
+          return value
+        },
+      })
     }
 
     const getCartItems: APIs['getCartItems'] = async () => {
-      const response = await client.get<ToRawEntity<CartItem>[]>('cartItems', {
+      const response = await client.get<APICartItem[]>('cart_items', {
         shouldAuth: true,
       })
-      return toEntities(response.data)
+
+      return keysToCamel<typeof response.data, CartItem[]>(response.data, {
+        convertor: (key, value) => {
+          if (key === 'created_at') return dayjs(value)
+          if (key === 'updated_at') return dayjs(value)
+          return value
+        },
+      })
     }
 
     const addCartItems: APIs['addCartItems'] = async items => {
-      const response = await client.post<ToRawEntity<CartItemEditResponse>[]>('cartItems', items, {
-        shouldAuth: true,
-      })
-      return toEntities(response.data)
+      const response = await client.post<APICartItemEditResponse[]>(
+        'cart_items',
+        keysToSnake(items),
+        {
+          shouldAuth: true,
+        }
+      )
+      return response.data.map(item => apiAPICartItemEditResponseToEntity(item))
     }
 
     const updateCartItems: APIs['updateCartItems'] = async items => {
-      const response = await client.put<ToRawEntity<CartItemEditResponse>[]>('cartItems', items, {
-        shouldAuth: true,
-      })
-      return toEntities(response.data)
+      const response = await client.put<APICartItemEditResponse[]>(
+        'cart_items',
+        keysToSnake(items),
+        {
+          shouldAuth: true,
+        }
+      )
+      return response.data.map(item => apiAPICartItemEditResponseToEntity(item))
     }
 
     const removeCartItems: APIs['removeCartItems'] = async cartItemIds => {
-      const response = await client.delete<ToRawEntity<CartItemEditResponse>[]>('cartItems', {
+      const response = await client.delete<APICartItemEditResponse[]>('cart_items', {
         shouldAuth: true,
         params: { ids: cartItemIds },
       })
-      return toEntities(response.data)
+      return response.data.map(item => apiAPICartItemEditResponseToEntity(item))
     }
 
     const checkoutCart: APIs['checkoutCart'] = async () => {
-      const response = await client.put<boolean>('cartItems/checkout', undefined, {
+      const response = await client.put<boolean>('cart_items/checkout', undefined, {
         shouldAuth: true,
       })
       return response.data
+    }
+
+    //----------------------------------------------------------------------
+    //
+    //  Internal methods
+    //
+    //----------------------------------------------------------------------
+
+    function apiAPICartItemEditResponseToEntity(
+      item: APICartItemEditResponse
+    ): CartItemEditResponse {
+      return keysToCamel<APICartItemEditResponse, CartItemEditResponse>(item, {
+        convertor: (key, value) => {
+          if (key === 'product') {
+            type APIProduct = APICartItemEditResponse['product']
+            return keysToCamel<APIProduct>(value, {
+              convertor: (key, value) => {
+                if (key === 'created_at') return dayjs(value)
+                if (key === 'updated_at') return dayjs(value)
+                return value
+              },
+            })
+          }
+          if (key === 'created_at') return dayjs(value)
+          if (key === 'updated_at') return dayjs(value)
+          return value
+        },
+      })
     }
 
     //----------------------------------------------------------------------
