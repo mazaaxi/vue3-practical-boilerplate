@@ -121,24 +121,18 @@ namespace APIs {
     }
 
     const addCartItems: APIs['addCartItems'] = async items => {
-      const response = await client.post<APICartItemEditResponse[]>(
-        'cart_items',
-        keysToSnake(items),
-        {
-          shouldAuth: true,
-        }
-      )
+      const response = await client.post<APICartItemEditResponse[]>('cart_items', {
+        shouldAuth: true,
+        data: keysToSnake(items),
+      })
       return response.data.map(item => apiAPICartItemEditResponseToEntity(item))
     }
 
     const updateCartItems: APIs['updateCartItems'] = async items => {
-      const response = await client.put<APICartItemEditResponse[]>(
-        'cart_items',
-        keysToSnake(items),
-        {
-          shouldAuth: true,
-        }
-      )
+      const response = await client.put<APICartItemEditResponse[]>('cart_items', {
+        shouldAuth: true,
+        data: keysToSnake(items),
+      })
       return response.data.map(item => apiAPICartItemEditResponseToEntity(item))
     }
 
@@ -151,7 +145,7 @@ namespace APIs {
     }
 
     const checkoutCart: APIs['checkoutCart'] = async () => {
-      const response = await client.put<boolean>('cart_items/checkout', undefined, {
+      const response = await client.put<boolean>('cart_items/checkout', {
         shouldAuth: true,
       })
       return response.data

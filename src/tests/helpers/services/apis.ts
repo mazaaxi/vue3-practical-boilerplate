@@ -26,7 +26,7 @@ namespace TestAPIs {
 
   function mix<T extends WrapAPIs>(api: T): TestAPIs & T {
     const putTestData: TestAPIs['putTestData'] = async testData => {
-      await api.client.put('test_data', testData)
+      await api.client.put('test_data', { data: testData })
     }
 
     return {

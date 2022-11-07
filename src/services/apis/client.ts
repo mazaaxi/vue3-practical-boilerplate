@@ -1,10 +1,4 @@
-import type {
-  AxiosError,
-  AxiosResponse,
-  Method,
-  ParamsSerializerOptions,
-  ResponseType,
-} from 'axios'
+import type { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios'
 import { extensibleMethod, removeBothEndsSlash } from 'js-common-lib'
 import axios from 'axios'
 import { useConfig } from '@/base'
@@ -16,37 +10,32 @@ import { useConfig } from '@/base'
 //==========================================================================
 
 interface APIClient {
-  request<T = any>(config: APIRequestInternalConfig): APIPromise<T>
-  get<T = any>(path: string, config?: APIRequestConfig): APIPromise<T>
-  post<T = any>(path: string, data?: any, config?: APIRequestConfig): APIPromise<T>
-  put<T = any>(path: string, data?: any, config?: APIRequestConfig): APIPromise<T>
-  delete<T = any>(path: string, config?: APIRequestConfig): APIPromise<T>
+  request<T = any>(config: APIRequestConfig): Promise<APIResponse<T>>
+  get<T = any>(path: string, config?: APIGetConfig): Promise<APIResponse<T>>
+  post<T = any>(path: string, config?: APIPostConfig): Promise<APIResponse<T>>
+  put<T = any>(path: string, config?: APIPutConfig): Promise<APIResponse<T>>
+  delete<T = any>(path: string, config?: APIDeleteConfig): Promise<APIResponse<T>>
 }
 
-interface APIRequestConfig {
-  headers?: any
-  params?: any
-  paramsSerializer?: ParamsSerializerOptions
-  responseType?: ResponseType
+interface BaseAPIRequestConfig
+  extends Pick<AxiosRequestConfig, 'headers' | 'params' | 'paramsSerializer' | 'responseType'> {
   shouldAuth?: boolean
 }
 
-interface APIResponse<T = any> {
-  data: T
-  status: number
-  statusText: string
-  headers: any
-  config: APIRequestConfig
-  request?: any
-}
+type APIRequestConfig = BaseAPIRequestConfig & Pick<AxiosRequestConfig, 'method' | 'url' | 'data'>
 
-type APIPromise<T = any> = Promise<APIResponse<T>>
+type APIGetConfig = BaseAPIRequestConfig
 
-interface APIRequestInternalConfig extends APIRequestConfig {
-  url?: string
-  method: Method
-  data?: any
-}
+type APIPostConfig = BaseAPIRequestConfig & Pick<AxiosRequestConfig, 'data'>
+
+type APIPutConfig = BaseAPIRequestConfig & Pick<AxiosRequestConfig, 'data'>
+
+type APIDeleteConfig = BaseAPIRequestConfig
+
+type APIResponse<DATA = any, CONFIG = any> = Pick<
+  AxiosResponse<DATA, CONFIG>,
+  'data' | 'status' | 'statusText' | 'headers' | 'config' | 'request'
+>
 
 //==========================================================================
 //
@@ -101,21 +90,19 @@ namespace APIClient {
       })
     }
 
-    const post: APIClient['post'] = (path, data, config) => {
+    const post: APIClient['post'] = (path, config) => {
       return request({
         ...(config || {}),
         url: path,
         method: 'post',
-        data,
       })
     }
 
-    const put: APIClient['put'] = (path, data, config) => {
+    const put: APIClient['put'] = (path, config) => {
       return request({
         ...(config || {}),
         url: path,
         method: 'put',
-        data,
       })
     }
 
@@ -134,10 +121,10 @@ namespace APIClient {
     //----------------------------------------------------------------------
 
     // TODO
-    //  The return value of this function is [token], which is used in the "Authorization: Bearer
-    //  [token]" HTTP header. This function gets the value of [token] pseudo-optimally, but please
-    //  consider the implementation, including whether you will use this function in your actual
-    //  application.
+    //  The return value of this function is [token], which is used in the
+    //  "Authorization: Bearer [token]" HTTP header. This function gets the value of
+    //  [token] pseudo-optimally, but please consider the implementation, including
+    //  whether you will use this function in your actual application.
     async function getIdToken(): Promise<string> {
       const idToken = localStorage.getItem('idToken')
       if (!idToken) {
@@ -181,4 +168,11 @@ class APIError extends Error {
 //==========================================================================
 
 export { APIClient }
-export type { APIPromise, APIRequestConfig, APIResponse }
+export type {
+  APIRequestConfig,
+  APIGetConfig,
+  APIPostConfig,
+  APIPutConfig,
+  APIDeleteConfig,
+  APIResponse,
+}
