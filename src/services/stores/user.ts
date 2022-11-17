@@ -1,9 +1,8 @@
 import type { Ref, UnwrapNestedRefs } from 'vue'
-import { reactive, ref } from 'vue'
 import type { DeepReadonly } from 'js-common-lib'
 import { User } from '@/services/entities'
-import dayjs from 'dayjs'
 import { isImplemented } from 'js-common-lib'
+import { ref } from 'vue'
 
 //==========================================================================
 //
@@ -23,6 +22,8 @@ interface WrapUserStore {
   removeAll(): User[]
 }
 
+type RawUserStore = ReturnType<typeof UserStore['newWrapInstance']>
+
 interface SetUser extends Partial<User> {
   id: string
 }
@@ -34,11 +35,11 @@ interface SetUser extends Partial<User> {
 //==========================================================================
 
 namespace UserStore {
-  let instance: UserStore
+  let instance: RawUserStore
 
-  export function setupInstance(store?: UserStore): UserStore {
-    instance = store ?? reactive(newWrapInstance())
-    return instance
+  export function setup<T extends RawUserStore>(store?: T): T {
+    instance = store ?? newWrapInstance()
+    return instance as T
   }
 
   export function newWrapInstance() {
@@ -128,17 +129,6 @@ namespace UserStore {
     }
 
     return isImplemented<WrapUserStore, typeof instance>(instance)
-  }
-
-  export function createEmptyUser(): User {
-    return {
-      id: '',
-      email: '',
-      first: '',
-      last: '',
-      createdAt: dayjs(0),
-      updatedAt: dayjs(0),
-    }
   }
 }
 

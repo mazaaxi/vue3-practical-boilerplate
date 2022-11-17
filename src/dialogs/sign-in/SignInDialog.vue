@@ -85,13 +85,13 @@
 <script lang="ts">
 import type { QInput, QSelect } from 'quasar'
 import { computed, defineComponent, ref, watch } from 'vue'
-import type { Dialog } from '@/dialogs'
-import { PromiseDialog } from '@/components/dialog'
+import type { AppDialog } from '@/dialogs'
+import { AppI18n } from '@/i18n'
+import { AppServices } from '@/services'
+import { PromiseDialog } from '@/components'
 import { TestUsers } from '@/services/test-data'
 import type { UnwrapNestedRefs } from 'vue'
 import { isImplemented } from 'js-common-lib'
-import { useI18n } from '@/i18n'
-import { useServices } from '@/services'
 
 //==========================================================================
 //
@@ -106,7 +106,7 @@ namespace SignInDialog {
 
   export type Features = UnwrapNestedRefs<WrapFeatures>
 
-  export interface WrapFeatures extends Dialog<void, boolean> {}
+  export interface WrapFeatures extends AppDialog<void, boolean> {}
 }
 
 //==========================================================================
@@ -131,8 +131,8 @@ const SignInDialog = defineComponent({
 
     const dialog = ref<PromiseDialog<void, boolean>>()
 
-    const services = useServices()
-    const i18n = useI18n()
+    const services = AppServices.use()
+    const i18n = AppI18n.use()
 
     const emailInput = ref<QSelect>()
     const passwordInput = ref<QInput>()

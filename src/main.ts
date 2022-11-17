@@ -1,29 +1,27 @@
 import '@/styles/settings.scss'
-import { setupConfig, useConstants, useScreen } from '@/base'
-import { setupI18n, useI18nUtils } from '@/i18n'
+import { AppConfig, AppConstants, Screen } from '@/base'
+import { AppI18n } from '@/i18n'
 import AppPage from './pages/app'
+import { AppRouter } from '@/router'
+import { AppServices } from '@/services'
 import { Quasar } from 'quasar'
 import { createApp } from 'vue'
 import quasarOptions from '@/quasar-options'
-import { setupRouter } from '@/router'
-import { setupServices } from '@/services'
 
 async function init() {
-  setupConfig()
-  const i18n = setupI18n()
-  await useI18nUtils().loadI18nLocaleMessages()
-  const router = setupRouter(i18n)
-  setupServices()
-  const constants = useConstants()
-  const screen = useScreen()
+  AppConfig.setup()
+  const i18n = AppI18n.setup()
+  await AppI18n.useUtils().loadI18nLocaleMessages()
+  const router = AppRouter.setup(i18n)
+  AppServices.setup()
 
   const app = createApp(AppPage)
     .use(Quasar, quasarOptions)
     .use(i18n)
     .use(router)
     .use(router.routes)
-    .use(constants)
-    .use(screen)
+    .use(AppConstants.use())
+    .use(Screen.use())
     .mount('#app')
 }
 init()

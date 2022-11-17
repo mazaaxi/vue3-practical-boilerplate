@@ -1,9 +1,9 @@
 import { computed, onMounted, reactive, ref, toRefs, watch, watchEffect } from 'vue'
+import { AppRouter } from '@/router'
+import { AppServices } from '@/services'
 import MessageInput from '@/pages/examples/abc/MessageInput.vue'
 import type { QInput } from 'quasar'
 import type { SetupContext } from 'vue'
-import { useRouter } from '@/router'
-import { useServices } from '@/services'
 
 //==========================================================================
 //
@@ -45,8 +45,8 @@ namespace BaseAbcView {
     //
     //----------------------------------------------------------------------
 
-    const services = useServices()
-    const router = useRouter()
+    const services = AppServices.use()
+    const router = AppRouter.use()
     const route = router.routes.examples.abc
 
     // see below for why we use `toRefs`:

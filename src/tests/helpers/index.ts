@@ -1,9 +1,9 @@
-import { TestAPIs, TestHelpers, TestServices, TestStores } from './services'
+import { TestAPIs, TestHelpers, TestServices, TestStores } from '@/tests/helpers/services'
+import { AppAPIs } from '@/services/apis'
+import { AppHelpers } from '@/services/helpers'
+import { AppServices } from '@/services'
+import { AppStores } from '@/services/stores'
 import type { DefineComponent } from 'vue'
-import { setupAPIs } from '@/services/apis'
-import { setupHelper } from '@/services/helpers'
-import { setupServices } from '@/services'
-import { setupStores } from '@/services/stores'
 import { shallowMount } from '@vue/test-utils'
 
 //==========================================================================
@@ -65,16 +65,16 @@ function useServiceDependenciesImpl(
 
   if (!currentDependencies) {
     const apis = dependencies?.apis ?? TestAPIs.newInstance()
-    setupAPIs(apis)
+    AppAPIs.setup(apis)
 
     const stores = dependencies?.stores ?? TestStores.newInstance()
-    setupStores(stores)
+    AppStores.setup(stores)
 
     const helpers = dependencies?.helpers ?? TestHelpers.newInstance()
-    setupHelper(helpers)
+    AppHelpers.setup(helpers)
 
     const services = dependencies?.services ?? TestServices.newInstance()
-    setupServices(services)
+    AppServices.setup(services)
 
     currentDependencies = { apis, stores, helpers, services }
   }
@@ -101,4 +101,4 @@ function clearServiceDependencies(): void {
 
 export { useServiceDependencies, clearServiceDependencies }
 export type { ServiceDependencies }
-export * from './services'
+export * from '@/tests/helpers/services'

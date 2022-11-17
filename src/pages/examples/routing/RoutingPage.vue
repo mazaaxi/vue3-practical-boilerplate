@@ -83,10 +83,10 @@
 <script lang="ts">
 import { computed, defineComponent, nextTick, onMounted, ref } from 'vue'
 import { onBeforeRouteLeave, onBeforeRouteUpdate } from 'vue-router'
+import { AppRouter } from '@/router'
 import type { QInput } from 'quasar'
 import type { RouteLocationNormalized } from 'vue-router'
-import { useRouter } from '@/router'
-import { useScreen } from '@/base'
+import { Screen } from '@/base'
 
 const RoutingPage = defineComponent({
   components: {},
@@ -112,9 +112,9 @@ const RoutingPage = defineComponent({
     //
     //----------------------------------------------------------------------
 
-    const router = useRouter()
+    const router = AppRouter.use()
     const route = router.routes.examples.routing
-    const screen = useScreen()
+    const screen = Screen.use()
 
     const logInput = ref<QInput>()
 

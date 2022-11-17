@@ -3,12 +3,13 @@ import type {
   APICartItemEditResponse,
   APIProduct,
   CartItem,
+  CartItemAddInput,
   CartItemEditResponse,
+  CartItemUpdateInput,
   Product,
 } from '@/services/entities'
 import { isImplemented, keysToCamel, keysToSnake } from 'js-common-lib'
 import { APIClient } from '@/services/apis/client'
-import type { KeysToCamel } from 'js-common-lib'
 import dayjs from 'dayjs'
 
 //==========================================================================
@@ -17,7 +18,7 @@ import dayjs from 'dayjs'
 //
 //==========================================================================
 
-interface APIs {
+interface AppAPIs {
   getProduct(id: string): Promise<Product | undefined>
   getProducts(ids?: string[]): Promise<Product[]>
   getCartItems(): Promise<CartItem[]>
@@ -27,21 +28,7 @@ interface APIs {
   checkoutCart(): Promise<boolean>
 }
 
-interface APICartItemAddInput {
-  uid: string
-  product_id: string
-  title: string
-  price: number
-  quantity: number
-}
-type CartItemAddInput = KeysToCamel<APICartItemAddInput>
-
-interface APICartItemUpdateInput {
-  uid: string
-  id: string
-  quantity: number
-}
-type CartItemUpdateInput = KeysToCamel<APICartItemUpdateInput>
+type RawAppAPIs = ReturnType<typeof AppAPIs['newInstance']>
 
 //==========================================================================
 //
@@ -49,15 +36,15 @@ type CartItemUpdateInput = KeysToCamel<APICartItemUpdateInput>
 //
 //==========================================================================
 
-namespace APIs {
-  let instance: APIs
+namespace AppAPIs {
+  let instance: RawAppAPIs
 
-  export function setupAPIs(apis?: APIs): APIs {
+  export function setup<T extends RawAppAPIs>(apis?: T): T {
     instance = apis ?? newInstance()
-    return instance
+    return instance as T
   }
 
-  export function useAPIs(): APIs {
+  export function use(): AppAPIs {
     return instance
   }
 
@@ -76,7 +63,7 @@ namespace APIs {
     //
     //----------------------------------------------------------------------
 
-    const getProduct: APIs['getProduct'] = async id => {
+    const getProduct: AppAPIs['getProduct'] = async id => {
       const response = await client.get<APIProduct[]>('products', {
         params: { ids: [id] },
       })
@@ -92,7 +79,7 @@ namespace APIs {
       })
     }
 
-    const getProducts: APIs['getProducts'] = async ids => {
+    const getProducts: AppAPIs['getProducts'] = async ids => {
       const response = await client.get<APIProduct[]>('products', {
         params: { ids },
       })
@@ -106,7 +93,7 @@ namespace APIs {
       })
     }
 
-    const getCartItems: APIs['getCartItems'] = async () => {
+    const getCartItems: AppAPIs['getCartItems'] = async () => {
       const response = await client.get<APICartItem[]>('cart_items', {
         shouldAuth: true,
       })
@@ -120,7 +107,7 @@ namespace APIs {
       })
     }
 
-    const addCartItems: APIs['addCartItems'] = async items => {
+    const addCartItems: AppAPIs['addCartItems'] = async items => {
       const response = await client.post<APICartItemEditResponse[]>('cart_items', {
         shouldAuth: true,
         data: keysToSnake(items),
@@ -128,7 +115,7 @@ namespace APIs {
       return response.data.map(item => apiAPICartItemEditResponseToEntity(item))
     }
 
-    const updateCartItems: APIs['updateCartItems'] = async items => {
+    const updateCartItems: AppAPIs['updateCartItems'] = async items => {
       const response = await client.put<APICartItemEditResponse[]>('cart_items', {
         shouldAuth: true,
         data: keysToSnake(items),
@@ -136,7 +123,7 @@ namespace APIs {
       return response.data.map(item => apiAPICartItemEditResponseToEntity(item))
     }
 
-    const removeCartItems: APIs['removeCartItems'] = async cartItemIds => {
+    const removeCartItems: AppAPIs['removeCartItems'] = async cartItemIds => {
       const response = await client.delete<APICartItemEditResponse[]>('cart_items', {
         shouldAuth: true,
         params: { ids: cartItemIds },
@@ -144,7 +131,7 @@ namespace APIs {
       return response.data.map(item => apiAPICartItemEditResponseToEntity(item))
     }
 
-    const checkoutCart: APIs['checkoutCart'] = async () => {
+    const checkoutCart: AppAPIs['checkoutCart'] = async () => {
       const response = await client.put<boolean>('cart_items/checkout', {
         shouldAuth: true,
       })
@@ -186,6 +173,7 @@ namespace APIs {
     //----------------------------------------------------------------------
 
     const instance = {
+      client,
       getProduct,
       getProducts,
       getCartItems,
@@ -193,10 +181,9 @@ namespace APIs {
       updateCartItems,
       removeCartItems,
       checkoutCart,
-      client,
     }
 
-    return isImplemented<APIs, typeof instance>(instance)
+    return isImplemented<AppAPIs, typeof instance>(instance)
   }
 }
 
@@ -206,6 +193,5 @@ namespace APIs {
 //
 //==========================================================================
 
-const { setupAPIs, useAPIs } = APIs
-export { APIs, setupAPIs, useAPIs }
-export type { CartItemAddInput, CartItemEditResponse, CartItemUpdateInput }
+export { AppAPIs }
+export type { RawAppAPIs }

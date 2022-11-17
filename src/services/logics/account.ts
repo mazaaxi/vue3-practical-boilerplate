@@ -1,11 +1,10 @@
 import type { Ref, UnwrapNestedRefs } from 'vue'
 import { extensibleMethod, isImplemented } from 'js-common-lib'
 import { reactive, ref } from 'vue'
+import { AppStores } from '@/services/stores'
 import type { DeepReadonly } from 'js-common-lib'
 import { TestUsers } from '@/services/test-data'
 import { User } from '@/services/entities'
-import { UserStore } from '@/services/stores/user'
-import { useStores } from '@/services/stores'
 
 //==========================================================================
 //
@@ -29,6 +28,8 @@ interface InternalAccountLogic {
   validateSignedIn: AccountLogic['validateSignedIn']
 }
 
+type RawAccountLogic = ReturnType<typeof AccountLogic.newWrapInstance>
+
 //==========================================================================
 //
 //  Implementation
@@ -36,15 +37,15 @@ interface InternalAccountLogic {
 //==========================================================================
 
 namespace AccountLogic {
-  let instance: AccountLogic
+  let instance: RawAccountLogic
 
-  export function setupInstance<T extends AccountLogic>(logic?: T): T {
-    instance = logic ?? reactive(newWrapInstance())
+  export function setup<T extends RawAccountLogic>(logic?: T): T {
+    instance = logic ?? newWrapInstance()
     return instance as T
   }
 
-  export function useInternalInstance(): InternalAccountLogic {
-    return instance
+  export function use(): InternalAccountLogic {
+    return reactive(instance)
   }
 
   export function newWrapInstance() {
@@ -54,9 +55,9 @@ namespace AccountLogic {
     //
     //----------------------------------------------------------------------
 
-    const stores = useStores()
+    const stores = AppStores.use()
 
-    const user = ref<User>(UserStore.createEmptyUser())
+    const user = ref<User>(User.createEmptyUser())
 
     const isSignedIn = ref(false)
 
@@ -89,7 +90,7 @@ namespace AccountLogic {
     })
 
     const signOut: WrapAccountLogic['signOut'] = async () => {
-      User.populate(user.value, UserStore.createEmptyUser())
+      User.populate(user.value, User.createEmptyUser())
       isSignedIn.value = false
     }
 

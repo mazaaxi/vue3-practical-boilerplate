@@ -6,7 +6,7 @@ import type { App } from 'vue'
 //
 //==========================================================================
 
-type Constants = typeof constants
+type AppConstants = ReturnType<typeof AppConstants.use>
 
 //==========================================================================
 //
@@ -14,21 +14,23 @@ type Constants = typeof constants
 //
 //==========================================================================
 
-const constants = {
-  styles: {
-    AppHeaderHeight: 50,
-  },
+namespace AppConstants {
+  const instance = {
+    Styles: {
+      AppHeaderHeight: 50,
+    },
 
-  /**
-   * @see Plugin.install of @vue/runtime-core
-   */
-  install(app: App, ...options: any[]) {
-    app.config.globalProperties.$constants = constants
-  },
-}
+    /**
+     * @see Plugin.install of @vue/runtime-core
+     */
+    install(app: App, ...options: any[]) {
+      app.config.globalProperties.$constants = instance
+    },
+  }
 
-function useConstants(): Constants {
-  return constants
+  export function use() {
+    return instance
+  }
 }
 
 //==========================================================================
@@ -37,5 +39,4 @@ function useConstants(): Constants {
 //
 //==========================================================================
 
-export { useConstants }
-export type { Constants }
+export { AppConstants }

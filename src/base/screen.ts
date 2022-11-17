@@ -37,7 +37,7 @@ interface Screen {
 namespace Screen {
   let instance: Screen
 
-  export function useScreen(): Screen {
+  export function use(): Screen {
     instance = instance ?? newInstance()
     return instance
   }
@@ -94,5 +94,4 @@ namespace Screen {
 //
 //==========================================================================
 
-const { useScreen } = Screen
-export { Screen, useScreen }
+export { Screen }

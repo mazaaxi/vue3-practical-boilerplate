@@ -1,8 +1,8 @@
 import type { Ref, UnwrapNestedRefs } from 'vue'
-import { reactive, ref } from 'vue'
 import type { DeepReadonly } from 'js-common-lib'
 import { Product } from '@/services/entities'
 import { isImplemented } from 'js-common-lib'
+import { ref } from 'vue'
 
 //==========================================================================
 //
@@ -25,6 +25,8 @@ interface WrapProductStore {
   incrementStock(productId: string): void
 }
 
+type RawProductStore = ReturnType<typeof ProductStore['newWrapInstance']>
+
 interface SetProduct extends Partial<Product> {
   id: string
 }
@@ -36,11 +38,11 @@ interface SetProduct extends Partial<Product> {
 //==========================================================================
 
 namespace ProductStore {
-  let instance: ProductStore
+  let instance: RawProductStore
 
-  export function setupInstance(store?: ProductStore): ProductStore {
-    instance = store ?? reactive(newWrapInstance())
-    return instance
+  export function setup<T extends RawProductStore>(store?: T): T {
+    instance = store ?? newWrapInstance()
+    return instance as T
   }
 
   export function newWrapInstance() {

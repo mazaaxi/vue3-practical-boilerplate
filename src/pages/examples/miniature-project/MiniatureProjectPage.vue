@@ -123,8 +123,8 @@
 <script lang="ts">
 import type { QInput, QTable, QTableProps } from 'quasar'
 import { defineComponent, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
-import { setupServices, useServices } from '@/pages/examples/miniature-project/services'
 import { Loading } from 'quasar'
+import { Services } from '@/pages/examples/miniature-project/services'
 import type { User } from '@/pages/examples/miniature-project/services'
 import debounce from 'lodash/debounce'
 import { generateId } from '@/services'
@@ -169,11 +169,11 @@ const MiniatureProjectPage = defineComponent({
 
     // Should originally be executed at application startup
     if (!isSetupServices) {
-      setupServices()
+      Services.setup()
       isSetupServices = true
     }
 
-    const services = useServices()
+    const services = Services.use()
 
     const table = ref<QTable>()
 

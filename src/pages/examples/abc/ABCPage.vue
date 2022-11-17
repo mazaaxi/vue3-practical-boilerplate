@@ -7,7 +7,7 @@
 import { computed, defineComponent, ref } from 'vue'
 import AbcViewPC from '@/pages/examples/abc/ABCViewPC.vue'
 import AbcViewSP from '@/pages/examples/abc/ABCViewSP.vue'
-import { useScreen } from '@/base'
+import { Screen } from '@/base'
 
 const AbcPage = defineComponent({
   components: {
@@ -22,7 +22,7 @@ const AbcPage = defineComponent({
     //
     //----------------------------------------------------------------------
 
-    const screen = useScreen()
+    const screen = Screen.use()
 
     const pcView = ref<AbcViewPC>()
     const spView = ref<AbcViewSP>()

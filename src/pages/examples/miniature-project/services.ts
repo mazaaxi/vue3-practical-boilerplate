@@ -39,10 +39,6 @@ namespace User {
 //
 //==========================================================================
 
-//--------------------------------------------------------------------------
-//  APIs
-//--------------------------------------------------------------------------
-
 interface APIs {
   getAllUsers(): Promise<User[]>
   addUser(user: User): Promise<User>
@@ -63,12 +59,12 @@ namespace APIs {
 
   let instance: APIs
 
-  export function setupAPIs(): APIs {
+  export function setup(): APIs {
     instance = newInstance()
     return instance
   }
 
-  export function useAPIs(): APIs {
+  export function use(): APIs {
     return instance
   }
 
@@ -117,17 +113,11 @@ namespace APIs {
   }
 }
 
-const { setupAPIs, useAPIs } = APIs
-
 //==========================================================================
 //
 //  Stores
 //
 //==========================================================================
-
-//--------------------------------------------------------------------------
-//  Stores
-//--------------------------------------------------------------------------
 
 interface Stores {
   readonly user: UserStore
@@ -136,19 +126,17 @@ interface Stores {
 namespace Stores {
   let instance: Stores
 
-  export function setupStores(): Stores {
-    instance = {
-      user: UserStore.setupInstance(),
-    }
+  export function setup(): Stores {
+    instance = reactive({
+      user: UserStore.setup(),
+    })
     return instance
   }
 
-  export function useStores(): Stores {
+  export function use(): Stores {
     return instance
   }
 }
-
-const { setupStores, useStores } = Stores
 
 //--------------------------------------------------------------------------
 //  UserStore
@@ -166,10 +154,10 @@ interface WrapUserStore {
 }
 
 namespace UserStore {
-  let instance: UserStore
+  let instance: WrapUserStore
 
-  export function setupInstance(): UserStore {
-    instance = reactive(newWrapInstance())
+  export function setup() {
+    instance = newWrapInstance()
     return instance
   }
 
@@ -239,10 +227,6 @@ namespace UserStore {
 //
 //==========================================================================
 
-//--------------------------------------------------------------------------
-//  Services
-//--------------------------------------------------------------------------
-
 interface Services {
   readonly admin: AdminLogic
 }
@@ -250,22 +234,20 @@ interface Services {
 namespace Services {
   let instance: Services
 
-  export function setupServices(): Services {
-    setupAPIs()
-    setupStores()
+  export function setup(): Services {
+    APIs.setup()
+    Stores.setup()
 
-    instance = {
-      admin: AdminLogic.setupInstance(),
-    }
+    instance = reactive({
+      admin: AdminLogic.setup(),
+    })
     return instance
   }
 
-  export function useServices(): Services {
+  export function use(): Services {
     return instance
   }
 }
-
-const { setupServices, useServices } = Services
 
 //--------------------------------------------------------------------------
 //  AdminLogic
@@ -286,16 +268,16 @@ interface WrapAdminLogic {
 }
 
 namespace AdminLogic {
-  let instance: AdminLogic
+  let instance: WrapAdminLogic
 
-  export function setupInstance() {
-    instance = reactive(newWrapInstance())
+  export function setup() {
+    instance = newWrapInstance()
     return instance
   }
 
   export function newWrapInstance() {
-    const apis = useAPIs()
-    const stores = useStores()
+    const apis = APIs.use()
+    const stores = Stores.use()
     const emitter = createNanoEvents<{
       usersChange: (changeType: ItemsChangeType, newUser?: User, oldUser?: User) => void
     }>()
@@ -364,5 +346,5 @@ namespace AdminLogic {
 //
 //==========================================================================
 
-export { setupServices, useServices }
+export { Services }
 export type { User }

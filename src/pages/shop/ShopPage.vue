@@ -170,12 +170,12 @@
 </template>
 
 <script lang="ts">
-import { CartItem, Product, useServices } from '@/services'
+import { AppServices, CartItem, Product } from '@/services'
 import { computed, defineComponent, onMounted, onUnmounted, reactive, ref, toRefs } from 'vue'
+import { AppDialogs } from '@/dialogs'
+import { AppI18n } from '@/i18n'
 import { Loading } from 'quasar'
 import { assertNonNullable } from 'js-common-lib'
-import { useDialogs } from '@/dialogs'
-import { useI18n } from '@/i18n'
 
 const ShopPage = defineComponent({
   setup(props, context) {
@@ -203,9 +203,9 @@ const ShopPage = defineComponent({
     //
     //----------------------------------------------------------------------
 
-    const services = useServices()
-    const i18n = useI18n()
-    const dialogs = useDialogs()
+    const services = AppServices.use()
+    const i18n = AppI18n.use()
+    const dialogs = AppDialogs.use()
 
     const isSignedIn = computed(() => services.account.isSignedIn)
 

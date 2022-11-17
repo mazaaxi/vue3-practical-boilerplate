@@ -6,7 +6,7 @@ import { reactive } from 'vue'
 //
 //==========================================================================
 
-interface Helpers {}
+interface AppHelpers {}
 
 //==========================================================================
 //
@@ -14,15 +14,15 @@ interface Helpers {}
 //
 //==========================================================================
 
-namespace Helpers {
-  let instance: Helpers
+namespace AppHelpers {
+  let instance: AppHelpers
 
-  export function setupHelper(helpers?: Helpers): Helpers {
+  export function setup(helpers?: AppHelpers): AppHelpers {
     instance = helpers ?? reactive({})
     return instance
   }
 
-  export function useHelper(): Helpers {
+  export function use(): AppHelpers {
     return instance
   }
 }
@@ -33,5 +33,4 @@ namespace Helpers {
 //
 //==========================================================================
 
-const { setupHelper, useHelper } = Helpers
-export { Helpers, setupHelper, useHelper }
+export { AppHelpers }

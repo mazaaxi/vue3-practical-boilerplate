@@ -1,6 +1,6 @@
 import type { APICartItem, APIProduct, CartItem, Product } from '@/services'
 import { describe, expect, it } from 'vitest'
-import type { CartItemEditResponse } from '@/services/apis'
+import type { CartItemEditResponse } from '@/services'
 import { TestUsers } from '@/services/test-data'
 import dayjs from 'dayjs'
 import { keysToSnake } from 'js-common-lib'

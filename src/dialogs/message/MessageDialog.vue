@@ -54,8 +54,8 @@
 
 <script lang="ts">
 import { defineComponent, reactive, ref } from 'vue'
-import type { Dialog } from '@/dialogs'
-import { PromiseDialog } from '@/components/dialog'
+import type { AppDialog } from '@/dialogs'
+import { PromiseDialog } from '@/components'
 import type { UnwrapNestedRefs } from 'vue'
 import { isImplemented } from 'js-common-lib'
 import merge from 'lodash/merge'
@@ -73,7 +73,7 @@ namespace MessageDialog {
 
   export type Features = UnwrapNestedRefs<WrapFeatures>
 
-  export interface WrapFeatures extends Dialog<MessageDialogOpenParams | void, boolean> {
+  export interface WrapFeatures extends AppDialog<MessageDialogOpenParams | void, boolean> {
     readonly params: MessageDialogOpenParams
   }
 }

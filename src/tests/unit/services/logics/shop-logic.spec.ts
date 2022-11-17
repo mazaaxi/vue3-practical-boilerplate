@@ -1,6 +1,5 @@
-import type { CartItem, ItemsChangeType, Product } from '@/services'
+import type { CartItem, CartItemEditResponse, ItemsChangeType, Product } from '@/services'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import type { CartItemEditResponse } from '@/services/apis'
 import type { TestServices } from '@/tests/helpers'
 import { TestUsers } from '@/services/test-data'
 import dayjs from 'dayjs'

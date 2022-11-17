@@ -1,6 +1,7 @@
 import { CartStore } from '@/services/stores/cart'
 import { ProductStore } from '@/services/stores/product'
 import { UserStore } from '@/services/stores/user'
+import { reactive } from 'vue'
 
 //==========================================================================
 //
@@ -8,7 +9,7 @@ import { UserStore } from '@/services/stores/user'
 //
 //==========================================================================
 
-interface Stores {
+interface AppStores {
   readonly user: UserStore
   readonly product: ProductStore
   readonly cart: CartStore
@@ -20,19 +21,21 @@ interface Stores {
 //
 //==========================================================================
 
-namespace Stores {
-  let instance: Stores
+namespace AppStores {
+  let instance: AppStores
 
-  export function setupStores(stores?: Stores): Stores {
-    instance = stores ?? {
-      user: UserStore.setupInstance(),
-      product: ProductStore.setupInstance(),
-      cart: CartStore.setupInstance(),
-    }
+  export function setup(stores?: AppStores): AppStores {
+    instance =
+      stores ??
+      reactive({
+        user: UserStore.setup(),
+        product: ProductStore.setup(),
+        cart: CartStore.setup(),
+      })
     return instance
   }
 
-  export function useStores(): Stores {
+  export function use(): AppStores {
     return instance
   }
 }
@@ -43,5 +46,7 @@ namespace Stores {
 //
 //==========================================================================
 
-const { setupStores, useStores } = Stores
-export { Stores, setupStores, useStores }
+export { AppStores }
+export * from '@/services/stores/cart'
+export * from '@/services/stores/product'
+export * from '@/services/stores/user'

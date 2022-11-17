@@ -1,8 +1,9 @@
 import { AccountLogic } from '@/services/logics/account'
+import { AppAPIs } from '@/services/apis'
+import { AppHelpers } from '@/services/helpers'
+import { AppStores } from '@/services/stores'
 import { ShopLogic } from '@/services/logics/shop'
-import { setupAPIs } from '@/services/apis'
-import { setupHelper } from '@/services/helpers'
-import { setupStores } from '@/services/stores'
+import { reactive } from 'vue'
 
 //==========================================================================
 //
@@ -10,7 +11,7 @@ import { setupStores } from '@/services/stores'
 //
 //==========================================================================
 
-interface Services {
+interface AppServices {
   readonly account: AccountLogic
   readonly shop: ShopLogic
 }
@@ -21,22 +22,24 @@ interface Services {
 //
 //==========================================================================
 
-namespace Services {
-  let instance: Services
+namespace AppServices {
+  let instance: AppServices
 
-  export function setupServices(services?: Services): Services {
-    setupAPIs()
-    setupStores()
-    setupHelper()
+  export function setup(services?: AppServices): AppServices {
+    AppAPIs.setup()
+    AppStores.setup()
+    AppHelpers.setup()
 
-    instance = services ?? {
-      account: AccountLogic.setupInstance(),
-      shop: ShopLogic.setupInstance(),
-    }
+    instance =
+      services ??
+      reactive({
+        account: AccountLogic.setup(),
+        shop: ShopLogic.setup(),
+      })
     return instance
   }
 
-  export function useServices(): Services {
+  export function use(): AppServices {
     return instance
   }
 }
@@ -47,7 +50,6 @@ namespace Services {
 //
 //==========================================================================
 
-const { setupServices, useServices } = Services
-export { Services, setupServices, useServices }
+export { AppServices }
 export * from '@/services/base'
 export * from '@/services/entities'

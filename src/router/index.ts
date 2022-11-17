@@ -1,6 +1,6 @@
 import type { App, WritableComputedRef } from 'vue'
+import { AppI18n, SupportI18nLocales } from '@/i18n'
 import { Route, Router } from '@/router/core'
-import { SupportI18nLocales, useI18nUtils } from '@/i18n'
 import { computed, reactive, watch } from 'vue'
 import type { BaseRouteInput } from '@/router/base'
 import { ExamplesRoutes } from '@/router/routes/examples'
@@ -8,6 +8,7 @@ import { HomeRoute } from '@/router/routes/home'
 import type { I18n } from 'vue-i18n'
 import type { RawRoute } from '@/router/core'
 import { ShopRoute } from '@/router/routes/shop'
+import { isImplemented } from 'js-common-lib'
 
 //==========================================================================
 //
@@ -36,21 +37,21 @@ interface AppRoutes {
 namespace AppRouter {
   let instance: AppRouter
 
-  export function setupRouter(i18n: I18n, router?: AppRouter): AppRouter {
+  export function setup<T extends AppRouter>(i18n: I18n, router?: T): T {
     instance = router ?? newInstance(i18n)
-    return instance
+    return instance as T
   }
 
-  export function useRouter(): AppRouter {
+  export function use(): AppRouter {
     if (!instance) {
       throw new Error(
-        `Router is not initialized. Run \`setupRouter()\` before using \`userRouter()\`.`
+        `AppRouter is not initialized. Run \`setupRouter()\` before using \`userRouter()\`.`
       )
     }
     return instance
   }
 
-  function newInstance(i18n: I18n): AppRouter {
+  function newInstance(i18n: I18n) {
     //----------------------------------------------------------------------
     //
     //  Variables
@@ -59,7 +60,7 @@ namespace AppRouter {
 
     const locale = computed(() => (i18n.global.locale as WritableComputedRef<string>).value)
 
-    const { loadI18nLocaleMessages } = useI18nUtils()
+    const { loadI18nLocaleMessages } = AppI18n.useUtils()
 
     //----------------------------------------------------------------------
     //
@@ -137,7 +138,9 @@ namespace AppRouter {
     //
     //----------------------------------------------------------------------
 
-    return reactive(router)
+    const result = reactive(router)
+
+    return isImplemented<AppRouter, typeof result>(result)
   }
 }
 
@@ -147,7 +150,5 @@ namespace AppRouter {
 //
 //==========================================================================
 
-const { setupRouter, useRouter } = AppRouter
-export { AppRouter, setupRouter, useRouter }
-export type { AppRoutes }
+export { AppRouter }
 export * from '@/router/core'

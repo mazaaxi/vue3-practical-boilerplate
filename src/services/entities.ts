@@ -46,6 +46,24 @@ type CartItemEditResponse = Merge<
   }
 >
 
+interface APICartItemAddInput {
+  uid: string
+  product_id: string
+  title: string
+  price: number
+  quantity: number
+}
+
+type CartItemAddInput = KeysToCamel<APICartItemAddInput>
+
+interface APICartItemUpdateInput {
+  uid: string
+  id: string
+  quantity: number
+}
+
+type CartItemUpdateInput = KeysToCamel<APICartItemUpdateInput>
+
 //==========================================================================
 //
 //  Implementation
@@ -62,6 +80,17 @@ namespace User {
     if (dayjs.isDayjs(from.updatedAt)) to.updatedAt = dayjs(from.updatedAt)
     return to
   })
+
+  export function createEmptyUser(): User {
+    return {
+      id: '',
+      email: '',
+      first: '',
+      last: '',
+      createdAt: dayjs(0),
+      updatedAt: dayjs(0),
+    }
+  }
 }
 
 namespace Product {
@@ -100,9 +129,13 @@ export { CartItem, Product, User }
 
 export type {
   APICartItem,
+  APICartItemAddInput,
   APICartItemEditResponse,
+  APICartItemUpdateInput,
   APIProduct,
   APITimestampEntity,
   APIUser,
+  CartItemAddInput,
   CartItemEditResponse,
+  CartItemUpdateInput,
 }

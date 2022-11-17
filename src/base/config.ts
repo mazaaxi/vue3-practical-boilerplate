@@ -1,8 +1,6 @@
-import type { DeepPartial } from 'js-common-lib'
+import { isImplemented, removeStartSlash } from 'js-common-lib'
 import URI from 'urijs'
-import merge from 'lodash/merge'
 import { reactive } from 'vue'
-import { removeStartSlash } from 'js-common-lib'
 
 //==========================================================================
 //
@@ -10,7 +8,7 @@ import { removeStartSlash } from 'js-common-lib'
 //
 //==========================================================================
 
-interface Config {
+interface AppConfig {
   readonly env: {
     buildMode: BuildMode
   }
@@ -23,15 +21,11 @@ interface Config {
   }
 }
 
-type EnvConfig = Config['env']
+type EnvConfig = AppConfig['env']
 
-type APIConfig = Config['api']
+type APIConfig = AppConfig['api']
 
 type BuildMode = 'remote' | 'local'
-
-interface CreateConfigParams {
-  api?: DeepPartial<Omit<APIConfig, 'baseURL'>>
-}
 
 //==========================================================================
 //
@@ -39,19 +33,19 @@ interface CreateConfigParams {
 //
 //==========================================================================
 
-namespace Config {
-  let instance: Config
+namespace AppConfig {
+  let instance: AppConfig
 
-  export function setupConfig(params: CreateConfigParams = {}): Config {
-    instance = merge(newInstance(), params.api)
+  export function setup(): ReturnType<typeof newInstance> {
+    instance = newInstance()
     return instance
   }
 
-  export function useConfig(params: CreateConfigParams = {}): Config {
+  export function use(): AppConfig {
     return instance
   }
 
-  function newInstance(): Config {
+  function newInstance(): AppConfig {
     //----------------------------------------------------------------------
     //
     //  Properties
@@ -99,10 +93,12 @@ namespace Config {
     //
     //----------------------------------------------------------------------
 
-    return {
+    const result = {
       env: state.env,
       api: state.api,
     }
+
+    return isImplemented<AppConfig, typeof result>(result)
   }
 }
 
@@ -112,6 +108,5 @@ namespace Config {
 //
 //==========================================================================
 
-const { setupConfig, useConfig } = Config
-export { Config, setupConfig, useConfig }
+export { AppConfig }
 export type { APIConfig }

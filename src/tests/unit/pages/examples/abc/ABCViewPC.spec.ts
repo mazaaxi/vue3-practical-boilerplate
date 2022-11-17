@@ -5,11 +5,11 @@ import { nextTick } from 'vue'
 import { useServiceDependencies } from '@/tests/helpers'
 
 vi.mock('@/router', () => {
-  return {
-    useRouter: vi.fn().mockImplementation(() => {
-      return { routes: { examples: { abc: { message: {} } } } }
-    }),
+  const AppRouter = {
+    use: () => AppRouter,
+    routes: { examples: { abc: { message: {} } } },
   }
+  return { AppRouter }
 })
 
 describe('ABCViewPC.vue', () => {

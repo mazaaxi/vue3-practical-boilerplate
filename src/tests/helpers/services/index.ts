@@ -1,11 +1,10 @@
 import { AccountLogic } from '@/services/logics/account'
+import { AppI18n } from '@/i18n'
+import { AppStores } from '@/services/stores'
 import { ShopLogic } from '@/services/logics/shop'
 import { TestUsers } from '@/services/test-data'
-import type { UnwrapNestedRefs } from 'vue'
 import { User } from '@/services'
 import { reactive } from 'vue'
-import { useI18n } from '@/i18n'
-import { useStores } from '@/services/stores'
 
 //==========================================================================
 //
@@ -13,7 +12,7 @@ import { useStores } from '@/services/stores'
 //
 //==========================================================================
 
-interface TestServices extends UnwrapNestedRefs<ReturnType<typeof TestServices['newInstance']>> {}
+type TestServices = ReturnType<typeof TestServices['newInstance']>
 
 //==========================================================================
 //
@@ -23,18 +22,18 @@ interface TestServices extends UnwrapNestedRefs<ReturnType<typeof TestServices['
 
 namespace TestServices {
   export function newInstance() {
-    return {
-      account: AccountLogic.setupInstance(reactive(TestAccountLogic.newWrapInstance())),
-      shop: ShopLogic.setupInstance(reactive(ShopLogic.newWrapInstance())),
-    }
+    return reactive({
+      account: AccountLogic.setup(TestAccountLogic.newWrapInstance()),
+      shop: ShopLogic.setup(),
+    })
   }
 }
 
 namespace TestAccountLogic {
   export function newWrapInstance() {
     const base = AccountLogic.newWrapInstance()
-    const stores = useStores()
-    const i18n = useI18n()
+    const stores = AppStores.use()
+    const i18n = AppI18n.use()
 
     /**
      * Mocking the sign-in process
@@ -68,6 +67,6 @@ namespace TestAccountLogic {
 //==========================================================================
 
 export { TestServices }
-export * from './apis'
-export * from './stores'
-export * from './helpers'
+export * from '@/tests/helpers/services/apis'
+export * from '@/tests/helpers/services/stores'
+export * from '@/tests/helpers/services/helpers'

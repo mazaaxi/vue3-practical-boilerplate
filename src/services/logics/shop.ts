@@ -1,16 +1,16 @@
 import type { CartItem, Product } from '@/services/entities'
-import type { CartItemAddInput, CartItemUpdateInput } from '@/services/apis'
+import type { CartItemAddInput, CartItemUpdateInput } from '@/services/entities'
 import type { ComputedRef, UnwrapNestedRefs } from 'vue'
 import { arrayToDict, assertNonNullable, isImplemented } from 'js-common-lib'
 import { computed, reactive, watch } from 'vue'
 import { AccountLogic } from '@/services/logics/account'
+import { AppAPIs } from '@/services/apis'
+import { AppStores } from '@/services/stores'
 import type { DeepUnreadonly } from 'js-common-lib'
 import type { ItemsChangeType } from '@/services/base'
 import type { Unsubscribe } from 'nanoevents'
 import { createNanoEvents } from 'nanoevents'
 import rfdc from 'rfdc'
-import { useAPIs } from '@/services/apis'
-import { useStores } from '@/services/stores'
 const cloneDeep = rfdc()
 
 //==========================================================================
@@ -39,6 +39,8 @@ interface WrapShopLogic {
   ): Unsubscribe
 }
 
+type RawShopLogic = ReturnType<typeof ShopLogic.newWrapInstance>
+
 //==========================================================================
 //
 //  Implementation
@@ -46,10 +48,10 @@ interface WrapShopLogic {
 //==========================================================================
 
 namespace ShopLogic {
-  let instance: ShopLogic
+  let instance: RawShopLogic
 
-  export function setupInstance<T extends ShopLogic>(logic?: T): T {
-    instance = logic ?? reactive(newWrapInstance())
+  export function setup<T extends RawShopLogic>(logic?: T): T {
+    instance = logic ?? newWrapInstance()
     return instance as T
   }
 
@@ -60,9 +62,9 @@ namespace ShopLogic {
     //
     //----------------------------------------------------------------------
 
-    const apis = useAPIs()
-    const stores = useStores()
-    const accountLogic = AccountLogic.useInternalInstance()
+    const apis = AppAPIs.use()
+    const stores = AppStores.use()
+    const accountLogic = AccountLogic.use()
 
     const emitter = createNanoEvents<{
       productsChange: (

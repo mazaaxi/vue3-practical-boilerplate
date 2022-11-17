@@ -169,21 +169,21 @@
     </q-page-container>
   </q-layout>
 
-  <DialogContainer ref="dialogContainer" />
+  <AppDialogContainer ref="dialogContainer" />
 </template>
 
 <script lang="ts">
-import { DialogContainer, setupDialogs } from '@/dialogs'
+import { AppDialogContainer, AppDialogs } from '@/dialogs'
+import { Screen, showNotification } from '@/base'
 import { computed, defineComponent, ref, watch } from 'vue'
-import { showNotification, useScreen } from '@/base'
-import { useI18n, useI18nUtils } from '@/i18n'
-import { useRouter } from '@/router'
+import { AppI18n } from '@/i18n'
+import { AppRouter } from '@/router'
+import { AppServices } from '@/services'
 // import { useServiceWorker } from '@/service-worker'
-import { useServices } from '@/services'
 
 const AppPage = defineComponent({
   components: {
-    DialogContainer,
+    AppDialogContainer,
   },
 
   setup() {
@@ -193,16 +193,16 @@ const AppPage = defineComponent({
     //
     //----------------------------------------------------------------------
 
-    const services = useServices()
+    const services = AppServices.use()
     // const serviceWorker = useServiceWorker()
-    const screen = useScreen()
+    const screen = Screen.use()
 
-    const i18n = useI18n()
-    const { loadI18nLocaleMessages } = useI18nUtils()
-    const router = useRouter()
+    const i18n = AppI18n.use()
+    const { loadI18nLocaleMessages } = AppI18n.useUtils()
+    const router = AppRouter.use()
 
-    const dialogContainer = ref<DialogContainer>()
-    const dialogs = setupDialogs(dialogContainer)
+    const dialogContainer = ref<AppDialogContainer>()
+    const dialogs = AppDialogs.setup(dialogContainer)
 
     const leftDrawerOpen = ref(false)
     const isSignedIn = computed(() => services.account.isSignedIn)

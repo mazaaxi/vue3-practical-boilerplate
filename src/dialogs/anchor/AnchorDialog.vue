@@ -45,8 +45,8 @@
 
 <script lang="ts">
 import { defineComponent, reactive, ref } from 'vue'
-import type { Dialog } from '@/dialogs'
-import { URLQueryDialog } from '@/components/dialog'
+import type { AppDialog } from '@/dialogs'
+import { URLQueryDialog } from '@/components'
 import type { UnwrapNestedRefs } from 'vue'
 import { isImplemented } from 'js-common-lib'
 import merge from 'lodash/merge'
@@ -64,7 +64,7 @@ namespace AnchorDialog {
 
   export type Features = UnwrapNestedRefs<WrapFeatures>
 
-  export interface WrapFeatures extends Dialog<OpenParams, void> {
+  export interface WrapFeatures extends AppDialog<OpenParams, void> {
     readonly params: OpenParams
   }
 

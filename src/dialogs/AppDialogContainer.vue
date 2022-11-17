@@ -1,5 +1,5 @@
 <template>
-  <div class="DialogContainer">
+  <div class="AppDialogContainer">
     <MessageDialog ref="message" />
     <AnchorDialog ref="anchor" />
     <SignInDialog ref="signIn" />
@@ -20,9 +20,9 @@ import { isImplemented } from 'js-common-lib'
 //
 //==========================================================================
 
-type DialogContainer = DialogContainer.Props & DialogContainer.Features
+type AppDialogContainer = AppDialogContainer.Props & AppDialogContainer.Features
 
-namespace DialogContainer {
+namespace AppDialogContainer {
   export interface Props {}
 
   export type Features = UnwrapNestedRefs<WrapFeatures>
@@ -34,8 +34,8 @@ namespace DialogContainer {
   }
 }
 
-type DialogNames = 'message' | 'anchor' | 'signIn'
-const DialogNames: DialogNames[] = ['message', 'anchor', 'signIn']
+type AppDialogNames = 'message' | 'anchor' | 'signIn'
+const AppDialogNames: AppDialogNames[] = ['message', 'anchor', 'signIn']
 
 //==========================================================================
 //
@@ -43,14 +43,14 @@ const DialogNames: DialogNames[] = ['message', 'anchor', 'signIn']
 //
 //==========================================================================
 
-const DialogContainer = defineComponent({
+const AppDialogContainer = defineComponent({
   components: {
     MessageDialog,
     AnchorDialog,
     SignInDialog,
   },
 
-  setup(props: DialogContainer.Props, ctx) {
+  setup(props: AppDialogContainer.Props, ctx) {
     const message = ref() as ComputedRef<MessageDialog>
     const anchor = ref() as ComputedRef<AnchorDialog>
     const signIn = ref() as ComputedRef<SignInDialog>
@@ -61,7 +61,7 @@ const DialogContainer = defineComponent({
       signIn,
     }
 
-    return isImplemented<DialogContainer.WrapFeatures, typeof result>(result)
+    return isImplemented<AppDialogContainer.WrapFeatures, typeof result>(result)
   },
 })
 
@@ -71,6 +71,6 @@ const DialogContainer = defineComponent({
 //
 //==========================================================================
 
-export default DialogContainer
-export { DialogNames }
+export default AppDialogContainer
+export { AppDialogNames }
 </script>

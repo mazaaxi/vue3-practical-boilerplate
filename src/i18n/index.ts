@@ -1,5 +1,5 @@
 import type { I18n, Locale } from 'vue-i18n'
-import { useI18n as _useI18n, createI18n } from 'vue-i18n'
+import { createI18n, useI18n } from 'vue-i18n'
 import type { WritableComputedRef } from 'vue'
 import axios from 'axios'
 import { datetimeFormats } from '@/i18n/date-time-formats'
@@ -13,16 +13,16 @@ import { numberFormats } from '@/i18n/number-formats'
 //
 //----------------------------------------------------------------------
 
-type I18nComposer = ReturnType<typeof _useI18n>
-
-const SupportI18nLocales = ['ja', 'ja-JP', 'en', 'en-US']
-
-const DefaultI18nLocale = 'en'
-
-interface I18nContainer {
+interface AppI18n {
   i18n: I18n
   loadI18nLocaleMessages(locale?: string): Promise<void>
 }
+
+const SupportI18nLocales = ['ja', 'ja-JP', 'en', 'en-US']
+
+type I18nComposer = ReturnType<typeof useI18n>
+
+const DefaultI18nLocale = 'en'
 
 //----------------------------------------------------------------------
 //
@@ -30,24 +30,24 @@ interface I18nContainer {
 //
 //----------------------------------------------------------------------
 
-namespace I18nContainer {
-  let instance: I18nContainer
+namespace AppI18n {
+  let instance: AppI18n
 
-  export function setupI18n(): I18n {
+  export function setup(): I18n {
     instance = newInstance()
     return instance.i18n
   }
 
-  export function useI18n(): I18nComposer {
+  export function use(): I18nComposer {
     return instance.i18n.global as any
   }
 
-  export function useI18nUtils(): Omit<I18nContainer, 'i18n'> {
+  export function useUtils(): Omit<AppI18n, 'i18n'> {
     const { i18n, ...others } = instance
     return others
   }
 
-  function newInstance(): I18nContainer {
+  function newInstance(): AppI18n {
     const i18n: I18n = createI18n({
       legacy: false,
       globalInjection: true,
@@ -58,7 +58,7 @@ namespace I18nContainer {
       numberFormats,
     })
 
-    const loadI18nLocaleMessages: I18nContainer['loadI18nLocaleMessages'] = async locale => {
+    const loadI18nLocaleMessages: AppI18n['loadI18nLocaleMessages'] = async locale => {
       locale = locale || getLocaleFromBrowser()
 
       if (!SupportI18nLocales.includes(locale)) {
@@ -103,5 +103,4 @@ namespace I18nContainer {
 //
 //----------------------------------------------------------------------
 
-const { setupI18n, useI18n, useI18nUtils } = I18nContainer
-export { SupportI18nLocales, setupI18n, useI18n, useI18nUtils }
+export { AppI18n, SupportI18nLocales }

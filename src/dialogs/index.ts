@@ -1,9 +1,9 @@
-import DialogContainer, { DialogNames } from '@/dialogs/DialogContainer.vue'
+import AppDialogContainer, { AppDialogNames } from '@/dialogs/AppDialogContainer.vue'
 import type { Ref, UnwrapNestedRefs } from 'vue'
 import { computed, reactive } from 'vue'
-import { URLQueryDialogHelper } from '@/components/dialog/URLQueryDialog.vue'
+import { AppRouter } from '@/router'
+import { URLQueryDialogHelper } from '@/components'
 import { isImplemented } from 'js-common-lib'
-import { useRouter } from '@/router'
 
 //==========================================================================
 //
@@ -12,30 +12,30 @@ import { useRouter } from '@/router'
 //==========================================================================
 
 //--------------------------------------------------
-//  Dialog
+//  AppDialog
 //--------------------------------------------------
 
-interface Dialog<PARAMS = void, RESULT = void> {
+interface AppDialog<PARAMS = void, RESULT = void> {
   open(params: PARAMS): Promise<RESULT>
   close(result: RESULT): void
 }
 
 //--------------------------------------------------
-//  Dialogs
+//  AppDialogs
 //--------------------------------------------------
 
-type Dialogs = UnwrapNestedRefs<WrapDialogs>
+type AppDialogs = UnwrapNestedRefs<WrapAppDialogs>
 
-interface WrapDialogs extends DialogContainer.WrapFeatures {
+interface WrapAppDialogs extends AppDialogContainer.WrapFeatures {
   /**
    * @see URLQueryDialogHelper.buildQuery
    */
-  buildQuery(dialogName: DialogNames, dialogParams?: any): string
+  buildQuery(dialogName: AppDialogNames, dialogParams?: any): string
 
   /**
    * @see URLQueryDialogHelper.getQuery
    */
-  getQuery(): { dialogName: DialogNames; dialogParams?: Record<string, unknown> } | undefined
+  getQuery(): { dialogName: AppDialogNames; dialogParams?: Record<string, unknown> } | undefined
 
   /**
    * @see URLQueryDialogHelper.clearQuery
@@ -49,29 +49,29 @@ interface WrapDialogs extends DialogContainer.WrapFeatures {
 //
 //==========================================================================
 
-namespace Dialogs {
-  let instance: Dialogs
+namespace AppDialogs {
+  let instance: AppDialogs
 
-  export function setupDialogs(dialogContainer: Ref<DialogContainer | undefined>): Dialogs {
+  export function setup(dialogContainer: Ref<AppDialogContainer | undefined>): AppDialogs {
     instance = reactive(newWrapInstance(dialogContainer))
     return instance
   }
 
-  export function useDialogs(): Dialogs {
+  export function use(): AppDialogs {
     if (!instance) {
-      throw new Error('`Dialogs` has not been setup yet.')
+      throw new Error('`AppDialogs` has not been setup yet.')
     }
     return instance
   }
 
-  function newWrapInstance(dialogContainer: Ref<DialogContainer | undefined>) {
+  function newWrapInstance(dialogContainer: Ref<AppDialogContainer | undefined>) {
     //----------------------------------------------------------------------
     //
     //  Variables
     //
     //----------------------------------------------------------------------
 
-    const router = useRouter()
+    const router = AppRouter.use()
 
     //----------------------------------------------------------------------
     //
@@ -89,11 +89,11 @@ namespace Dialogs {
     //
     //----------------------------------------------------------------------
 
-    const buildQuery: Dialogs['buildQuery'] = URLQueryDialogHelper.buildQuery
+    const buildQuery: AppDialogs['buildQuery'] = URLQueryDialogHelper.buildQuery
 
-    const getQuery: Dialogs['getQuery'] = URLQueryDialogHelper.getQuery
+    const getQuery: AppDialogs['getQuery'] = URLQueryDialogHelper.getQuery
 
-    const clearQuery: Dialogs['clearQuery'] = URLQueryDialogHelper.clearQuery
+    const clearQuery: AppDialogs['clearQuery'] = URLQueryDialogHelper.clearQuery
 
     //----------------------------------------------------------------------
     //
@@ -118,14 +118,14 @@ namespace Dialogs {
       dialog.open(info.dialogParams)
     }
 
-    function getDialogs(): DialogContainer {
+    function getDialogs(): AppDialogContainer {
       if (!dialogContainer.value) {
-        throw new Error('`DialogContainer` has not been setup yet.')
+        throw new Error('`AppDialogContainer` has not been setup yet.')
       }
       return dialogContainer.value
     }
 
-    function getDialog(dialogName: DialogNames): Dialog<any, any> | undefined {
+    function getDialog(dialogName: AppDialogNames): AppDialog<any, any> | undefined {
       const dialog = getDialogs()[dialogName]
       if (!dialogName) {
         console.warn(`There is no dialog named ${dialogName}.`)
@@ -162,7 +162,7 @@ namespace Dialogs {
       clearQuery,
     }
 
-    return isImplemented<WrapDialogs, typeof result>(result)
+    return isImplemented<WrapAppDialogs, typeof result>(result)
   }
 }
 
@@ -172,8 +172,7 @@ namespace Dialogs {
 //
 //==========================================================================
 
-const { setupDialogs, useDialogs } = Dialogs
-export { DialogContainer, setupDialogs, useDialogs }
-export type { Dialog }
+export { AppDialogs, AppDialogContainer }
+export type { AppDialog }
 export * from '@/dialogs'
 export * from '@/dialogs/message'

@@ -1,4 +1,5 @@
-import { APIs } from '@/services/apis'
+import { AppAPIs } from '@/services/apis'
+import type { RawAppAPIs } from '@/services/apis'
 
 //==========================================================================
 //
@@ -6,11 +7,9 @@ import { APIs } from '@/services/apis'
 //
 //==========================================================================
 
-interface TestAPIs extends APIs {
+interface TestAPIs extends RawAppAPIs {
   putTestData(testData: any): Promise<void>
 }
-
-type WrapAPIs = ReturnType<typeof APIs['newInstance']>
 
 //==========================================================================
 //
@@ -20,11 +19,10 @@ type WrapAPIs = ReturnType<typeof APIs['newInstance']>
 
 namespace TestAPIs {
   export function newInstance(): TestAPIs {
-    const api = APIs.newInstance()
-    return mix(api)
+    return mix(AppAPIs.newInstance())
   }
 
-  function mix<T extends WrapAPIs>(api: T): TestAPIs & T {
+  function mix<T extends RawAppAPIs>(api: T): TestAPIs {
     const putTestData: TestAPIs['putTestData'] = async testData => {
       await api.client.put('test_data', { data: testData })
     }

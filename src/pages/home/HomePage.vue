@@ -33,7 +33,7 @@
 
 <script lang="ts">
 import { defineComponent, reactive } from 'vue'
-import { useRouter } from '@/router'
+import { AppRouter } from '@/router'
 
 const HomePage = defineComponent({
   components: {},
@@ -45,7 +45,7 @@ const HomePage = defineComponent({
     //
     //----------------------------------------------------------------------
 
-    const router = useRouter()
+    const router = AppRouter.use()
     const route = router.routes.home
 
     const message = reactive({

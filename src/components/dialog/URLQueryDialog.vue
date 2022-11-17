@@ -15,10 +15,10 @@
 <script lang="ts">
 import type { SetupContext, UnwrapNestedRefs } from 'vue'
 import { extensibleMethod, isImplemented } from 'js-common-lib'
+import { AppRouter } from '@/router'
 import { BasePromiseDialog } from '@/components/dialog/PromiseDialog.vue'
 import { QDialog } from 'quasar'
 import { defineComponent } from 'vue'
-import { useRouter } from '@/router'
 
 //==========================================================================
 //
@@ -66,7 +66,7 @@ const URLQueryDialog = defineComponent({
 
     const base = BasePromiseDialog.setup<PARAMS, RESULT>(props, ctx)
 
-    const router = useRouter()
+    const router = AppRouter.use()
 
     //----------------------------------------------------------------------
     //
@@ -156,7 +156,7 @@ namespace URLQueryDialogHelper {
   export function getQuery<NAMES>():
     | { dialogName: NAMES; dialogParams?: Record<string, unknown> }
     | undefined {
-    const router = useRouter()
+    const router = AppRouter.use()
 
     const dialogName: NAMES | undefined = router.currentRoute.query.dialogName as any
     if (!dialogName) return
@@ -173,7 +173,7 @@ namespace URLQueryDialogHelper {
    * Remove a dialog query given to a URL of a current route.
    */
   export function clearQuery() {
-    const router = useRouter()
+    const router = AppRouter.use()
 
     const query = { ...router.currentRoute.query }
     delete query.dialogName

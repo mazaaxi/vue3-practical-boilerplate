@@ -1,12 +1,10 @@
-import type { UnwrapNestedRefs } from 'vue'
-
 //==========================================================================
 //
 //  Interfaces
 //
 //==========================================================================
 
-interface TestHelpers extends UnwrapNestedRefs<ReturnType<typeof TestHelpers['newInstance']>> {}
+type TestHelpers = ReturnType<typeof TestHelpers['newInstance']>
 
 //==========================================================================
 //

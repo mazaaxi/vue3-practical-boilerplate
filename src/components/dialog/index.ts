@@ -1,3 +1,3 @@
-import PromiseDialog from '@/components/dialog/PromiseDialog.vue'
-import URLQueryDialog from '@/components/dialog/URLQueryDialog.vue'
-export { PromiseDialog, URLQueryDialog }
+import PromiseDialog, { BasePromiseDialog } from '@/components/dialog/PromiseDialog.vue'
+import URLQueryDialog, { URLQueryDialogHelper } from '@/components/dialog/URLQueryDialog.vue'
+export { PromiseDialog, BasePromiseDialog, URLQueryDialog, URLQueryDialogHelper }

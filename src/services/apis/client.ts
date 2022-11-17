@@ -1,7 +1,7 @@
 import type { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios'
 import { extensibleMethod, removeBothEndsSlash } from 'js-common-lib'
+import { AppConfig } from '@/base'
 import axios from 'axios'
-import { useConfig } from '@/base'
 
 //==========================================================================
 //
@@ -56,7 +56,7 @@ namespace APIClient {
     //----------------------------------------------------------------------
 
     const request = extensibleMethod<APIClient['request']>(async config => {
-      const appConfig = useConfig()
+      const appConfig = AppConfig.use()
 
       const axiosConfig = {
         ...config,
