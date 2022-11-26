@@ -101,7 +101,7 @@ const RoutingPage = defineComponent({
     onMounted(async () => {
       const min = Math.min(...pages.value)
       const max = Math.max(...pages.value)
-      if (isNaN(route.page) || route.page < min || max < route.page) {
+      if (isNaN(route.props.page) || route.props.page < min || max < route.props.page) {
         await route.replacePage(1)
       }
     })
@@ -122,7 +122,7 @@ const RoutingPage = defineComponent({
 
     const pages = ref([1, 2, 3])
 
-    const currentPage = computed(() => route.page || 1)
+    const currentPage = computed(() => route.props.page || 1)
 
     const logMessage = ref('')
 

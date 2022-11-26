@@ -41,7 +41,7 @@ namespace ExamplesRoutes {
 type AbcRoute = UnwrapNestedRefs<WrapAbcRoute>
 
 interface WrapAbcRoute extends WrapBaseRoute<AbcRouteMessage | void> {
-  readonly message: DeepReadonly<AbcRouteMessage>
+  readonly props: DeepReadonly<AbcRouteMessage>
 }
 
 interface AbcRouteMessage {
@@ -63,7 +63,7 @@ namespace AbcRoute {
       ...input,
     })
 
-    const message = reactive<AbcRouteMessage>({
+    const props = reactive<AbcRouteMessage>({
       title: undefined,
       body: undefined,
     })
@@ -106,13 +106,13 @@ namespace AbcRoute {
 
       // set message object when moved to own route
       if (base.isCurrent.value) {
-        message.title = route.query.title as string | undefined
-        message.body = route.query.body as string | undefined
+        props.title = route.query.title as string | undefined
+        props.body = route.query.body as string | undefined
       }
       // clear the message object if it is moved to a route that is not its own
       else {
-        message.title = undefined
-        message.body = undefined
+        props.title = undefined
+        props.body = undefined
       }
     }
 
@@ -124,7 +124,7 @@ namespace AbcRoute {
 
     return {
       ...base,
-      message,
+      props,
     }
   }
 }
@@ -170,7 +170,9 @@ namespace MiniatureProjectRoute {
 type RoutingRoute = UnwrapNestedRefs<WrapRoutingRoute>
 
 interface WrapRoutingRoute extends WrapBaseRoute<number> {
-  readonly page: Ref<number>
+  readonly props: {
+    readonly page: number
+  }
   parse(path_or_fullPath: string): { page: number } | undefined
   replacePage(page: number): Promise<void>
 }
@@ -189,7 +191,9 @@ namespace RoutingRoute {
       ...input,
     })
 
-    const page = ref<number>(NaN)
+    const props = reactive({
+      page: NaN,
+    })
 
     //----------------------------------------------------------------------
     //
@@ -240,9 +244,9 @@ namespace RoutingRoute {
       await base.update.super(route)
 
       if (base.isCurrent.value) {
-        page.value = toPage(route.query.page)
+        props.page = toPage(route.query.page)
       } else {
-        page.value = 0
+        props.page = 0
       }
     }
 
@@ -277,7 +281,7 @@ namespace RoutingRoute {
 
     const result = {
       ...base,
-      page,
+      props,
       parse,
       replacePage,
     }

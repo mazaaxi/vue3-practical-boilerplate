@@ -34,7 +34,7 @@ namespace BaseAbcView {
     //----------------------------------------------------------------------
 
     onMounted(() => {
-      const { title, body } = route.message
+      const { title, body } = route.props
       message.title = title || ''
       message.body = body || ''
     })

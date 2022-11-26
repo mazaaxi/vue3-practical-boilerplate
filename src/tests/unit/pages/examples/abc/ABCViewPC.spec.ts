@@ -7,7 +7,7 @@ import { useServiceDependencies } from '@/tests/helpers'
 vi.mock('@/router', () => {
   const AppRouter = {
     use: () => AppRouter,
-    routes: { examples: { abc: { message: {} } } },
+    routes: { examples: { abc: { props: {} } } },
   }
   return { AppRouter }
 })
