@@ -1,16 +1,7 @@
-import type {
-  APICartItem,
-  APICartItemEditResponse,
-  APIProduct,
-  CartItem,
-  CartItemAddInput,
-  CartItemEditResponse,
-  CartItemUpdateInput,
-  Product,
-} from '@/services/entities'
-import { isImplemented, keysToCamel, keysToSnake } from 'js-common-lib'
+import type { CartItem, Product } from '@/services/entities'
+import { type ToEntity, toEntities, toEntity } from '@/services/base'
+import { isImplemented, keysToSnake } from 'js-common-lib'
 import { APIClient } from '@/services/apis/client'
-import dayjs from 'dayjs'
 
 //==========================================================================
 //
@@ -29,6 +20,80 @@ interface AppAPIs {
 }
 
 type RawAppAPIs = ReturnType<typeof AppAPIs['newInstance']>
+
+//--------------------------------------------------
+//  API types
+//--------------------------------------------------
+
+interface APIUser {
+  id: string
+  email: string
+  first: string
+  last: string
+  created_at: string
+  updated_at: string
+}
+
+interface APIProduct {
+  id: string
+  title: string
+  price: number
+  stock: number
+  created_at: string
+  updated_at: string
+}
+
+interface APICartItem {
+  id: string
+  uid: string
+  product_id: string
+  title: string
+  price: number
+  quantity: number
+  created_at: string
+  updated_at: string
+}
+
+interface APICartItemEditResponse {
+  id: string
+  uid: string
+  product_id: string
+  title: string
+  price: number
+  quantity: number
+  created_at: string
+  updated_at: string
+  product: {
+    id: string
+    stock: number
+    created_at: string
+    updated_at: string
+  }
+}
+
+interface APICartItemAddInput {
+  uid: string
+  product_id: string
+  title: string
+  price: number
+  quantity: number
+}
+
+interface APICartItemUpdateInput {
+  uid: string
+  id: string
+  quantity: number
+}
+
+//--------------------------------------------------
+//  App types
+//--------------------------------------------------
+
+type CartItemAddInput = ToEntity<APICartItemAddInput>
+
+type CartItemEditResponse = ToEntity<APICartItemEditResponse>
+
+type CartItemUpdateInput = ToEntity<APICartItemUpdateInput>
 
 //==========================================================================
 //
@@ -68,43 +133,21 @@ namespace AppAPIs {
         params: { ids: [id] },
       })
       if (response.data.length === 0) return
-
-      const product = response.data[0]
-      return keysToCamel<typeof product, Product>(product, {
-        convertor: (key, value) => {
-          if (key === 'created_at') return dayjs(value)
-          if (key === 'updated_at') return dayjs(value)
-          return value
-        },
-      })
+      return toEntity(response.data[0])
     }
 
     const getProducts: AppAPIs['getProducts'] = async ids => {
       const response = await client.get<APIProduct[]>('products', {
         params: { ids },
       })
-
-      return keysToCamel<typeof response.data, Product[]>(response.data, {
-        convertor: (key, value) => {
-          if (key === 'created_at') return dayjs(value)
-          if (key === 'updated_at') return dayjs(value)
-          return value
-        },
-      })
+      return toEntities(response.data)
     }
 
     const getCartItems: AppAPIs['getCartItems'] = async () => {
       const response = await client.get<APICartItem[]>('cart_items', {
         shouldAuth: true,
       })
-
-      return keysToCamel<typeof response.data, CartItem[]>(response.data, {
-        convertor: (key, value) => {
-          if (key === 'created_at') return dayjs(value)
-          if (key === 'updated_at') return dayjs(value)
-          return value
-        },
-      })
+      return toEntities(response.data)
     }
 
     const addCartItems: AppAPIs['addCartItems'] = async items => {
@@ -112,7 +155,7 @@ namespace AppAPIs {
         shouldAuth: true,
         data: keysToSnake(items),
       })
-      return response.data.map(item => apiAPICartItemEditResponseToEntity(item))
+      return toEntities(response.data)
     }
 
     const updateCartItems: AppAPIs['updateCartItems'] = async items => {
@@ -120,7 +163,7 @@ namespace AppAPIs {
         shouldAuth: true,
         data: keysToSnake(items),
       })
-      return response.data.map(item => apiAPICartItemEditResponseToEntity(item))
+      return toEntities(response.data)
     }
 
     const removeCartItems: AppAPIs['removeCartItems'] = async cartItemIds => {
@@ -128,7 +171,7 @@ namespace AppAPIs {
         shouldAuth: true,
         params: { ids: cartItemIds },
       })
-      return response.data.map(item => apiAPICartItemEditResponseToEntity(item))
+      return toEntities(response.data)
     }
 
     const checkoutCart: AppAPIs['checkoutCart'] = async () => {
@@ -136,34 +179,6 @@ namespace AppAPIs {
         shouldAuth: true,
       })
       return response.data
-    }
-
-    //----------------------------------------------------------------------
-    //
-    //  Internal methods
-    //
-    //----------------------------------------------------------------------
-
-    function apiAPICartItemEditResponseToEntity(
-      item: APICartItemEditResponse
-    ): CartItemEditResponse {
-      return keysToCamel<APICartItemEditResponse, CartItemEditResponse>(item, {
-        convertor: (key, value) => {
-          if (key === 'product') {
-            type APIProduct = APICartItemEditResponse['product']
-            return keysToCamel<APIProduct>(value, {
-              convertor: (key, value) => {
-                if (key === 'created_at') return dayjs(value)
-                if (key === 'updated_at') return dayjs(value)
-                return value
-              },
-            })
-          }
-          if (key === 'created_at') return dayjs(value)
-          if (key === 'updated_at') return dayjs(value)
-          return value
-        },
-      })
     }
 
     //----------------------------------------------------------------------
@@ -194,4 +209,12 @@ namespace AppAPIs {
 //==========================================================================
 
 export { AppAPIs }
-export type { RawAppAPIs }
+export type {
+  APICartItem,
+  APIProduct,
+  APIUser,
+  CartItemAddInput,
+  CartItemEditResponse,
+  CartItemUpdateInput,
+  RawAppAPIs,
+}

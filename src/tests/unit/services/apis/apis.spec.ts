@@ -1,9 +1,8 @@
-import type { APICartItem, APIProduct, CartItem, Product } from '@/services'
+import type { APICartItem, APIProduct, CartItemEditResponse } from '@/services/apis'
+import { CartItem, type Product, toRawEntities } from '@/services'
 import { describe, expect, it } from 'vitest'
-import type { CartItemEditResponse } from '@/services'
 import { TestUsers } from '@/services/test-data'
 import dayjs from 'dayjs'
-import { keysToSnake } from 'js-common-lib'
 import { useServiceDependencies } from '@/tests/helpers'
 
 //==========================================================================
@@ -52,14 +51,7 @@ function Products(): Product[] {
 }
 
 function APIProducts(): APIProduct[] {
-  const products = Products()
-  return keysToSnake<typeof products, APIProduct[]>(products, {
-    convertor: (key, value) => {
-      if (key === 'createdAt' && dayjs.isDayjs(value)) return value.toISOString()
-      if (key === 'updatedAt' && dayjs.isDayjs(value)) return value.toISOString()
-      return value
-    },
-  })
+  return toRawEntities(Products())
 }
 
 function CartItems(): CartItem[] {
@@ -88,14 +80,7 @@ function CartItems(): CartItem[] {
 }
 
 function APICartItems(): APICartItem[] {
-  const cartItems = CartItems()
-  return keysToSnake<typeof cartItems, APICartItem[]>(cartItems, {
-    convertor: (key, value) => {
-      if (key === 'createdAt' && dayjs.isDayjs(value)) return value.toISOString()
-      if (key === 'updatedAt' && dayjs.isDayjs(value)) return value.toISOString()
-      return value
-    },
-  })
+  return toRawEntities(CartItems())
 }
 
 //==========================================================================

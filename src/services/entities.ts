@@ -1,7 +1,5 @@
-import type { APITimestampEntity, TimestampEntity } from '@/services/base'
-import type { KeysToCamel, Merge } from 'js-common-lib'
+import dayjs, { type Dayjs } from 'dayjs'
 import { createObjectCopyFunctions } from '@/base'
-import dayjs from 'dayjs'
 
 //==========================================================================
 //
@@ -9,60 +7,34 @@ import dayjs from 'dayjs'
 //
 //==========================================================================
 
-interface APIUser extends APITimestampEntity {
+interface User {
+  id: string
   email: string
   first: string
   last: string
+  createdAt: Dayjs
+  updatedAt: Dayjs
 }
 
-type User = Merge<KeysToCamel<APIUser>, TimestampEntity>
-
-interface APIProduct extends APITimestampEntity {
+interface Product {
+  id: string
   title: string
   price: number
   stock: number
+  createdAt: Dayjs
+  updatedAt: Dayjs
 }
 
-type Product = Merge<KeysToCamel<APIProduct>, TimestampEntity>
-
-interface APICartItem extends APITimestampEntity {
-  uid: string
-  product_id: string
-  title: string
-  price: number
-  quantity: number
-}
-
-type CartItem = Merge<KeysToCamel<APICartItem>, TimestampEntity>
-
-interface APICartItemEditResponse extends APICartItem {
-  product: Pick<APIProduct, 'id' | 'stock' | 'created_at' | 'updated_at'>
-}
-
-type CartItemEditResponse = Merge<
-  KeysToCamel<APICartItemEditResponse>,
-  TimestampEntity & {
-    product: Merge<KeysToCamel<APICartItemEditResponse['product']>, TimestampEntity>
-  }
->
-
-interface APICartItemAddInput {
-  uid: string
-  product_id: string
-  title: string
-  price: number
-  quantity: number
-}
-
-type CartItemAddInput = KeysToCamel<APICartItemAddInput>
-
-interface APICartItemUpdateInput {
-  uid: string
+interface CartItem {
   id: string
+  uid: string
+  productId: string
+  title: string
+  price: number
   quantity: number
+  createdAt: Dayjs
+  updatedAt: Dayjs
 }
-
-type CartItemUpdateInput = KeysToCamel<APICartItemUpdateInput>
 
 //==========================================================================
 //
@@ -126,16 +98,3 @@ namespace CartItem {
 //==========================================================================
 
 export { CartItem, Product, User }
-
-export type {
-  APICartItem,
-  APICartItemAddInput,
-  APICartItemEditResponse,
-  APICartItemUpdateInput,
-  APIProduct,
-  APITimestampEntity,
-  APIUser,
-  CartItemAddInput,
-  CartItemEditResponse,
-  CartItemUpdateInput,
-}
