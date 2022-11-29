@@ -60,9 +60,6 @@ function useServiceDependenciesImpl(
   setup?: SetupFunc,
   dependencies?: Partial<ServiceDependencies>
 ): ServiceDependencies {
-  // launching a dialog during testing will cause an error, so mock it.
-  // setupDialogs(td.object())
-
   if (!currentDependencies) {
     const apis = dependencies?.apis ?? TestAPIs.newInstance()
     AppAPIs.setup(apis)

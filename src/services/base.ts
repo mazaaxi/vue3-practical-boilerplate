@@ -155,7 +155,7 @@ function toDeepRawDate<T>(obj: T): ToDeepRawDate<T> {
  * Converts an entity retrieved from API to an entity in application format.
  */
 function toEntity<T>(rawEntity: T): ToEntity<T> {
-  return keysToCamel(toDeepEntityDate(rawEntity, ['created_at', 'updated_at']), { deep: true })
+  return keysToCamel(toDeepEntityDate(rawEntity, ['created_at', 'updated_at']))
 }
 
 /**
@@ -169,7 +169,7 @@ function toEntities<T>(rawEntities: T[]): ToEntity<T>[] {
  * Converts an entity to an entity in API format.
  */
 function toRawEntity<T>(entity: T): ToRawEntity<T> {
-  return keysToSnake(toDeepRawDate(entity), { deep: true })
+  return keysToSnake(toDeepRawDate(entity))
 }
 
 /**

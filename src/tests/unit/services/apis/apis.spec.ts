@@ -103,7 +103,7 @@ function setTestIdToken(): void {
 //
 //==========================================================================
 
-describe('APIs', () => {
+describe('AppAPIs', () => {
   describe('getProduct', () => {
     it('basic case', async () => {
       const { apis } = useServiceDependencies()
