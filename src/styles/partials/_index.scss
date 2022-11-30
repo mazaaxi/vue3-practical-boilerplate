@@ -1,2 +1,40 @@
-@forward './common';
 @forward './flex-addon';
+
+@use 'node_modules/quasar/src/css/variables.sass' as q;
+@use '../variables' as v;
+
+%text- {
+  @each $heading, $value in q.$headings {
+    &#{$heading} {
+      font-size: map-get($value, 'size');
+      font-weight: map-get($value, 'weight');
+      line-height: map-get($value, 'line-height');
+      letter-spacing: map-get($value, 'letter-spacing');
+    }
+  }
+}
+
+%item-box-title {
+  font-size: v.$item-box-title-font-size;
+  font-weight: v.$item-box-title-font-weight;
+  color: v.$item-box-title-color;
+}
+
+%item-box-value {
+  font-size: v.$item-box-value-font-size;
+  font-weight: v.$item-box-value-font-weight;
+  color: v.$item-box-value-color;
+}
+
+%anchor-link {
+  color: v.$anchor-link-color;
+  text-decoration: none;
+  cursor: pointer;
+  &:not([disabled]):hover {
+    text-decoration: underline;
+  }
+  &[disabled] {
+    color: v.$text-disabled;
+    cursor: not-allowed !important;
+  }
+}
