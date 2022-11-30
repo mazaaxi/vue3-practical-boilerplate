@@ -6,7 +6,7 @@ import type {
   RouteRecordRaw,
   RouteRecordRedirectOption,
   RouteLocationNormalized as VueRoute,
-  Router as VueRouter,
+  Router as _VueRouter,
 } from 'vue-router'
 import type { Ref, UnwrapNestedRefs } from 'vue'
 import { compile, pathToRegexp } from 'path-to-regexp'
@@ -22,14 +22,20 @@ import type { Key } from 'path-to-regexp'
 //==========================================================================
 
 //--------------------------------------------------
+//  VueRouter
+//--------------------------------------------------
+
+type VueRouter = _VueRouter
+
+//--------------------------------------------------
 //  Router
 //--------------------------------------------------
 
-type Router<ROUTES> = UnwrapNestedRefs<WrapRouter<ROUTES>>
+type Router<ROUTES = unknown> = UnwrapNestedRefs<WrapRouter<ROUTES>>
 
 interface WrapRouter<ROUTES> extends Omit<VueRouter, 'currentRoute'> {
-  routes: ROUTES
-  currentRoute: Ref<CurrentRoute>
+  readonly routes: ROUTES
+  readonly currentRoute: Ref<CurrentRoute>
 }
 
 interface RouterInput<ROUTES> {
@@ -195,6 +201,21 @@ interface RouteInput {
 //
 //==========================================================================
 
+namespace VueRouter {
+  let instance: VueRouter
+
+  export function setup(vueRouter: VueRouter): void {
+    instance = vueRouter
+  }
+
+  export function use(): VueRouter {
+    if (!instance) {
+      throw new Error(`VueRouter is not initialized. Run \`setup()\` before using \`use()\`.`)
+    }
+    return instance
+  }
+}
+
 namespace Router {
   export function newWrapInstance<ROUTES>(input: RouterInput<ROUTES>) {
     const { routes, flattenRoutes, beforeRouteUpdate } = input
@@ -215,10 +236,12 @@ namespace Router {
       isHistoryMoving.value = true
     })
 
-    const vueRouter = createRouter({
-      history: createWebHistory(),
-      routes: flattenRoutes.map(item => item.toConfig()),
-    })
+    VueRouter.setup(
+      createRouter({
+        history: createWebHistory(),
+        routes: flattenRoutes.map(item => item.toConfig()),
+      })
+    )
 
     const currentRoute: Ref<CurrentRoute> = ref({
       path: '',
@@ -279,7 +302,7 @@ namespace Router {
     //
     //----------------------------------------------------------------------
 
-    vueRouter.beforeEach(async (to, from, next) => {
+    VueRouter.use().beforeEach(async (to, from, next) => {
       // if `beforeRouteUpdate` is specified, it is executed before route update
       if (beforeRouteUpdate) {
         const shouldNext = await beforeRouteUpdate(result, to, from, next)
@@ -292,7 +315,7 @@ namespace Router {
       next()
     })
 
-    vueRouter.afterEach(async (to, from, failure) => {
+    VueRouter.use().afterEach(async (to, from, failure) => {
       isHistoryMoving.value = false
 
       if (failure) {
@@ -319,7 +342,7 @@ namespace Router {
     //
     //----------------------------------------------------------------------
 
-    const { currentRoute: _, ...extractedVueRouter } = vueRouter
+    const { currentRoute: _, ...extractedVueRouter } = VueRouter.use()
 
     const result = {
       ...extractedVueRouter,
@@ -547,5 +570,5 @@ namespace Route {
 //
 //==========================================================================
 
-export { Router, Route }
+export { VueRouter, Router, Route }
 export type { WrapRouter, WrapRoute, RawRoute, RouteInput }

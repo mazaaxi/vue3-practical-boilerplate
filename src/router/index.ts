@@ -1,7 +1,7 @@
 import type { App, WritableComputedRef } from 'vue'
 import { AppI18n, SupportI18nLocales } from '@/i18n'
-import { Route, Router } from '@/router/core'
-import { computed, reactive, watch } from 'vue'
+import { Route, Router, VueRouter } from '@/router/core'
+import { computed, reactive, ref, watch } from 'vue'
 import type { BaseRouteInput } from '@/router/base'
 import { ExamplesRoutes } from '@/router/routes/examples'
 import { HomeRoute } from '@/router/routes/home'
@@ -44,11 +44,13 @@ namespace AppRouter {
 
   export function use(): AppRouter {
     if (!instance) {
-      throw new Error(
-        `AppRouter is not initialized. Run \`setupRouter()\` before using \`userRouter()\`.`
-      )
+      throw new Error(`AppRouter is not initialized. Run \`setup()\` before using \`use()\`.`)
     }
     return instance
+  }
+
+  export function useVueRouter(): VueRouter {
+    return VueRouter.use()
   }
 
   function newInstance(i18n: I18n) {
