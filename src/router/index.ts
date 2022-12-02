@@ -1,12 +1,10 @@
-import type { App, WritableComputedRef } from 'vue'
 import { AppI18n, SupportI18nLocales } from '@/i18n'
 import { Route, Router, VueRouter } from '@/router/core'
-import { computed, reactive, ref, watch } from 'vue'
+import { type WritableComputedRef, computed, reactive, watch } from 'vue'
 import type { BaseRouteInput } from '@/router/base'
 import { ExamplesRoutes } from '@/router/routes/examples'
 import { HomeRoute } from '@/router/routes/home'
 import type { I18n } from 'vue-i18n'
-import type { RawRoute } from '@/router/core'
 import { ShopRoute } from '@/router/routes/shop'
 import { isImplemented } from 'js-common-lib'
 
@@ -18,14 +16,10 @@ import { isImplemented } from 'js-common-lib'
 
 type AppRouter = Router<AppRoutes>
 
-interface AppRoutes {
+type AppRoutes = {
   home: HomeRoute
   shop: ShopRoute
   examples: ExamplesRoutes
-  /**
-   * @see Plugin.install of @vue/runtime-core
-   */
-  install(app: App, ...options: any[]): any
 }
 
 //==========================================================================
@@ -79,30 +73,22 @@ namespace AppRouter {
       home: HomeRoute.newWrapInstance(routeInput),
       shop: ShopRoute.newWrapInstance(routeInput),
       examples: ExamplesRoutes.newWrapInstance(routeInput),
-      install: (app: App) => {
-        app.config.globalProperties.$routes = routes
-      },
     }
-
-    const flattenRoutes: RawRoute[] = [
-      routes.home,
-      routes.shop,
-      routes.examples.abc,
-      routes.examples.miniatureProject,
-      routes.examples.routing,
-      // fallback route
-      Route.newWrapInstance({
-        routePath: `/:pathMatch(.*)*`,
-        redirect: `/${locale.value}/home`,
-      }),
-    ]
 
     //--------------------------------------------------
 
     const router = Router.newWrapInstance({
       routes,
-      flattenRoutes,
-      beforeRouteUpdate: async (router, to, from, next) => {
+
+      extraRoutes: [
+        // fallback route
+        Route.newWrapInstance({
+          routePath: `/:pathMatch(.*)*`,
+          redirect: `/${locale.value}/home`,
+        }),
+      ],
+
+      beforeEach: async (router, to, from, next) => {
         const paramsLocale = to.params.locale as string
 
         // if `paramsLocale` is not in `SupportI18nLocales`, use current `locale`
@@ -129,7 +115,7 @@ namespace AppRouter {
       async (newValue, oldValue) => {
         // when a language switch occurs, refresh the current route to embed the switched language
         // in the path.
-        const current = flattenRoutes.find(route => route.isCurrent.value)
+        const current = router.allRoutes.find(route => route.isCurrent.value)
         current && (await current.refresh())
       }
     )

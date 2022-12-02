@@ -1,19 +1,23 @@
+import { type App, type Ref, type UnwrapNestedRefs, computed, reactive, ref } from 'vue'
 import type {
   LocationQuery,
   LocationQueryValue,
+  NavigationFailure,
   NavigationGuardNext,
+  RouteLocationNormalizedLoaded,
+  RouteMeta,
   RouteParams,
+  RouteRecordName,
   RouteRecordRaw,
   RouteRecordRedirectOption,
   RouteLocationNormalized as VueRoute,
   Router as _VueRouter,
 } from 'vue-router'
-import type { Ref, UnwrapNestedRefs } from 'vue'
 import { compile, pathToRegexp } from 'path-to-regexp'
-import { computed, reactive, ref } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
-import { extensibleMethod, isImplemented, pickProps, removeEndSlash, sleep } from 'js-common-lib'
+import { extensibleMethod, isImplemented, removeEndSlash, sleep } from 'js-common-lib'
 import type { Key } from 'path-to-regexp'
+import type { VuePluginInstall } from '@/base'
 
 //==========================================================================
 //
@@ -31,63 +35,89 @@ type VueRouter = _VueRouter
 //  Router
 //--------------------------------------------------
 
-type Router<ROUTES = unknown> = UnwrapNestedRefs<WrapRouter<ROUTES>>
+type Router<ROUTES extends Routes = Routes> = UnwrapNestedRefs<
+  Omit<WrapRouter, 'routes' | 'allRoutes'>
+> & {
+  readonly routes: ROUTES & { install: VuePluginInstall }
+  readonly allRoutes: Route[]
+}
 
-interface WrapRouter<ROUTES> extends Omit<VueRouter, 'currentRoute'> {
-  readonly routes: ROUTES
+interface WrapRouter<ROUTES extends RawRoutes = RawRoutes>
+  extends Omit<VueRouter, 'currentRoute' | 'beforeEach' | 'afterEach'> {
+  readonly routes: ROUTES & { install: VuePluginInstall }
+  readonly allRoutes: RawRoute[]
   readonly currentRoute: Ref<CurrentRoute>
 }
 
-interface RouterInput<ROUTES> {
-  // Specifies the structure of the `Route` object.<br>
-  // e.g.
-  // ```
-  // {
-  //   home: // specify `HomeRoute` instance
-  //   shop: // specify `ShopRoute` instance
-  //   examples: // specify `ExamplesRoute` instance
-  // }
-  // ```
-  routes: ROUTES
+interface RouterInput<ROUTES extends RawRoutes = RawRoutes> {
   /**
-   * Specify an array of flattened `routes`.<br>
+   * Specifies the structure of the `RawRoute` object.<br>
    * e.g.
    * ```
-   * [
-   *   home,
-   *   shop,
-   *   examples.abc,
-   *   examples.miniatureProject,
-   * ]
+   * {
+   *   // specify raw `HomeRoute` instance
+   *   home: HomeRoute.newWrapInstance(routeInput),
+   *   // specify raw `ShopRoute` instance
+   *   shop: ShopRoute.newWrapInstance(routeInput),
+   *   // specify raw `ExamplesRoute` instance
+   *   examples: ExamplesRoutes.newWrapInstance(routeInput),
+   * }
    * ```
    */
-  flattenRoutes: RawRoute[]
+  routes: ROUTES
+  /**
+   * Specifies internal routes that cannot be specified with `routes`.
+   * It is mainly used to specify a fallback route.
+   */
+  extraRoutes: RawRoute[]
   /**
    * If this function is specified, it is executed before route update.
-   * @param self Self router is passed on.
+   * @param router Router is passed on.
    * @param to The next route is passed.
    * @param from The previous route is passed.
    * @param next Navigation guard is passed.
    *   https://v3.router.vuejs.org/guide/advanced/navigation-guards.html
    * @return
-   *   Returns true if you want to perform subsequent processing of `beforeRouteUpdate`,
+   *   Returns true if you want to perform subsequent processing of `beforeEach`,
    *   false otherwise.
    */
-  beforeRouteUpdate?: (
+  beforeEach?: (
     self: WrapRouter<ROUTES>,
     to: VueRoute,
     from: VueRoute,
     next: NavigationGuardNext
   ) => Promise<boolean>
+  /**
+   * If this function is specified, it is executed after route update.
+   * @param router Router is passed on.
+   * @param to The next route is passed.
+   * @param from The previous route is passed.
+   * @param failure Navigation error is passed.
+   */
+  afterEach?: (
+    router: WrapRouter<ROUTES>,
+    to: VueRoute,
+    from: VueRoute,
+    failure?: NavigationFailure | void
+  ) => Promise<void>
 }
+
+type Routes = Record<string, Route>
+
+type RawRoutes = Record<string, RawRoute>
 
 //--------------------------------------------------
 //  Route
 //--------------------------------------------------
 
-type Route = UnwrapNestedRefs<WrapRoute>
+type Route<MOVE_PARAMS extends any | void = unknown> = UnwrapNestedRefs<WrapRoute<MOVE_PARAMS>>
 
-interface WrapRoute<MOVE_PARAMS extends any | void = void> {
+interface WrapRoute<MOVE_PARAMS extends any | void> {
+  /**
+   * A path for the `VueRouter` configuration.
+   * e.g. /:locale/articles/:articlesId
+   */
+  readonly routePath: Ref<string>
   /**
    * A path of a route.
    * e.g. /ja/articles/1234567890
@@ -129,6 +159,10 @@ interface WrapRoute<MOVE_PARAMS extends any | void = void> {
    */
   readonly hasHistoryMoved: Ref<boolean>
   /**
+   * Child routes.
+   */
+  readonly children: WrapRoute<unknown>[]
+  /**
    * Moves to itself route.
    */
   move(params: MOVE_PARAMS): Promise<void>
@@ -136,17 +170,25 @@ interface WrapRoute<MOVE_PARAMS extends any | void = void> {
    * Generates a path to move to itself route.
    */
   toMovePath(params: MOVE_PARAMS): string
+  /**
+   * Get if the specified path matches its own root.
+   */
+  match(path: string): boolean
 }
 
-interface RawRoute<MOVE_PARAMS extends any | void = void> extends WrapRoute<MOVE_PARAMS> {
+interface RawRoute<MOVE_PARAMS extends any | void = unknown> extends WrapRoute<MOVE_PARAMS> {
   /**
    * Router instance.
    */
-  router: { value: WrapRouter<unknown> }
+  router: { value: WrapRouter }
+  /**
+   * Child routes.
+   */
+  readonly children: RawRoute[]
   /**
    * Initializes itself route object.
    */
-  init(params: { router: WrapRouter<unknown>; isHistoryMoving: Ref<boolean> }): void
+  init(params: { router: WrapRouter; isHistoryMoving: Ref<boolean> }): void
   /**
    * Converts itself to the Vue Router configuration format.
    */
@@ -181,17 +223,15 @@ interface RawRoute<MOVE_PARAMS extends any | void = void> extends WrapRoute<MOVE
   getIsCurrent(route: VueRoute): boolean
 }
 
-type CurrentRoute = Omit<Route, 'move' | 'toMovePath'>
-
-interface RouteConfig {
-  path: string
-  component: any
-  redirect?: RouteRecordRedirectOption
-}
+type CurrentRoute = RouteLocationNormalizedLoaded &
+  Pick<Route, 'isCurrent' | 'isHistoryMoving' | 'hasHistoryMoved' | 'match'>
 
 interface RouteInput {
   routePath?: string
   component?: any
+  children?: RawRoute[]
+  name?: RouteRecordName
+  meta?: RouteMeta
   redirect?: RouteRecordRedirectOption
 }
 
@@ -217,14 +257,38 @@ namespace VueRouter {
 }
 
 namespace Router {
-  export function newWrapInstance<ROUTES>(input: RouterInput<ROUTES>) {
-    const { routes, flattenRoutes, beforeRouteUpdate } = input
+  export function newWrapInstance<ROUTES extends RawRoutes = RawRoutes>(
+    input: RouterInput<ROUTES>
+  ) {
+    const { routes, beforeEach, afterEach } = input
+    const extraRoutes = input.extraRoutes || []
 
     //----------------------------------------------------------------------
     //
     //  Variables
     //
     //----------------------------------------------------------------------
+
+    const getRecursiveRoutes = (route: RawRoute) => {
+      if (!route.children.length) return [route]
+
+      return route.children.reduce<RawRoute[]>(
+        (result, childRoute) => {
+          result.push(childRoute)
+          for (const grandChildRoute of childRoute.children) {
+            result.push(...getRecursiveRoutes(grandChildRoute))
+          }
+          return result
+        },
+        [route]
+      )
+    }
+
+    const allRoutes = Object.values(routes).reduce<RawRoute[]>((result, route) => {
+      result.push(...getRecursiveRoutes(route))
+      return result
+    }, [])
+    allRoutes.push(...extraRoutes)
 
     const isHistoryMoving = ref(false)
 
@@ -239,11 +303,11 @@ namespace Router {
     VueRouter.setup(
       createRouter({
         history: createWebHistory(),
-        routes: flattenRoutes.map(item => item.toConfig()),
+        routes: [...Object.values(routes), ...extraRoutes].map(route => route.toConfig()),
       })
     )
 
-    const currentRoute: Ref<CurrentRoute> = ref({
+    const currentRoute = ref<CurrentRoute>({
       path: '',
       fullPath: '',
       hash: '',
@@ -252,6 +316,11 @@ namespace Router {
       isCurrent: false,
       isHistoryMoving: false,
       hasHistoryMoved: false,
+      name: undefined,
+      redirectedFrom: undefined,
+      meta: {},
+      matched: [],
+      match: () => false,
     })
 
     //----------------------------------------------------------------------
@@ -261,39 +330,33 @@ namespace Router {
     //----------------------------------------------------------------------
 
     async function updateAllRoutes(to: VueRoute) {
-      // the first matched next route is the current route.
-      let alreadyExistsCurrentRoute = false
-      for (const route of flattenRoutes) {
-        if (!alreadyExistsCurrentRoute) {
-          route.isCurrent.value = route.getIsCurrent(to)
-          if (route.isCurrent.value) {
-            alreadyExistsCurrentRoute = true
-          }
-        } else {
-          route.isCurrent.value = false
-        }
-      }
-
-      // update all routes
-      await Promise.all(flattenRoutes.map(route => route.update(to)))
+      await Promise.all(allRoutes.map(route => route.update(to)))
     }
 
     function updateCurrentRoute(): void {
-      const newCurrentRoute = flattenRoutes.find(route => route.isCurrent.value)
+      const newCurrentRoute = allRoutes.find(route => route.isCurrent.value)
       if (!newCurrentRoute) return
 
-      currentRoute.value = reactive({
-        ...pickProps(newCurrentRoute, [
-          'path',
-          'fullPath',
-          'hash',
-          'query',
-          'params',
-          'isCurrent',
-          'hasHistoryMoved',
-        ]),
-        isHistoryMoving,
-      })
+      const orgCurrentRoute = VueRouter.use().currentRoute
+
+      currentRoute.value = {
+        path: newCurrentRoute.path.value,
+        fullPath: newCurrentRoute.fullPath.value,
+        hash: newCurrentRoute.hash.value,
+        query: newCurrentRoute.query.value,
+        params: newCurrentRoute.params.value,
+        isCurrent: newCurrentRoute.isCurrent.value,
+        hasHistoryMoved: newCurrentRoute.hasHistoryMoved.value,
+        // when assigning a `ref` to a `reactive` property,
+        // that `ref` will also be automatically unwrapped
+        // https://vuejs.org/api/reactivity-core.html#reactive
+        isHistoryMoving: isHistoryMoving as any,
+        name: orgCurrentRoute.value.name,
+        redirectedFrom: orgCurrentRoute.value.redirectedFrom,
+        meta: orgCurrentRoute.value.meta,
+        matched: orgCurrentRoute.value.matched,
+        match: newCurrentRoute.match,
+      }
     }
 
     //----------------------------------------------------------------------
@@ -303,9 +366,8 @@ namespace Router {
     //----------------------------------------------------------------------
 
     VueRouter.use().beforeEach(async (to, from, next) => {
-      // if `beforeRouteUpdate` is specified, it is executed before route update
-      if (beforeRouteUpdate) {
-        const shouldNext = await beforeRouteUpdate(result, to, from, next)
+      if (beforeEach) {
+        const shouldNext = await beforeEach(instance, to, from, next)
         if (!shouldNext) return
       }
 
@@ -324,7 +386,7 @@ namespace Router {
 
         updateCurrentRoute()
 
-        // If the routing fails in a history move, the `window.popstate` event will be fired.
+        // If the routing fails in a history move, `window.popstate` event will be fired.
         // If this happens, `isHistoryMoving`, which was turned off above, will be turned on
         // unintentionally. For this reason, we wait for a certain amount of time before
         // turning off `isHistoryMoving`.
@@ -334,6 +396,10 @@ namespace Router {
       } else {
         updateCurrentRoute()
       }
+
+      if (afterEach) {
+        await afterEach(instance, to, from, failure)
+      }
     })
 
     //----------------------------------------------------------------------
@@ -342,20 +408,26 @@ namespace Router {
     //
     //----------------------------------------------------------------------
 
-    const { currentRoute: _, ...extractedVueRouter } = VueRouter.use()
+    const { currentRoute: _1, beforeEach: _2, ...extractedVueRouter } = VueRouter.use()
 
-    const result = {
+    const instance = {
       ...extractedVueRouter,
-      routes,
+      routes: {
+        ...routes,
+        install: (app: App) => {
+          app.config.globalProperties.$routes = routes
+        },
+      },
+      allRoutes,
       currentRoute,
     }
 
     // routes are initialized here because an instance of the router needs to be passed
-    flattenRoutes.forEach(route => {
-      route.init({ router: result, isHistoryMoving })
+    allRoutes.forEach(route => {
+      route.init({ router: instance, isHistoryMoving })
     })
 
-    return isImplemented<WrapRouter<ROUTES>, typeof result>(result)
+    return isImplemented<WrapRouter, typeof instance>(instance)
   }
 }
 
@@ -371,7 +443,7 @@ namespace Route {
       isHistoryMoving: false,
     })
 
-    let _router: WrapRouter<unknown>
+    let _router: WrapRouter
     const router = {
       get value() {
         return _router
@@ -379,8 +451,7 @@ namespace Route {
     }
 
     const routePath = ref(input.routePath ?? '')
-    const component = ref(input.component)
-    const redirect = ref(input.redirect)
+    const children = input.children || []
 
     //----------------------------------------------------------------------
     //
@@ -407,15 +478,21 @@ namespace Route {
     //
     //----------------------------------------------------------------------
 
-    const move = extensibleMethod<RawRoute<any>['move']>(async () => {
+    const move = extensibleMethod<RawRoute['move']>(async () => {
       const nextPath = toMovePath(undefined)
       await router.value.push(nextPath)
     })
 
-    const toMovePath = extensibleMethod<RawRoute<any>['toMovePath']>(() => {
+    const toMovePath = extensibleMethod<RawRoute['toMovePath']>(() => {
       return toPath({
         routePath: routePath.value,
       })
+    })
+
+    const match = extensibleMethod<RawRoute['match']>(path => {
+      const keys: Key[] = []
+      const pathRegexp = pathToRegexp(routePath.value, keys)
+      return pathRegexp.test(path)
     })
 
     //----------------------------------------------------------------------
@@ -426,26 +503,28 @@ namespace Route {
 
     const init = extensibleMethod<RawRoute['init']>(params => {
       _router = params.router as any
-      // when assigning a `ref` to a reactive property,
+      // when assigning a `ref` to a `reactive` property,
       // that `ref` will also be automatically unwrapped
       // https://vuejs.org/api/reactivity-core.html#reactive
       state.isHistoryMoving = params.isHistoryMoving as any
     })
 
     const toConfig = extensibleMethod<RawRoute['toConfig']>(() => {
-      const baseConfig = {
+      return {
         path: routePath.value,
-        component: component.value,
-      }
-
-      if (redirect.value) {
-        return { ...baseConfig, redirect: redirect.value }
-      } else {
-        return baseConfig
+        component: input.component,
+        children: children.map(child => child.toConfig()),
+        name: input.name,
+        meta: input.meta,
+        redirect: input.redirect,
       }
     })
 
     const update = extensibleMethod<RawRoute['update']>(async route => {
+      // set whether itself route is the current route
+      // Note: if the `route` passed matches itself route, it is the current route
+      isCurrent.value = getIsCurrent(route)
+
       if (isCurrent.value) {
         // reconfigure its own state
         path.value = getPath(route)
@@ -540,7 +619,6 @@ namespace Route {
     const result = {
       router,
       routePath,
-      component,
       path,
       fullPath,
       hash,
@@ -549,8 +627,10 @@ namespace Route {
       isCurrent,
       isHistoryMoving,
       hasHistoryMoved,
+      children,
       move,
       toMovePath,
+      match,
       init,
       toConfig,
       update,

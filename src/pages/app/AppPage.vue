@@ -226,7 +226,8 @@ const AppPage = defineComponent({
     // watch(
     //   () => router.currentRoute,
     //   async (newValue, oldValue) => {
-    //     console.log(`currentRoute:`, { newValue, oldValue })
+    //     // eslint-disable-next-line no-console
+    //     console.log(`currentRoute:`, JSON.stringify({ newValue, oldValue }, null, 2))
     //   }
     // )
 
@@ -242,6 +243,7 @@ const AppPage = defineComponent({
     //       null,
     //       2
     //     )
+    //     // eslint-disable-next-line no-console
     //     console.log(`currentRoute:`, detail)
     //   }
     // )

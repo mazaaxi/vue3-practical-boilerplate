@@ -1,7 +1,6 @@
 import type { BaseRouteInput, WrapBaseRoute } from '@/router/base'
-import type { Ref, UnwrapNestedRefs } from 'vue'
+import { type UnwrapNestedRefs, reactive } from 'vue'
 import { isImplemented, pickProps, removeEndSlash } from 'js-common-lib'
-import { reactive, ref } from 'vue'
 import { BaseRoute } from '@/router/base'
 import type { DeepReadonly } from 'js-common-lib'
 import type { LocationQueryValue } from 'vue-router'
@@ -16,7 +15,7 @@ import url from 'url'
 
 type ExamplesRoutes = UnwrapNestedRefs<WrapExamplesRoutes>
 
-interface WrapExamplesRoutes {
+interface WrapExamplesRoutes extends WrapBaseRoute<void> {
   readonly abc: WrapAbcRoute
   readonly miniatureProject: WrapMiniatureProjectRoute
   readonly routing: WrapRoutingRoute
@@ -24,10 +23,21 @@ interface WrapExamplesRoutes {
 
 namespace ExamplesRoutes {
   export function newWrapInstance(input: BaseRouteInput) {
-    const result = {
+    const children = {
       abc: AbcRoute.newWrapInstance(input),
       miniatureProject: MiniatureProjectRoute.newWrapInstance(input),
       routing: RoutingRoute.newWrapInstance(input),
+    }
+
+    const base = BaseRoute.newWrapInstance({
+      routePath: `/:locale/examples`,
+      children: Object.values(children),
+      ...input,
+    })
+
+    const result = {
+      ...base,
+      ...children,
     }
 
     return isImplemented<WrapExamplesRoutes, typeof result>(result)
@@ -59,7 +69,7 @@ namespace AbcRoute {
 
     const base = BaseRoute.newWrapInstance({
       routePath: `/:locale/examples/abc`,
-      component: () => import('@/pages/examples/abc'),
+      component: () => import('@/pages/examples/abc/ABCPage.vue'),
       ...input,
     })
 
@@ -135,7 +145,7 @@ namespace AbcRoute {
 
 type MiniatureProjectRoute = UnwrapNestedRefs<WrapMiniatureProjectRoute>
 
-interface WrapMiniatureProjectRoute extends WrapBaseRoute {}
+interface WrapMiniatureProjectRoute extends WrapBaseRoute<void> {}
 
 namespace MiniatureProjectRoute {
   export function newWrapInstance(input: BaseRouteInput) {
@@ -147,7 +157,7 @@ namespace MiniatureProjectRoute {
 
     const base = BaseRoute.newWrapInstance({
       routePath: `/:locale/examples/miniature-project`,
-      component: () => import('@/pages/examples/miniature-project'),
+      component: () => import('@/pages/examples/miniature-project/MiniatureProjectPage.vue'),
       ...input,
     })
 
@@ -187,7 +197,7 @@ namespace RoutingRoute {
 
     const base = BaseRoute.newWrapInstance({
       routePath: `/:locale/examples/routing`,
-      component: () => import('@/pages/examples/routing'),
+      component: () => import('@/pages/examples/routing/RoutingPage.vue'),
       ...input,
     })
 

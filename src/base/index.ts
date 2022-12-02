@@ -1,6 +1,18 @@
 import type { DeepPartial, DeepReadonly, DeepUnreadonly } from 'js-common-lib'
+import type { App } from 'vue'
 import { Notify } from 'quasar'
 import merge from 'lodash/merge'
+
+//==========================================================================
+//
+//  Interfaces
+//
+//==========================================================================
+
+/**
+ * @see Plugin.install of @vue/runtime-core
+ */
+type VuePluginInstall = (app: App, ...options: any[]) => any
 
 //==========================================================================
 //
@@ -130,6 +142,7 @@ function isFontAwesome(icon: string | undefined | null): boolean {
 //==========================================================================
 
 export { createObjectCopyFunctions, showNotification, getBaseURL, isFontAwesome }
+export type { VuePluginInstall }
 export * from '@/base/config'
 export * from '@/base/constants'
 export * from '@/base/screen'

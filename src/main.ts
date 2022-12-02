@@ -1,7 +1,7 @@
 import '@/styles/settings.scss'
 import { AppConfig, AppConstants, Screen } from '@/base'
 import { AppI18n } from '@/i18n'
-import AppPage from './pages/app'
+import AppPage from './pages/app/AppPage.vue'
 import { AppRouter } from '@/router'
 import { AppServices } from '@/services'
 import { Quasar } from 'quasar'

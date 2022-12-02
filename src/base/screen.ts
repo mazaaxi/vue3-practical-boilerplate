@@ -1,5 +1,5 @@
 import { computed, reactive } from 'vue'
-import type { App } from 'vue'
+import type { VuePluginInstall } from '@/base'
 import { Screen as _Screen } from 'quasar'
 import { isImplemented } from 'js-common-lib'
 
@@ -22,10 +22,7 @@ interface Screen {
   readonly lt: { sm: boolean; md: boolean; lg: boolean; xl: boolean }
   readonly gt: { xs: boolean; sm: boolean; md: boolean; lg: boolean }
 
-  /**
-   * @see Plugin.install of @vue/runtime-core
-   */
-  install(app: App, ...options: any[]): any
+  install: VuePluginInstall
 }
 
 //==========================================================================

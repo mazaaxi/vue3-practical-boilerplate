@@ -9,7 +9,7 @@ import { isImplemented } from 'js-common-lib'
 
 type HomeRoute = UnwrapNestedRefs<WrapHomeRoute>
 
-interface WrapHomeRoute extends WrapBaseRoute {}
+interface WrapHomeRoute extends WrapBaseRoute<void> {}
 
 namespace HomeRoute {
   export function newWrapInstance(input: BaseRouteInput) {
@@ -21,7 +21,7 @@ namespace HomeRoute {
 
     const base = BaseRoute.newWrapInstance({
       routePath: `/:locale/home`,
-      component: () => import('@/pages/home'),
+      component: () => import('@/pages/home/HomePage.vue'),
       ...input,
     })
 

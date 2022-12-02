@@ -23,7 +23,7 @@ interface BaseRouteInput extends RouteInput {
 //
 //==========================================================================
 
-interface WrapBaseRoute<MOVE_PARAMS extends any | void = void> extends WrapRoute<MOVE_PARAMS> {
+interface WrapBaseRoute<MOVE_PARAMS extends any | void> extends WrapRoute<MOVE_PARAMS> {
   readonly locale: ComputedRef<string>
 }
 
@@ -83,7 +83,7 @@ namespace BaseRoute {
       toPath,
     }
 
-    return isImplemented<WrapBaseRoute, typeof result>(result)
+    return isImplemented<WrapBaseRoute<unknown>, typeof result>(result)
   }
 }
 

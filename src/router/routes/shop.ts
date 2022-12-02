@@ -23,7 +23,7 @@ namespace ShopRoute {
 
     const base = BaseRoute.newWrapInstance({
       routePath: `/:locale/shop`,
-      component: () => import('@/pages/shop'),
+      component: () => import('@/pages/shop/ShopPage.vue'),
       ...input,
     })
 
