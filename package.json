@@ -13,9 +13,9 @@
     "test:unit": "vitest --environment jsdom",
     "build-only": "vite build",
     "type-check": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false",
-    "lint": "npm run lint:eslint -- --fix && npm run lint:stylelint -- --fix",
-    "lint:eslint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --ignore-path .gitignore",
-    "lint:stylelint": "stylelint \"./src/**/*.{vue,scss,sass}\"",
+    "lint": "npm run lint:eslint && npm run lint:stylelint",
+    "lint:eslint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --ignore-path .gitignore --fix && :",
+    "lint:stylelint": "stylelint \"./src/**/*.{vue,scss,sass}\" --fix && :",
     "db:setup": "source ./package.scripts.sh && SetupDB",
     "db:revert": "source ./package.scripts.sh && RevertDB",
     "prepare": "husky install"

@@ -48,7 +48,7 @@ module.exports = {
         asyncArrow: 'always',
       },
     ],
-    'sort-imports': 'warn',
+    'sort-imports': 'error',
     'space-in-parens': ['error', 'never'],
     '@typescript-eslint/ban-ts-ignore': 'off',
     '@typescript-eslint/ban-types': [
