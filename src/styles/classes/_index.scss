@@ -1,41 +1,41 @@
 @forward './space';
 
-@use '../variables' as v;
+@use '../variables' as *;
 @use '../partials';
 
 .text-primary {
-  color: v.$text-primary;
+  color: $text-primary;
 }
 .text-secondary {
-  color: v.$text-secondary;
+  color: $text-secondary;
 }
 .text-light {
-  color: v.$text-light;
+  color: $text-light;
 }
 .text-disabled {
-  color: v.$text-disabled;
+  color: $text-disabled;
 }
 .text-accent {
-  color: v.$text-accent;
+  color: $text-accent;
 }
 .text-error {
-  color: v.$text-error;
+  color: $text-error;
 }
 
 .color-red {
-  color: v.$color-red !important;
+  color: $color-red !important;
 }
 .color-blue {
-  color: v.$color-blue !important;
+  color: $color-blue !important;
 }
 .color-green {
-  color: v.$color-green !important;
+  color: $color-green !important;
 }
 .color-purple {
-  color: v.$color-purple !important;
+  color: $color-purple !important;
 }
 .color-orange {
-  color: v.$color-orange !important;
+  color: $color-orange !important;
 }
 
 @for $i from 1 through 20 {

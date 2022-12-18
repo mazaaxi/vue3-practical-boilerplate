@@ -1,11 +1,11 @@
-@use './variables' as v;
+@use './variables' as *;
 @use './partials';
 
 body {
   margin: 0;
   font-family: 'Roboto', 'Noto', sans-serif;
-  font-weight: v.$text-weight-regular;
-  color: v.$text-primary;
+  font-weight: $text-weight-regular;
+  color: $text-primary;
   background-color: #ffffff;
 }
 
@@ -34,14 +34,14 @@ a {
       margin-right: 10px;
       font-size: 20px;
     }
+  }
 
-    .q-btn {
-      body.screen--xs &,
-      body.screen--sm & {
-        min-height: 2em;
-        padding: 0.285em;
-        font-size: 12px;
-      }
+  .q-btn {
+    body.screen--xs &,
+    body.screen--sm & {
+      min-height: 2em;
+      padding: 0.285em;
+      font-size: 12px;
     }
   }
 }
