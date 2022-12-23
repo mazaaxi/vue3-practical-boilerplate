@@ -17,7 +17,7 @@ module.exports = {
   },
   overrides: [
     {
-      files: ['**/*.{scss,sass}'],
+      files: ['src/styles/**/*.{scss,sass}'],
       rules: {
         'selector-class-pattern': [
           '^[a-z][a-z0-9-_]+$',
