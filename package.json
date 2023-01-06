@@ -7,18 +7,21 @@
   },
   "scripts": {
     "dev": "vite",
+    "lib": "npm run ts-script scripts/lib.mts",
+    "lib:revert": "yarn install --check-files",
     "api": "npm run db:setup && node server/index.mjs",
     "build": "run-p type-check \"build-only --mode {1}\" --",
     "preview": "vite preview --port 4173",
     "test:unit": "vitest --environment jsdom",
     "build-only": "vite build",
     "type-check": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false",
+    "ts-script": "ts-node-esm --project tsconfig.config.json --",
     "lint": "npm run lint:eslint && npm run lint:stylelint",
     "lint:eslint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --ignore-path .gitignore --fix && :",
-    "lint:stylelint": "stylelint \"./src/**/*.{vue,scss,sass}\" --fix && :",
-    "db:setup": "source ./package.scripts.sh && SetupDB",
-    "db:revert": "source ./package.scripts.sh && RevertDB",
-    "prepare": "husky install"
+    "lint:stylelint": "stylelint \"src/**/*.{vue,scss,sass}\" --fix && :",
+    "db:setup": ". scripts/package.sh && SetupDB",
+    "db:revert": ". scripts/package.sh && RevertDB",
+    "prepare": ". scripts/package.sh && Prepare"
   },
   "lint-staged": {
     "./**/*.{vue,js,jsx,cjs,mjs,ts,tsx,cts,mts}": [
@@ -80,6 +83,7 @@
     "stylelint-config-recommended-scss": "^8.0.0",
     "stylelint-config-recommended-vue": "^1.4.0",
     "stylelint-prettier": "^2.0.0",
+    "ts-node": "^10.9.1",
     "typescript": "~4.8.4",
     "vite": "^3.0.9",
     "vitest": "^0.23.0",

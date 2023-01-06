@@ -30,4 +30,6 @@ coverage
 *.sw?
 
 # Application settings
+scripts/**/*
+!scripts/package.sh
 server/db.json

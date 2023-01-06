@@ -4,6 +4,11 @@ SERVER_DIR="./server"
 FM_DB_FILE="$SERVER_DIR/db.origin.json"
 TO_DB_FILE="$SERVER_DIR/db.json"
 
+Prepare() {
+  husky install
+  cp -r node_modules/js-common-lib/scripts/. scripts/
+}
+
 SetupDB() {
   if [ ! -e "$TO_DB_FILE" ]; then
     cp "$FM_DB_FILE" "$TO_DB_FILE"
