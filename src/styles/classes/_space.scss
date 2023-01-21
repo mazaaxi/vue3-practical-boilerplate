@@ -58,6 +58,18 @@
   .space-pa-#{$num} {
     padding: #{$num}px #{$num}px !important;
   }
+
+  .space-ga-#{$num} {
+    gap: #{$num}px !important;
+  }
+
+  .space-gx-#{$num} {
+    column-gap: #{$num}px !important;
+  }
+
+  .space-gy-#{$num} {
+    row-gap: #{$num}px !important;
+  }
 }
 
 .space-mx-auto {
