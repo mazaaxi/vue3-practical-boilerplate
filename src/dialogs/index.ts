@@ -1,8 +1,8 @@
 import AppDialogContainer, { AppDialogNames } from '@/dialogs/AppDialogContainer.vue'
+import { type BaseDialog, URLQueryDialogHelper } from '@/components'
 import type { Ref, UnwrapNestedRefs } from 'vue'
 import { computed, reactive } from 'vue'
 import { AppRouter } from '@/router'
-import { URLQueryDialogHelper } from '@/components'
 import { isImplemented } from 'js-common-lib'
 
 //==========================================================================
@@ -15,10 +15,7 @@ import { isImplemented } from 'js-common-lib'
 //  AppDialog
 //--------------------------------------------------
 
-interface AppDialog<PARAMS = void, RESULT = void> {
-  open(params: PARAMS): Promise<RESULT>
-  close(result: RESULT): void
-}
+interface AppDialog<PARAMS = void, RESULT = void> extends BaseDialog<PARAMS, RESULT> {}
 
 //--------------------------------------------------
 //  AppDialogs
@@ -175,4 +172,3 @@ namespace AppDialogs {
 export { AppDialogs, AppDialogContainer }
 export type { AppDialog }
 export * from '@/dialogs'
-export * from '@/dialogs/message'

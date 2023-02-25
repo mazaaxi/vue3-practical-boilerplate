@@ -13,12 +13,10 @@
 </template>
 
 <script lang="ts">
-import type { SetupContext, UnwrapNestedRefs } from 'vue'
-import { extensibleMethod, isImplemented } from 'js-common-lib'
+import { type DeepReadonly, extensibleMethod, isImplemented } from 'js-common-lib'
+import { type SetupContext, type UnwrapNestedRefs, defineComponent } from 'vue'
 import { AppRouter } from '@/router'
 import { BasePromiseDialog } from '@/components/dialog/PromiseDialog.vue'
-import { QDialog } from 'quasar'
-import { defineComponent } from 'vue'
 
 //==========================================================================
 //
@@ -26,12 +24,12 @@ import { defineComponent } from 'vue'
 //
 //==========================================================================
 
-type URLQueryDialog<PARAMS = void, RESULT = void> = URLQueryDialog.Props<RESULT> &
+type URLQueryDialog<PARAMS = void, RESULT = void> = DeepReadonly<URLQueryDialog.Props<RESULT>> &
   URLQueryDialog.Features<PARAMS, RESULT>
 
 namespace URLQueryDialog {
   export interface Props<RESULT> extends BasePromiseDialog.Props<RESULT> {
-    readonly dialogName: string
+    dialogName: string
   }
 
   export type Features<PARAMS, RESULT> = UnwrapNestedRefs<WrapFeatures<PARAMS, RESULT>>
@@ -84,7 +82,7 @@ const URLQueryDialog = defineComponent({
      */
     const open = (base.open.body = extensibleMethod<URLQueryDialog<PARAMS, RESULT>['open']>(
       params => {
-        base.closeResult.value = props.defaultResult as any
+        base.closeResult.value = props.defaultResult
 
         return new Promise((resolve, reject) => {
           base.closeResolve.value = resolve

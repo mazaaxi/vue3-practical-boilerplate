@@ -10,7 +10,7 @@
 import type { ComputedRef, UnwrapNestedRefs } from 'vue'
 import { defineComponent, ref } from 'vue'
 import { AnchorDialog } from '@/dialogs/anchor'
-import { MessageDialog } from '@/dialogs/message'
+import { MessageDialog } from '@/components'
 import { SignInDialog } from '@/dialogs/sign-in'
 import { isImplemented } from 'js-common-lib'
 

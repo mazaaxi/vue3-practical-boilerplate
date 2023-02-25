@@ -2,6 +2,8 @@ export default {
   common: {
     ok: 'OK',
     cancel: 'キャンセル',
+    yes: 'はい',
+    no: 'いいえ',
     reload: 'リロード',
     signIn: 'サインイン',
     signOut: 'サインアウト',

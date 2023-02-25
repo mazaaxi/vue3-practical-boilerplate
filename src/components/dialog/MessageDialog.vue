@@ -36,28 +36,39 @@
 
       <!-- Button area -->
       <q-card-actions class="row items-center justify-end">
-        <!-- Cancel button -->
-        <q-btn
-          v-show="params.type === 'confirm'"
-          flat
-          rounded
-          color="primary"
-          :label="$t('common.cancel')"
-          @click="close(false)"
-        />
-        <!-- OK button -->
-        <q-btn flat rounded color="primary" :label="$t('common.ok')" @click="close(true)" />
+        <template v-if="haveButtons">
+          <q-btn
+            v-for="button in params.buttons"
+            :key="button.value"
+            flat
+            rounded
+            color="primary"
+            :label="button.label"
+            @click="close(button.value)"
+          />
+        </template>
+        <template v-else>
+          <!-- Cancel button -->
+          <q-btn
+            v-show="params.type === 'confirm'"
+            flat
+            rounded
+            color="primary"
+            :label="$t('common.cancel')"
+            @click="close(false)"
+          />
+          <!-- OK button -->
+          <q-btn flat rounded color="primary" :label="$t('common.ok')" @click="close(true)" />
+        </template>
       </q-card-actions>
     </q-card>
   </PromiseDialog>
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref } from 'vue'
-import type { AppDialog } from '@/dialogs'
-import { PromiseDialog } from '@/components'
-import type { UnwrapNestedRefs } from 'vue'
-import { isImplemented } from 'js-common-lib'
+import { type DeepReadonly, isImplemented } from 'js-common-lib'
+import { type UnwrapNestedRefs, computed, defineComponent, reactive, ref } from 'vue'
+import PromiseDialog from '@/components/dialog/PromiseDialog.vue'
 import merge from 'lodash/merge'
 
 //==========================================================================
@@ -66,22 +77,29 @@ import merge from 'lodash/merge'
 //
 //==========================================================================
 
-type MessageDialog = MessageDialog.Props & MessageDialog.Features
+type MessageDialog = DeepReadonly<MessageDialog.Props> & MessageDialog.Features
 
 namespace MessageDialog {
   export interface Props {}
 
   export type Features = UnwrapNestedRefs<WrapFeatures>
 
-  export interface WrapFeatures extends AppDialog<MessageDialogOpenParams | void, boolean> {
-    readonly params: MessageDialogOpenParams
+  export interface WrapFeatures {
+    open<T = boolean>(params: MessageDialogOpenParams): Promise<T>
+    close<T = boolean>(result: T): void
   }
 }
 
 interface MessageDialogOpenParams {
-  readonly type?: MessageDialogType
-  readonly title?: string
-  readonly message?: string
+  title?: string
+  message?: string
+  type?: MessageDialogType
+  /**
+   * Specify the information for the buttons that appear at the bottom of the dialog.
+   * - label: Label to be displayed on the button
+   * - value: Value to identify which button was used to close the dialog
+   */
+  buttons?: { label: string; value: any }[]
 }
 
 type MessageDialogType = 'alert' | 'confirm'
@@ -99,7 +117,7 @@ const MessageDialog = defineComponent({
 
   props: {},
 
-  setup(props: MessageDialog.Props, ctx) {
+  setup(props: MessageDialog.Props) {
     //----------------------------------------------------------------------
     //
     //  Variables
@@ -112,7 +130,10 @@ const MessageDialog = defineComponent({
       type: 'alert',
       title: undefined,
       message: undefined,
+      buttons: undefined,
     })
+
+    const haveButtons = computed(() => Boolean(params.buttons?.length))
 
     //----------------------------------------------------------------------
     //
@@ -122,15 +143,15 @@ const MessageDialog = defineComponent({
 
     const open: MessageDialog.WrapFeatures['open'] = p => {
       if (p) {
-        const { type, title, message } = p
-        merge(params, { type, title, message })
+        const { title, message, type, buttons } = p
+        merge(params, { title, message, type, buttons })
       }
 
-      return dialog.value!.open()
+      return dialog.value!.open() as Promise<any>
     }
 
-    const close: MessageDialog.WrapFeatures['close'] = isOK => {
-      dialog.value!.close(isOK)
+    const close: MessageDialog.WrapFeatures['close'] = closedValue => {
+      dialog.value!.close(closedValue as any)
     }
 
     //----------------------------------------------------------------------
@@ -142,6 +163,7 @@ const MessageDialog = defineComponent({
     const result = {
       dialog,
       params,
+      haveButtons,
       open,
       close,
     }

@@ -2,6 +2,8 @@ export default {
   common: {
     ok: 'OK',
     cancel: 'Cancel',
+    yes: 'Yes',
+    no: 'No',
     reload: 'Reload',
     signIn: 'Sign In',
     signOut: 'Sign Out',

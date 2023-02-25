@@ -304,12 +304,15 @@ const ShopPage = defineComponent({
     }
 
     async function checkoutButtonOnClick() {
-      const confirmed = await dialogs.message.open({
-        type: 'confirm',
+      const confirmed = await dialogs.message.open<'yes' | 'no'>({
         title: i18n.t('shop.shoppingCart'),
         message: i18n.t('shop.checkoutQ'),
+        buttons: [
+          { label: i18n.t('common.no'), value: 'no' },
+          { label: i18n.t('common.yes'), value: 'yes' },
+        ],
       })
-      if (!confirmed) return
+      if (confirmed === 'no') return
 
       Loading.show()
       await services.shop.checkout()

@@ -13,9 +13,9 @@
 </template>
 
 <script lang="ts">
-import type { Ref, SetupContext, UnwrapNestedRefs } from 'vue'
-import { defineComponent, ref } from 'vue'
-import { extensibleMethod, isImplemented } from 'js-common-lib'
+import { type DeepReadonly, extensibleMethod, isImplemented } from 'js-common-lib'
+import { type Ref, type SetupContext, type UnwrapNestedRefs, defineComponent, ref } from 'vue'
+import type { BaseDialog } from '@/components/dialog/base'
 import type { QDialog } from 'quasar'
 
 //==========================================================================
@@ -26,16 +26,14 @@ import type { QDialog } from 'quasar'
 
 namespace BasePromiseDialog {
   export interface Props<RESULT> {
-    readonly defaultResult: RESULT
-    readonly persistent: boolean
+    defaultResult: RESULT
+    persistent: boolean
   }
 
   export type Features<PARAMS, RESULT> = UnwrapNestedRefs<WrapFeatures<PARAMS, RESULT>>
 
-  export interface WrapFeatures<PARAMS, RESULT> {
+  export interface WrapFeatures<PARAMS, RESULT> extends BaseDialog<PARAMS, RESULT> {
     readonly opened: Ref<boolean>
-    open(params: PARAMS): Promise<RESULT>
-    close(result: RESULT): void
   }
 
   export const props = {
@@ -63,8 +61,8 @@ namespace BasePromiseDialog {
     const dialog = ref<QDialog>()
 
     const opened = ref(false)
-    const closeResolve: Ref<((value: RESULT) => void) | undefined> = ref(undefined)
-    const closeResult: Ref<RESULT> = ref(undefined as any)
+    const closeResolve: Ref<((value: any) => void) | undefined> = ref(undefined)
+    const closeResult: Ref<any> = ref(undefined)
 
     //----------------------------------------------------------------------
     //
@@ -72,16 +70,16 @@ namespace BasePromiseDialog {
     //
     //----------------------------------------------------------------------
 
-    const open = extensibleMethod<PromiseDialog<PARAMS, RESULT>['open']>(() => {
+    const open = extensibleMethod<PromiseDialog<PARAMS, any>['open']>(() => {
       closeResult.value = props.defaultResult
 
-      return new Promise<RESULT>(resolve => {
+      return new Promise(resolve => {
         closeResolve.value = resolve
         opened.value = true
       })
     })
 
-    const close = extensibleMethod<PromiseDialog<PARAMS, RESULT>['close']>(value => {
+    const close = extensibleMethod<PromiseDialog<PARAMS, any>['close']>(value => {
       closeResult.value = value
       opened.value = false
     })
@@ -140,7 +138,7 @@ namespace BasePromiseDialog {
 //
 //==========================================================================
 
-type PromiseDialog<PARAMS = void, RESULT = void> = PromiseDialog.Props<RESULT> &
+type PromiseDialog<PARAMS = void, RESULT = void> = DeepReadonly<PromiseDialog.Props<RESULT>> &
   PromiseDialog.Features<PARAMS, RESULT>
 
 namespace PromiseDialog {
